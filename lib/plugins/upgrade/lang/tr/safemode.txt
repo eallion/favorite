@@ -1,0 +1,1 @@
+Bu wiki safemod hack kullanacak şekilde yapılandırılmış. Ne yazık ki bu şartlar altında wikiyi otomatik olarak güvenli bir şekilde yükseltemeyiz. Lütfen [[doku>install:upgrade|wikinizin elle yükseltilmesi (İngilizce)]] sayfasındaki talimatları okuyun.

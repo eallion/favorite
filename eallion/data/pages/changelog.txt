@@ -1,0 +1,106 @@
+====== Change Log ======
+
+==== Ver 3.5  Release====
+2016.9.29 （阿里云ECS推荐 [[https://promotion.aliyun.com/ntms/act/ambassador/sharetouser.html?userCode=wuthb7tq&productCode=vm|点击领券]]）
+  * Uptime：release online
+  * HTTPS 
+  * CDN [[https://cloud.baidu.com/|百度云]]
+  * 源站更换[[https://promotion.aliyun.com/ntms/act/ambassador/sharetouser.html?userCode=wuthb7tq&productCode=vm|阿里云香港]] 服务器
+  * <del>加入html5背景效果 [[https://github.com/hustcc/canvas-nest.js|Canvas-nest]]</del>
+
+==== Ver 3.4 ====
+2016.9.3
+  * Uptime：27 days
+  * 优化搜索结构
+  * 为了方便没有科学上网的用户，<del>使用[[https://getgoogle.org/|GetGoogle]]镜像</del> （已被墙）
+
+==== Ver 3.3 ====
+2016.8.26
+  * Uptime：8 days
+  * 全部转换为短链接，由[[https://5ch.in|Chin]]提供服务
+
+==== Ver 3.2 ====
+2016.7.8
+  * Uptime：49 days
+  * 换为[[https://github.com/Fraina/STM-Dokuwiki-Template|stm]]模板
+  * 性能优化
+
+==== Ver 3.1 ====
+2016.7.3
+  * Uptime：5 days
+  * 性能优化
+
+==== Ver 3.0 ====
+2016.7.2
+  * Uptime：1 day
+  * 2年后的首次改版
+  * 换为[[https://www.dokuwiki.org/|dokuwiki]]驱动
+  * Without Mysql
+  * Snapshot：[[ver3.0|version3.0]]
+
+==== Ver 2.7 ====
+2014.2.27
+  * Uptime：856 days
+  * 针对[[http://typecho.org|Typecho]]二次开发
+  * 仅保留1%的功能专用于导航
+
+==== Ver2.6 ====
+2013.12.20
+  * Uptime：69 days
+  * UI升级
+  * 性能优化
+
+==== Ver 2.5 ====
+2012.6.26
+  * Uptime：542 days
+  * 开发专用于导航的[[http://typecho.org|Typecho]]插件
+
+==== Ver 2.4 ====
+2012.6.1
+  * Uptime：25 days
+  * 开发专用于导航的[[http://typecho.org|Typecho]]模板
+
+==== Ver 2.3 ====
+2012.5.22
+  * Uptime：10 days
+  * 升级为[[http://typecho.org|Typecho]]驱动
+  * PHP+Mysql，就是这么折腾
+  * Snapshot：[[ver2.3|version2.3]]
+
+==== Ver 2.2 ====
+2011.11.20
+  * Uptime：184 days
+  * 放弃臃肿的[[http://wordpress.org|Woredpress]]
+  * 放弃数据库
+  * 全面静态化，回归html单页面（index.php）
+  * Snapshot：[[ver2.2|version2.2]]
+
+==== Ver 2.1 ====
+2011.11.19
+  * Uptime：1 day
+  * 删除不常用的链接
+  * 整理常用的网站
+
+==== Ver 2.0 ====
+2010.3.26
+  * Uptime：603 days
+  * 升级链接管理方式：PHP+Mysql
+  * 升级为[[http://wordpress.org|Woredpress]]驱动
+  * Snapshot：[[ver2.0|version2.0]]
+
+==== Ver 1.0====
+2009.12
+  * Uptime：115 days
+  * jobidc转换成html单页面
+  * 用虚拟主机存放
+  * 启用独立域名eallion.cn
+  * Snapshot：[[ver1.0|version1.0]]
+==== Ver 0.1 Beta ====
+2006.10
+  * Uptime：1157 days
+  * [[http://eallion.jobidc.com|jobidc]]模板
+  * Snapshot： [[beta|]]
+
+----
+
+<<[[start|返回首页]]

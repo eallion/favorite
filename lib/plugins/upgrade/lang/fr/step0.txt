@@ -1,0 +1,7 @@
+Cette extension met votre DokuWiki à jour automatiquement, en installant la dernière version. Avant d'aller plus loin, vous devriez lire la liste des modifications apportées ([[doku>changes|Changelog]]), afin de voir s'il y a des étapes supplémentaires à faire avant ou après la mise à jour.
+
+Pour rendre la mise à jour automatique possible, PHP doit avoir les droits en écriture sur les fichiers de DokuWiki. Cette extension contrôle les permissions avant le début du processus de mise à jour.
+
+Cette extension ne met pas à jour les extensions et les thèmes.
+
+Nous vous recommandons d'effectuer une sauvegarde de votre wiki avant de poursuivre !

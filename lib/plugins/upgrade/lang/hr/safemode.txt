@@ -1,0 +1,1 @@
+Ovaj wiki je podešen da koristi "safemode hack". Nažalost ne možemo sigurno izvršiti automatsku nadogradnju pod tim uvjetima. Molim [[doku>install:upgrade|ručno nadogradite vaš wiki]].

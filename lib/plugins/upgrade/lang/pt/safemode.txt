@@ -1,0 +1,1 @@
+Este wiki é configurado para usar o modo seguro. Infelizmente, não podemos atualizar automaticamente  com segurança o wiki sob estas condições. Por favor [[doku>install:upgrade|atualize seu wiki manualmente]].

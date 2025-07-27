@@ -1,0 +1,7 @@
+Bu eklenti wikinizi otomatik olarak mecut olan en yeni DokuWiki sürümüne yükseltecek. Devam etmeden önce yapmanız gereken ek basamaklar olup olmadığını [[doku>changes|Changelog]] adresinden kontrol etmeniz önerilir.
+
+Otomatik yükseltmenin yapılabilmesi için PHP sürecinin DokuWiki dosyalarına yazma hakkı olmalıdır. Eklenti, yükseltme sürecine başlamadan önce gerekli dosya izinlerini kontrol edecektir.
+
+Bu eklenti, yüklü olan şablon ve eklentileri yükseltmeyecektir.
+
+Devam etmeden önce wikinizin bir yedeğini oluşturmanızı öneririz.

@@ -1,0 +1,1 @@
+Este wiki está configurado para utilizar el hack modo seguro. Desafortunadamente, no podemos actualizar el wiki automáticamente con seguridad bajo estas condiciones. Por favor [[doku>install:upgrade| actualiza tu wiki manualmente]].

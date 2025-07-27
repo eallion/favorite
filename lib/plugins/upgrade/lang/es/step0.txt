@@ -1,0 +1,7 @@
+Este plugin actualizará automáticamente tu wiki a la nueva versión disponible de DokuWiki. Antes de continuar, debe leer el [[doku>changes|Histórico de Cambios]] para comprobar si hay pasos adicionales para llevar a cabo antes o después de la actualización.
+
+Para permitir la actualización automática, el proceso PHP requiere permisos de escritura para los archivos de Dokuwiki. El plugin comprobará los permisos de archivo necesarios antes de iniciar el proceso de actualización.
+
+Este plugin no actualiza los plugins o plantillas instaladas.
+
+Le recomendamos que cree una copia de seguridad de su wiki antes de continuar.

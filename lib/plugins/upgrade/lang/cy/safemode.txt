@@ -1,0 +1,1 @@
+Mae'r wici hwn wedi'i ffurfweddu i ddefnyddio'r safemode hack. Yn anffodus, 'dyn ni ddim yn gallu uwchraddio'n awtomatig yn ddiogel o dan y amodau hyn. Bydd angen [[doku>install:upgrade|uwchraddio'ch wici gan law]].

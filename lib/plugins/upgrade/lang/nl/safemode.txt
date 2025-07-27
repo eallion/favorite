@@ -1,0 +1,1 @@
+Deze wiki is geconfigureerd om de safemode hack te gebruiken. Helaas kunnen we onder die omstandigheden de wiki niet automatisch upgraden. [[doku>install:upgrade|Upgrade je wiki alsjeblieft handmatig]].

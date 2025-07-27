@@ -1,0 +1,1 @@
+這個Wiki被設定成使用 safemode hack。在這個情況下，很不幸的我們沒辦法安全且自動的升級wiki。請[[doku>install:upgrade|手動升級你的wiki]]。

@@ -1,0 +1,1 @@
+Ce wiki est configuré pour utiliser le mode sans échec. Il n'est malheureusement pas possible de mettre à jour automatiquement le wiki dans ces conditions. Veuillez [[doku>install:upgrade|mettre à jour votre wiki manuellement]].

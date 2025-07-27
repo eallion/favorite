@@ -1,0 +1,1 @@
+Tato wiki je nakonfigurována pro použití safemode hacku. Za těchto podmínek nelze provést bezpečnou automatickou aktualizaci. Aktualizujte prosím [[doku>install:upgrade|svou wiki ručně]].

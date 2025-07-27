@@ -1,0 +1,7 @@
+base     stm
+author   Fraina Huang
+email    jscaem@gmail.com
+date     2016-07-05
+name     STM Dokuwiki Template
+desc     Another simple, clean and responsive theme for dokuwiki.
+url      https://github.com/Fraina/STM-Dokuwiki-Template

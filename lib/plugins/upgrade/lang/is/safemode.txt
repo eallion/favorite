@@ -1,0 +1,1 @@
+Þessi wiki er stilltur á að nota safemode breytinguna. Því miður getum við ekki uppfært wiki-inn örugglega undir þessum skilyrðum. Vinsamlegast [[doku>install:upgrade|uppfærðu wiki-inn handvirkt]].

@@ -1,0 +1,2 @@
+Wikien er konfigurert for å bruke safemode hack. Uheldigvis kan vi ikke sikkert oppgradere wikien automatisk under slike forhold.
+Vennligst [[doku>install:upgrade|oppgrader wikien manuelt]]. 

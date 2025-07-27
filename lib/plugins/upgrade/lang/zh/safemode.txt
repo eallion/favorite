@@ -1,0 +1,1 @@
+本Wiki被设为使用安全模式。在此状态下我们无法安全升级Wiki。请 [[doku>install:upgrade|手动升级您的Wiki]]。

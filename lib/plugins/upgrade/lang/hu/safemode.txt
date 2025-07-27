@@ -1,0 +1,1 @@
+A wiki 'safemode hack' használatára van beállítva. Sajnos, ilyen körülmények mellett nem tudjuk a wikit biztonsággal frissíteni automatikusan. Próbáljuk meg a [[doku>install:upgrade|wiki manuális frissítését]].

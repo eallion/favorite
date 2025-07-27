@@ -1,0 +1,7 @@
+Þessi viðbót mun sjálfvirkt uppfæra wiki-inn þinn í nýjustu DokuWiki útgáfu. Áður en haldið er áfram ættir þú að lesa [[doku>changes|Breytingasöguna]] til að sjá hvort einhver viðbótar skref þurfi að taka fyrir eða eftir uppfærslu.
+
+Til að leyfa sjálfvirka uppfærslu þarf PHP forritið skriftar-réttindi á DokuWiki skrárnar. Viðbótin mun athuga hvort viðeigandi réttindi séu til staðar áður en uppfærslan hefst.
+
+Þessi viðbót mun ekki uppfæra neinar innsettar viðbætur eða skapalón.
+
+Við mælum með því að þú takir afrit af wiki-inum þínum áður en þú heldur áfram.

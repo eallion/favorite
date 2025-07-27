@@ -1,0 +1,7 @@
+Tento zásuvný modul automaticky aktualizuje vaši wiki na nejnovější dostupnou verzi DokuWiki. Než budete pokračovat, měli byste si přečíst [[doku>changes|Changelog]] a zkontrolovat, jestli jsou třeba provést nějaké dodatečné kroky před nebo po aktualizaci.
+
+Pro povolení automatické aktualizace je třeba zajistit PHP procesu zapisovací práva do souborů DokuWiki. Zásuvný modul ověří dostupnost potřebných oprávnění před spuštěním aktualizace.
+
+Tento modul nebude aktualizovat nainstalované šablony ani ostatní zásuvné moduly.
+
+Před spuštěním se doporučuje vytvoření zálohy vaší wiki.

@@ -1,0 +1,7 @@
+Bydd yr ategyn hwn yn uwchraddio'ch wici yn awtomatig i'r fersiwn DocuWiki diweddaraf. Cyn parhau, dylech chi ddarllen y [[doku>changes|Changelog]] i wirio os oes camau ychwanegol sydd angen i chi berfformio cyn neu ar ôl uwchraddio.
+
+Er mwyn galluogi uwchraddio'n awtomatig, mae proses PHP angen hawliau ysgrifennu ar gyfer ffeiliau DokuWiki. Bydd yr ategyn yn gwirio'r hawliau ffeil angenrheidiol cyn dechrau'r broses uwchraddio.
+
+'Dyw'r ategyn hwn ddim yn uwchraddio unrhyw ategion neu dempledau sydd wedi'u harsefydlu.
+
+Rydyn ni'n awgrymu eich bod chi'n creu copi wrth gefn o'ch wiki cyn parhau.

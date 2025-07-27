@@ -1,0 +1,7 @@
+Ovaj dodatak će automatski nadograditi vaš wiki na zadnju dostupnu DokuWIki inačicu. Prije nastavka, molimo da pročitate [[doku>changes|listu promjena]] da provjerite da li postoje neki dodatni koraci koje treba napraviti prije nadogradnje.
+ 
+Da bi nadogradnja bila moguća, PHP proces treba imati pravo pisanja po DokuWiki datotekama. Dodatak će provjeriti potrebna prava prije pokretanja procesa nadogradnje.
+
+Ovaj dodatak neće nadograditi niti jedan već postavljeni dodatak ili predložak.
+
+Preporučamo da napravite pričuvnu kopiju Vašeg wikija prije nastavka.

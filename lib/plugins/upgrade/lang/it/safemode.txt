@@ -1,0 +1,1 @@
+Questa wiki è configurata per usare il trucco safemode. Sfortunatamente non possiamo aggiornare senza rischi la wiki automaticamente sotto queste condizioni. Per favore [[doku>install:upgrade|aggiorna la tua wiki manualmente]].

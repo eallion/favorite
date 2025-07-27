@@ -1,0 +1,7 @@
+Tiu kromaĵo aŭtomate aktualigos vian vikion al la plej freŝe havebla DokuWiki-versio. Antaŭ ol daŭrigi, legu [[doku>changes|la ŝanĝ-liston]] por kontroli, ĉu vi devus fari aldonajn paŝojn antaŭ aŭ post la aktualigo.
+
+Por permesi aŭtomatan aktualigon, la PHP-procezo bezonas skribpermeson por Dokuwiki-dosieroj. La kromaĵo kontrolos la necesajn dosierpermesojn antaŭ la komenco de la aktualigado.
+
+Tiu kromaĵo **ne aktualigos** instalitajn kromaĵojn aŭ ŝablonojn.
+
+Ni rekomendas, ke vi faru sekurkopion de via vikio antaŭ ol daŭrigi.

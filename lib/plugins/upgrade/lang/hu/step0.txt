@@ -1,0 +1,7 @@
+A bővítmény automatikusan frissíti a wikit a legújabb elérhető DokuWiki-verzióra. A folytatás előtt olvassuk el a [[doku>changes|Changelog-ot (változások naplóját)]], ellenőrizendő, hogy a frissítés előtt vagy után szükséges-e bármilyen további lépés.
+
+Az automatikus frissítéshez a PHP-folyamatnak írási jogosultságra van szüksége a DokuWiki-fájlokhoz. A bővítmény ellenőrzi a szükséges fájljogosultságokat a frissítési folyamat megkezdése előtt.
+
+A bővítmény nem frissíti a már telepített bővítményeket vagy sablonokat.
+
+Javasoljuk, hogy a frissítés előtt készítsünk biztonsági másolatot.

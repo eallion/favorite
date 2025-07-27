@@ -1,0 +1,7 @@
+Denne programutvidelsen vil automatisk oppgradere din wiki til den nyeste stabile versjonen av DokuWiki. Før du fortsetter bør du lese [[doku>changes|Changelog]] for å sjekke om det er noen du må gjøre i tillegg til selve oppdateringen.
+
+Denne automatisk oppgraderingen krever at PHP-prosessen har skrivetillatelse for DokuWiki-filer. Programutvidelsen vil selv sjekke om de nødvendige filtillatelsene er på plass før oppgraderingen starter.
+
+Programutvidelsen vil ikke oppgradere installerte utvidelser eller maler.
+
+Vi anbefaler at du tar en sikkerhetskopi av wikien før du fortsetter.

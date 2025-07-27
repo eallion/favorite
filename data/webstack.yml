@@ -1,0 +1,2396 @@
+---
+- taxonomy: 常用
+  icon: fas fa-star
+  links:
+    - title: 博客 Blog
+      logo: 3.png
+      url: https://www.eallion.com/
+      description: 大大的小蜗牛的个人生活博客
+    - title: Mastodon e5n.cc
+      logo: mastodon.svg
+      url: https://e5n.cc/@eallion
+      description: Charles Chin's personal Mastodon.
+    - title: Gmail
+      logo: gmail.svg
+      url: https://mail.google.com
+      description: Secure, smart, and easy to use email
+    - title: Deepseek DS
+      logo: deepseek.png
+      url: https://chat.deepseek.com/
+      description: 深度求索 探索未至之境
+    - title: 腾讯元宝
+      logo: yuanbao.svg
+      url: https://yuanbao.tencent.com/chat
+      description: 轻松工作 多点生活
+    - title: 飞牛私有云 NASfnOS
+      logo: fnOS.png
+      url: https://nas.eallion.com
+      description: NAS fnOS Cloudflared
+    - title: Twitter 𝕏
+      logo: x.svg
+      url: https://x.com/eallion
+      description: Blaze your glory!
+    - title: Youtube
+      logo: youtube.svg
+      url: https://youtube.com/
+      description: Boardcast Yourself
+    - title: 哔哩哔哩 Bilibili
+      logo: bilibili.svg
+      url: https://www.bilibili.com/
+      description: 你感兴趣的视频都在 B 站
+    - title: Reddit
+      logo: reddit.svg
+      url: https://www.reddit.com/user/eallion/
+      description: Heart of the internet
+    - title: 抖音 Douyin
+      logo: tiktok.svg
+      url: https://www.douyin.com/
+      description: 记录美好生活
+    - title: 小红书 xhs
+      logo: xhs.png
+      url: https://www.xiaohongshu.com
+      description: 你的生活指南
+    - title: GitHub
+      logo: github.svg
+      url: https://github.com/eallion
+      description: Build and ship software on a single, collaborative platform
+    - title: Cloudflare
+      logo: cloudflare.svg
+      url: https://dash.cloudflare.com/
+      description: Connect, protect, and build everywhere
+    - title: Vercel
+      logo: vercel.svg
+      url: https://vercel.com
+      description: Build and deploy the best web experiences with the Frontend Cloud
+    - title: 阿里云 Aliyun
+      logo: aliyun.svg
+      url: https://www.aliyun.com/
+      description: 计算，为了无法计算的价值
+    - title: 腾讯云 Tencent
+      logo: tencentcloud.svg
+      url: https://cloud.tencent.com/
+      description: 产业智变·云启未来
+    - title: Dropbox
+      logo: dropbox.svg
+      url: https://www.dropbox.com/
+      description: For all things worth saving
+    - title: 京东 (JD.COM)
+      logo: jingdong.png
+      url: https://www.jd.com
+      description: 正品低价、品质保障、配送及时、轻松购物！
+    - title: 酷白菜 Kubaicai
+      logo: kubaicai.png
+      url: https://www.kubaicai.com/?r=/l/ddlist
+      description: 每天千款优惠券秒杀，一折限时疯抢！
+    - title: 什么值得买 smzdm
+      logo: smzdm.svg
+      url: https://www.smzdm.com/
+      description: 科学消费 认真生活
+    - title: 淘宝 TB
+      logo: taobao.webp
+      url: https://www.taobao.com
+      description: 亚洲较大的网上交易平台
+    - title: 拼多多 PDD
+      logo: pinduoduo.png
+      url: https://mobile.yangkeduo.com/
+      description: 风靡全国的拼团商城，优质商品新鲜直供，快来一起拼多多吧
+    - title: 小米有品 Youpin
+      logo: youpin.png
+      url: https://www.xiaomiyoupin.com/
+      description: 小米旗下精品生活电商平台
+    - title: 抖音创作者中心
+      logo: tiktok.svg
+      url: https://creator.douyin.com/creator-micro/home
+      description: 抖音创作服务平台
+    - title: 小红书千帆
+      logo: qianfan.png
+      url: https://ark.xiaohongshu.com/
+      description: 小红书卖家版，解锁社交内容电商全新体验！
+    - title: 淘宝联盟
+      logo: alimama.ico
+      url: https://pub.alimama.com/portal/v2/pages/promo/goods/index.htm
+      description: 淘宝联盟·生态伙伴
+    - title: 京东联盟
+      logo: jingdong.png
+      url: https://union.jd.com/
+      description: 网络赚钱，流量变现，专业电商 CPS 联盟平台！
+    - title: 多多进宝
+      logo: pinduoduo.png
+      url: https://jinbao.pinduoduo.com/
+      description: 大量高佣金、多优惠券商品在这里等你，可以随时随地登录该网站推广商品赚钱，商品优惠券多、佣金高，让您轻松赚钱！
+    - title: 汇率
+      logo: currency.png
+      url: https://currency.eallion.com/
+      description: 全球 34 个币种，付款无货币转换费
+    - title: ITDOG 在线 ping
+      logo: itdog.png
+      url: https://www.itdog.cn/ping
+      description: 多地 ping 网络延迟测试
+    - title: TinyPNG
+      logo: tinypng.png
+      url: https://tinypng.com/
+      description: Compress AVIF, WebP, PNG and JPEG images
+    - title: 在线拼图 Pintu
+      logo: pingtu.png
+      url: https://kejiweixun.com/tools/merge-images
+      description: 图片拼接：长图拼接，把多张图片合并成一张，支持纵向或横向拼接图片，还能添加水印。该工具完全离线运行，手机建议使用微信小程序“拼长图”。
+    - title: Docker Status
+      logo: docker-status.svg
+      url: https://status.1panel.top/status/docker
+      description: 国内 Docker 服务状态 & 镜像加速监控
+
+- taxonomy: NAS Apps
+  icon: fab fa-docker
+  links:
+    - title: 影视
+      logo: fnos-media.webp
+      url: https://nas.eallion.com/v
+      description: 飞牛私有云影视
+
+    - title: 相册
+      logo: fnos-photos.webp
+      url: https://nas.eallion.com/p
+      description: 飞牛私有云相册
+
+    - title: 音乐 Navidrome
+      logo: navidrome.svg
+      url: https://music.eallion.com
+      description: Personal Streaming Service
+
+    - title: Vaultwarden
+      logo: vaultwarden.svg
+      url: https://vaultwarden.eallion.com
+      description: A simple wake on lan web app
+      server: my-docker
+      container: vaultwarden
+
+    - title: Nginx Proxy Manager
+      logo: nginx-proxy-manager.svg
+      url: https://nginx.eallion.com
+      description: A simple wake on lan web app
+      server: my-docker
+      container: nginxproxymanager
+
+    - title: Duplicati
+      logo: duplicati.svg
+      url: http://192.168.0.2:8200
+      description: Zero-trust backup
+      server: my-docker
+      container: duplicati
+
+    - title: n8n
+      logo: n8n.svg
+      url: https://n8n.eallion.com/
+      description: Open Source, Self-hosted, Your Notes, Your Way
+      server: bwh-la-docker
+      container: n8n
+
+    - title: Mastodon
+      logo: mastodon.svg
+      url: https://e5n.cc
+      description: A simple wake on lan web app
+      server: tencent-sv-docker
+      container: mastodon-web-1
+
+    - title: Gotosocial
+      logo: gotosocial.svg
+      url: https://m.eallion.com/
+      description: Open Source, Self-hosted, Your Notes, Your Way
+      server: bwh-la-docker
+      container: gotosocial
+
+    - title: Memos
+      logo: memos.webp
+      url: https://memos.eallion.com/
+      description: Open Source, Self-hosted, Your Notes, Your Way
+      server: my-docker
+      container: memos
+
+    - title: Synapse Matrix
+      logo: synapse.svg
+      url: https://matrix.e5n.cc/
+      description: Open Source, Self-hosted, Your Notes, Your Way
+      server: bwh-la-docker
+      container: synapse
+
+    - title: AllinSSL
+      logo: allinssl.svg
+      url: https://ssl.eallion.com/admin
+      description: Open Source, Self-hosted, Your Notes, Your Way
+      server: bwh-la-docker
+      container: allinssl
+
+    - title: Umami
+      logo: umami.svg
+      url: https://umami.is/
+      description: The modern analytics platform
+      server: my-docker
+      container: umami
+
+    - title: Wallos
+      logo: wallos.webp
+      url: https://wallos.eallion.com/
+      description: Open-Source Personal Subscription Tracker
+      server: my-docker
+      container: wallos
+
+    - title: Watch Your LAN
+      logo: watchyourlan.png
+      url: http://192.168.0.2:8840/
+      description: AList proxy server for TvBox.
+      server: my-docker
+      container: watchyourlan
+
+    - title: QD Today
+      logo: qdtoday.png
+      url: http://192.168.0.2:8923/
+      description: HTTP 请求定时任务自动执行框架
+      server: my-docker
+      container: qd
+
+    - title: Calibre-Web
+      logo: calibre-web.svg
+      url: https://book.eallion.com
+      description: 一个简单好用的个人书库
+      server: my-docker
+      container: calibre-web
+
+    - title: MoonTV
+      logo: moontv.png
+      url: https://moontv.eallion.com/
+      description: 爱盼 - 资源随心，娱乐无限
+      server: my-docker
+      container: moontv
+
+    - title: LibreTV
+      logo: libretv.png
+      url: https://libretv.eallion.com/
+      description: 爱盼 - 资源随心，娱乐无限
+      server: my-docker
+      container: libretv
+
+    - title: AiPan
+      logo: aipan.png
+      url: http://192.168.0.2:8009/
+      description: 爱盼 - 资源随心，娱乐无限
+      server: my-docker
+      container: aipan
+
+    - title: CloudSaver
+      logo: cloudsaver.png
+      url: http://192.168.0.2:8008
+      description: 一个网盘资源搜索与转存工具
+      server: my-docker
+      container: cloud-saver
+
+    - title: XiaoMusic
+      logo: xiaomusic.ico
+      url: http://192.168.0.2:58090/static/tailwind/index.html
+      description: 一个网盘资源搜索与转存工具
+      server: my-docker
+      container: xiaomusic
+
+- taxonomy: Self Hosted
+  icon: fas fa-server fa-lg
+  links:
+    - title: Awesome Selfhosted
+      logo: awesome-selfhosted.svg
+      url: https://github.com/awesome-selfhosted/awesome-selfhosted
+      description: Self-hosted content and software
+    - title: selfh.st
+      logo: selfh-st.svg
+      url: https://selfh.st/
+      description: Self-hosted content and software
+    - title: Eallion's Status
+      logo: uptimerobot.svg
+      url: https://stats.uptimerobot.com/LvmZRfkNGP
+      description: Web Service status on Uptimerobot
+    - title: Phanpy
+      logo: phanpy.svg
+      url: https://app.e5n.cc/
+      description: Phanpy Mastodon Client
+    - title: Sink
+      logo: sink.png
+      url: https://s.e5n.cc/
+      description: Sink URL Shortener
+    - title: Scoop Search
+      logo: scoop.jpg
+      url: https://scoop.eallion.com/
+      description: Scoop Search Online
+    - title: Gravatar Mirror
+      logo: gravatar.svg
+      url: https://gravatar.eallion.com/
+      description: Gravatar Mirror on Cloudflare
+    - title: 汇率
+      logo: currency.svg
+      url: https://currency.eallion.com/
+      description: 实时汇率换算
+    - title: 生日
+      logo: birthday.svg
+      url: https://birthday.eallion.com/
+      description: 实时汇率换算
+    - title: 在线屏幕测试
+      logo: 350.png
+      url: https://monitor.eallion.com/
+      description: 自建在线屏幕测试网站
+    - title: KMS Windows 激活服务器
+      logo: 355.ico
+      url: https://kms.eallion.com/
+      description: 自建 KMS Windows 激活服务器（上海）
+    - title: 色圖網站
+      logo: 448.png
+      url: https://color.eallion.com/
+      description: 标记美好生活
+    - title: Coloring China
+      logo: coloringchina.png
+      url: https://se.eallion.com/
+      description: 标记美好生活
+    - title: Cover Paint
+      logo: 476.png
+      url: https://cover.eallion.com/
+      description: Creating cover images is now super easy
+    - title: Pic Smaller
+      logo: 485.svg
+      url: https://pics.eallion.com/
+      description: Compress JPEG, PNG, WEBP, AVIF, SVG and GIF images intelligently
+    - title: 瀑布流图片浏览器
+      logo: viewer.png
+      url: https://viewer.eallion.com/
+      description: 标记美好生活
+    - title: Wallos
+      logo: 471.png
+      url: https://wallos.eallion.com/
+      description: Subscription Tracker
+    - title: Vercel OG
+      logo: vercel.svg
+      url: https://og.eallion.com/api/og?title=
+      description: Vercel OG API
+    - title: Hanzi Writer
+      logo: hanziwriter.png
+      url: https://zi.eallion.com/
+      description: Hanzi Writer 案例
+    - title: GitHub Stars Manager
+      logo: stars.webp
+      url: https://star.eallion.com/
+      description: GitHub Stars Manager
+    - title: 海棠诗社
+      logo: haitang.svg
+      url: https://shi.eallion.com/
+      description: 古韵今风，海棠诗梦间
+    - title: Charles Chin's Whisper
+      logo: memo.jpg
+      url: https://memo.eallion.com/
+      description: Turn your Telegram Channel into a MicroBlog.
+
+
+- taxonomy: 社交
+  icon: fab fa-twitter
+  links:
+    - title: Twitter 𝕏
+      logo: x.svg
+      url: https://x.com/eallion
+      description: It's what's happening.
+    - title: Phanpy
+      logo: 473.svg
+      url: https://app.e5n.cc/
+      description: Mastodon Web Client
+    - title: GoToSocial
+      logo: gotosocial.svg
+      url: https://m.eallion.com/
+      description: 自建 GoToSocial
+    - title: Memos 嘀咕
+      logo: memos.webp
+      url: https://memos.eallion.com/
+      description: 自建 Memos 笔记与个人微博客后端
+    - title: Mastodon Social
+      logo: 461.svg
+      url: https://mastodon.social/@eallion
+      description: Mastodon.social 官方实例
+    - title: Hotspot Hourly
+      logo: 578.png
+      url: https://hourly.top/
+      description: 每小时汇总更新的中国社交网络热点。完整榜单：https://hot.hourly.top
+    - title: Bluesky
+      logo: 606.png
+      url: https://bsky.app/
+      description: 标记美好生活
+    - title: Threads
+      logo: 387.svg
+      url: https://www.threads.net/@eallion
+      description: Threads
+    - title: Steam
+      logo: steam.svg
+      url: https://steamcommunity.com/id/eallion
+      description: (-75%) 喜加一，+1+1+1+1+1+1...
+    - title: Keybase
+      logo: keybase.svg
+      url: https://keybase.io/eallion
+      description: 标记美好生活
+    - title: Telegram
+      logo: telegram.svg
+      url: https://t.me/eallion
+      description: 标记美好生活
+    - title: instagram
+      logo: instagram.svg
+      url: https://www.instagram.com/eallion
+      description: 标记美好生活
+    - title: Charles Chin's Whisper
+      logo: 575.png
+      url: https://memo.eallion.com
+      description: Mastodon Public Timeline Mirror of e5n.cc via Mastogr.am
+    - title: reddit
+      logo: reddit.svg
+      url: https://www.reddit.com/user/eallion/
+      description: 标记美好生活
+    - title: Slack
+      logo: slack.svg
+      url: https://eallion.slack.com/
+      description: 标记美好生活
+    - title: LinkedIn
+      logo: linkedin.svg
+      url: https://www.linkedin.com/
+      description: 标记美好生活
+    - title: Medium
+      logo: medium.svg
+      url: https://medium.com/
+      description: 标记美好生活
+    - title: Pinterest
+      logo: pinterest.svg
+      url: https://www.pinterest.com/
+      description: 标记美好生活
+    - title: Parler
+      logo: parler.svg
+      url: https://www.parler.com/
+      description: 标记美好生活
+    - title: Facebook
+      logo: facebook.svg
+      url: https://www.facebook.com/
+      description: 标记美好生活
+    - title: StackOverflow
+      logo: stackoverflow.svg
+      url: https://stackoverflow.com/users/11409594/eallion
+      description: 标记美好生活
+    - title: Hotmail
+      logo: outlook.svg
+      url: https://www.hotmail.com/
+      description: 标记美好生活
+    - title: Discord
+      logo: discord.svg
+      url: https://discord.com/
+      description: 談話與聚會的好地方
+    - title: MastoFeed
+      logo: mastofeed.png
+      url: https://mastofeed.org/
+      description: Send your RSS Feeds to Mastodon
+    - title: feedsin.space
+      logo: feedsin.space.png
+      url: https://feedsin.space/
+      description: Mastodon Feed
+    - title: xLog
+      logo: xlog.svg
+      url: https://xlog.app/
+      description: Write. Own. Earn.
+    - title: 哔哔广场 BB
+      logo: memos.webp
+      url: https://immmmm.com/bbs/
+      description: 标记美好生活
+    - title: Lemmy.World
+      logo: lemmy.svg
+      url: https://lemmy.world/
+      description: A generic Lemmy server for everyone to use.
+    - title: Folo
+      logo: folo.svg
+      url: https://folo.is/
+      description: 标记美好生活
+
+- taxonomy: 自媒体
+  icon: fa fa-video-camera
+  links:
+    - title: 抖音创作者中心
+      logo: 525.png
+      url: https://creator.douyin.com/creator-micro/home
+      description: 抖音创作服务平台是抖音创作者的专属服务平台，支持用户作为创作者和管理机构两种登陆方式，并通过提供授权管理、内容管理、互动管理及数据管理等服务助力抖音用户高效运营！
+    - title: 小红书
+      logo: 526.png
+      url: https://www.xiaohongshu.com
+      description: 你的生活指南
+    - title: 头条号
+      logo: toutiao.svg
+      url: https://mp.toutiao.com
+      description: 标记美好生活
+    - title: 哔哩哔哩
+      logo: bilibili.svg
+      url: https://www.bilibili.com/
+      description: 哔哩哔哩 (゜-゜) つロ 干杯 ~-bilibili
+    - title: 巨量引擎工作台
+      logo: oceanengine.svg
+      url: https://business.oceanengine.com/site/index
+      description: 巨量引擎工作台作为巨量引擎商业生态营销中枢，为商业化客户提供营销资产、数据、资金、人员智能化管理解决方案，助力品牌全局科学管理，超过 15 万 + 企业通过巨量引擎工作台开展营销和经营工作。
+    - title: 巨量百应 达人
+      logo: buyin.svg
+      url: https://buyin.jinritemai.com/dashboard
+      description: 标记美好生活
+    - title: 豆包
+      logo: doubao.svg
+      url: https://www.doubao.com/chat/
+      description: 豆包是你的 AI 聊天智能对话问答助手，写作文案翻译情感陪伴编程全能工具。豆包为你答疑解惑，提供灵感，辅助创作，也可以和你畅聊任何你感兴趣的话题。
+    - title: 即创
+      logo: aic.jpg
+      url: https://aic.oceanengine.com/workbench
+      description: 即创专注于智能创意生产与管理分析，同时兼容开放生态，提供视频创作、图文生成、直播工具等多种场景服务，帮助客户解锁创意生产力、携手服务商激发创新，撬动多元供给，助力商业化经营。
+    - title: 今日热卖
+      logo: 239.png
+      url: https://remai.today/
+      description: 「今日热卖」提供各电商热榜聚合：淘宝、天猫、京东、拼多多、苏宁、唯品会、当当、什么值得买、北美省钱快报 ... 追踪全网好物、让购物简单一点。
+    - title: cobalt
+      logo: cobalt.png
+      url: https://cobalt.tools/
+      description: cobalt is your go-to place for downloads from social and media platforms. zero ads, trackers, or other creepy bullshit. simply paste a share link and you're ready to rock!
+    - title: 轻抖
+      logo: qingdou.png
+      url: https://www.qingdou.vip/pctool/work-benches
+      description: 轻抖正版官网 - 百万达人在用的短视频工具：支持各大主流平台批量提取视频、找达人；全网高清素材一键搜索；AI 智能视频混剪、文案生成等
+    - title: 可灵 AI
+      logo: kling.webp
+      url: https://klingai.kuaishou.com/
+      description: 新一代 AI 创意生产力平台
+    - title: 文皮皮
+      logo: wenpipi.png
+      url: http://www.wenpipi.com/
+      description: 在线字词频统计工具
+    - title: 龙猫工具大师
+      logo: 534.ico
+      url: https://www.longmao.vip/
+      description: Generated by create next app
+    - title: 秘塔写作猫
+      logo: xiezuocat.png
+      url: https://xiezuocat.com/
+      description: 标记美好生活
+    - title: 企业微信
+      logo: wework.svg
+      url: https://work.weixin.qq.com/
+      description: 企业微信
+    - title: 微信公众平台
+      logo: wechat.svg
+      url: https://mp.weixin.qq.com/
+      description: 标记美好生活
+    - title: 微信公众平台客服
+      logo: mpkf.png
+      url: https://mpkf.weixin.qq.com/
+      description: 标记美好生活
+    - title: 媒小三
+      logo: meixiaosan.png
+      url: https://www.meixiaosan.com/
+      description: 媒小三 - 新媒体工具网，实用的新媒体工具大全，提供各种实用新媒体工具，如：AI 配音，视频解析，短视频下载，文案提取，文章改写，标题生成等功能，帮助新媒体人一站式快捷操作。
+    - title: 灰豚数据
+      logo: huitun.png
+      url: https://www.huitun.com
+      description: 灰豚数据是短视频和抖音直播、小红书等数据分析监测云平台 , 为 top 品牌与达人提供精准、可靠、高效的短视频、直播数据分析服务，包括热门视频广告素材、带货达人、畅销商品、品牌榜单等
+    - title: 考古加数据
+      logo: kaogujia.png
+      url: https://www.kaogujia.com
+      description: 考古加数据是专业高效的抖音直播数据分析平台，为达人、商家、MCN 机构提供抖音达人、商品、抖音小店和短视频的全方位数据分析服务，基于行业领先的数据处理能力，挖掘直播数据的价值，助力直播电商决策。
+    - title: 实选
+      logo: shixuan.png
+      url: https://www.shixuan.com
+      description: 实选，8 年数字化选品服务商，为直播从业者提供数字化管理 + 智能选品解决方案，助力企业实现规模化增长。通过数字化技术，帮助直播电商从业者打造专属直播品库，沉淀企业直播商品资源。基于实选直播选品 SOP，帮助企业构建专属管理流程，让直播选品更规范，更高效。运用数字化选品分析，助力企业更快选到好品。在直播电商领域，我们专注于通过数字化技术帮助企业实现规模化增长，和客户一起成长。
+    - title: Outfits AI
+      logo: outfits.png
+      url: https://www.outfitsai.com
+      description: Try on any outfits using AI!
+    - title: 微信 MD 编译器
+      logo: mdoocs.png
+      url: https://md.doocs.org/
+      description: 标记美好生活
+    - title: 微信公众号 Markdown 排版
+      logo: quail.png
+      url: https://quail.ink/tools/markdown-to-wx/
+      description: Quail 工具
+    - title: 微小宝
+      logo: 114.png
+      url: https://www.wxb.com/
+      description: 微信私域流量运营专家，百万用户的选择 - 微小宝助手 _ 微小宝
+    - title: 马克吐文 - 随易科技
+      logo: 543.png
+      url: https://md.yicode.tech/#/
+      description: 标记美好生活
+    - title: 任推邦
+      logo: renbangtui.ico
+      url: https://dt.bd.cn/#/
+      description: 标记美好生活
+    - title: WHEE
+      logo: whee.png
+      url: https://www.whee.com
+      description: 高品质的 AI 素材生成器
+    - title: TinyEraser
+      logo: tinyeraser.png
+      url: https://www.tinyeraser.com/
+      description: 标记美好生活
+    - title: 迅排设计
+      logo: palxp.png
+      url: https://design.palxp.cn/home
+      description: 轻松创意，迅速排版，免费在线设计器
+    - title: 小红书千帆 PC 端
+      logo: arkxhs.png
+      url: https://ark.xiaohongshu.com/
+      description: 小红书千帆，解锁社交内容电商全新体验！从美好生活到多元交易，让小红书伴你生长，品牌合作、数据分析、让商业变现更高效。平台占据社交电商流量红利，便捷高效获客，打造品牌商品新爆款。加入小红书商家，您可以得到经营店铺的生意小帮手，小红书会帮助商家解决核心经营链路问题，通过小红书专属社区电商模式助力商家快速获利！
+    - title: 开拍
+      logo: kaipai.png
+      url: https://www.kaipai.com/home
+      description: 用 AI 制作口播视频
+
+- taxonomy: 云计算
+  icon: fa fa-cloud
+  links:
+    - title: Cloudflare
+      logo: cloudflare.svg
+      url: https://www.cloudflare.com/
+      description: 智能化云服务平台 | 免费 CDN 安全防护
+    - title: Vercel
+      logo: vercel.svg
+      url: https://vercel.com/
+      description: Serverless 服务平台
+    - title: Docker Hub
+      logo: docker.svg
+      url: https://hub.docker.com/
+      description: 标记美好生活
+    - title: AWS
+      logo: aws.svg
+      url: https://aws.amazon.com/
+      description: Amazon Web Services Cloud
+    - title: Google Cloud Platform
+      logo: gcp.svg
+      url: https://cloud.google.com/
+      description: Google Cloud Platform 谷歌云计算平台
+    - title: Azure
+      logo: microsoft-azure.svg
+      url: https://azure.microsoft.com/
+      description: 微软 Azure 云计算平台
+    - title: 阿里云
+      logo: aliyun.svg
+      url: https://www.aliyun.com/
+      description: 计算，为了无法计算的价值
+    - title: 腾讯云
+      logo: tencentcloud.svg
+      url: https://cloud.tencent.com/act/cps/redirect?redirect=2446&cps_key=1f05a4ef7955bfdbc954f3f0a115c2e3&from=console
+      description: 产业智变 · 云启未来
+    - title: 火山引擎控制台
+      logo: 553.png
+      url: https://console.volcengine.com/home
+      description: 标记美好生活
+    - title: 华为云
+      logo: huaweicloud.svg
+      url: https://huaweicloud.com/
+      description: 共建智能世界云底座
+    - title: 百度智能云
+      logo: baiducloud.svg
+      url: https://cloud.baidu.com/
+      description: 百度智能云 - 智能时代基础设施
+    - title: 又拍云
+      logo: upyun.svg
+      url: https://console.upyun.com/register/?invite=S1gZukfRw
+      description: 加速在线业务 - CDN 加速 - 云存储
+    - title: 多吉云
+      logo: dogecloud.png
+      url: https://www.dogecloud.com/?iuid=5123
+      description: 一站式视频云点播平台，轻量级的用户能够无需了解任何技术就轻而易举地展示和播放视频，而以视频为主要产品的用户能通过强大的 API 和 SDK 完成对视频的高级处理。
+    - title: 缤纷云
+      logo: bitiful.png
+      url: https://www.bitiful.com/
+      description: 强化低版本的对象存储和 CDN 服务
+    - title: 括彩云智能 CDN
+      logo: 547.png
+      url: https://www.kuocaicdn.com/register?code=8pcrj4mqe237s
+      description: 标记美好生活
+    - title: Linode
+      logo: linode.svg
+      url: https://www.linode.com/
+      description: Cloud Computing Services | VMs, Kubernetes, Storage
+    - title: DigitalOcean
+      logo: digitalocean.svg
+      url: https://www.digitalocean.com/?refcode=32b844ce481a
+      description: The Cloud for Builders
+    - title: Vultr
+      logo: vultr.svg
+      url: http://www.vultr.com/?ref=6995088
+      description: SSD VPS Servers, Cloud Servers and Cloud Hosting
+    - title: Backblaze
+      logo: backblaze.svg
+      url: https://www.backblaze.com/
+      description: Backblaze
+    - title: LightCDN
+      logo: lightcdn.png
+      url: https://www.lightcdn.com/
+      description: LightCDN
+    - title: 搬瓦工
+      logo: 34.png
+      url: https://bandwagonhost.com/aff.php?aff=39172
+      description: 美西线路优化最好的 VPS 搬瓦工
+    - title: Algolia
+      logo: algolia.svg
+      url: https://www.algolia.com/
+      description: 标记美好生活
+    - title: JustMySocks
+      logo: 39.png
+      url: https://justmysocks.net/members/aff.php?aff=7265
+      description: 标记美好生活
+    - title: DlerCloud
+      logo: dlercloud.png
+      url: https://dlercloud.com/
+      description: 标记美好生活
+    - title: NF Cloud
+      logo: nfcloud.png
+      url: https://nfcloud.one/
+      description: 标记美好生活
+    - title: Cloudflare Domain Pricing
+      logo: cloudflare.svg
+      url: https://cfdomainpricing.com/
+      description: 标记美好生活
+    - title: Claw Cloud
+      logo: clawcloud.png
+      url: https://console.run.claw.cloud/signin?link=6C2YY1FG8Y28
+      description: 标记美好生活
+
+- taxonomy: AI
+  icon: fas fa-ghost
+  links:
+    - title: Future Tools
+      logo: futuretools.png
+      url: https://www.futuretools.io/
+      description: AI 导航 - Find The Exact AI Tool
+    - title: 层榜 AI 工具榜导航
+      logo: ai.cengbang.com.png
+      url: https://ai.cengbang.com/
+      description: 层榜 AI 工具榜导航集合 ,AI 工具箱 ,OpenAI Sora
+    - title: OpenAI
+      logo: chat.openai.com.png
+      url: https://chat.openai.com/
+      description: OpenAI ChatGPT 官网
+    - title: Claude
+      logo: claude.ai.png
+      url: https://claude.ai/
+      description: 标记美好生活
+    - title: AiHubMix
+      logo: aihubmix.png
+      url: https://aihubmix.com?aff=arLk
+      description: OpenAI Key 购买
+    - title: Stable Diffusion
+      logo: diffus.png
+      url: https://webui.graviti.com/
+      description: Stable Diffusion 集合，集成了大量的 API
+    - title: Perplexity
+      logo: perplexity.png
+      url: https://www.perplexity.ai/
+      description: 标记美好生活
+    - title: Pi, your personal AI
+      logo: heypi.com.png
+      url: https://heypi.com/talk
+      description: Pi, your personal AI
+    - title: Vercel AI
+      logo: chat.vercel.ai.png
+      url: https://chat.vercel.ai/
+      description: Next.js AI Chatbot
+    - title: Bing Copilot
+      logo: 380.png
+      url: https://www.bing.com/chat
+      description: Bing Copilot Chat
+    - title: Kimi.ai
+      logo: kimi.moonshot.cn.png
+      url: https://kimi.moonshot.cn/
+      description: 帮你看更大的世界
+    - title: 腾讯元宝
+      logo: yuanbao.tencent.com.png
+      url: https://yuanbao.tencent.com/chat/
+      description: 标记美好生活
+    - title: 通义
+      logo: 515.png
+      url: https://tongyi.aliyun.com/qianwen/
+      description: 我是通义，一个专门响应人类指令的大模型，希望能对你有所帮助
+    - title: 文心一言
+      logo: yiyan.baidu.com.png
+      url: https://yiyan.baidu.com/
+      description: 标记美好生活
+    - title: 讯飞星火大模型
+      logo: xinghuo.xfyun.cn.png
+      url: https://xinghuo.xfyun.cn/
+      description: AI 大语言模型 - 星火大模型 - 科大讯飞
+    - title: Coze
+      logo: coze.png
+      url: https://www.coze.com/
+      description: 标记美好生活
+    - title: CAIS
+      logo: safe.png
+      url: https://www.safe.ai/
+      description: Center for AI Safety (CAIS)
+    - title: Gigapixel AI
+      logo: topazlabs.png
+      url: https://www.topazlabs.com/gigapixel-ai
+      description: 图像 AI 放大
+    - title: 深言达意
+      logo: shenyandayi.com.png
+      url: https://shenyandayi.com/
+      description: 懂文字，更懂你 清华 AI 向量词典
+    - title: Royalty
+      logo: mubert.com.png
+      url: https://mubert.com/render
+      description: Free Music Generation For App And Content
+    - title: Regex.ai
+      logo: regex.ai.png
+      url: https://regex.ai/
+      description: AI Regular Expression Generator
+    - title: 阶跃
+      logo: stepfun.png
+      url: https://www.stepfun.com/
+      description: 标记美好生活
+    - title: Any Summary
+      logo: anysummary.png
+      url: https://www.anysummary.app/
+      description: Summarize any file with AI!
+    - title: Outfits AI
+      logo: outfitsai.png
+      url: https://www.outfitsai.com/
+      description: 衣服换装 AI
+    - title: WHEE
+      logo: whee.png
+      url: https://www.whee.com/
+      description: 高品质的 AI 素材生成器
+    - title: GeoSpy.ai
+      logo: geospy.ai.png
+      url: https://geospy.ai/
+      description: 标记美好生活
+    - title: TurboAI
+      logo: turboai.io.png
+      url: https://turboai.io/
+      description: 标记美好生活
+    - title: CF AI Playground
+      logo: cloudflare.svg
+      url: https://multi-modal.ai.cloudflare.com/
+      description: Cloudflare Multi-modal Playground
+    - title: 零一万物
+      logo: lingyiwanwu.png
+      url: https://www.lingyiwanwu.com/
+      description: AI2.0 大模型技术和应用的全球公司
+    - title: TextTo.site
+      logo: textto.site.png
+      url: https://textto.site/
+      description: 标记美好生活
+    - title: 302.AI
+      logo: 302.ai.png
+      url: https://302.ai/
+      description: 汇集全球顶级品牌的 AI 超市，零月费，按需付费，全面开放
+
+- taxonomy: 工具
+  icon: fa fa-wrench fa-lg
+  list:
+    - term: 生活工具
+      icon: fas fa-utensils
+      links:
+        - title: Google 相册
+          logo: google-photos.svg
+          url: https://photos.google.com/
+          description: 标记美好生活
+        - title: Smtp2go
+          logo: smtp2go.ico
+          url: https://smtp2go.com
+          description: Easily send and track all of your emails, and forget headaches with email delivery.
+        - title: 油小猴 - 网盘直链下载助手
+          logo: youxiaohou.gif
+          url: https://www.youxiaohou.com/
+          description: 标记美好生活
+        - title: Have i been pwned
+          logo: haveibeenpwned.com.png
+          url: https://haveibeenpwned.com/
+          description: 标记美好生活
+        - title: Personal data leak check
+          logo: cybernews.com.png
+          url: https://cybernews.com/personal-data-leak-check/
+          description: 标记美好生活
+        - title: 小米基带
+          logo: xiaomifirmwareupdater.com.png
+          url: https://xiaomifirmwareupdater.com/firmware/ares/
+          description: 标记美好生活
+        - title: AdBlock Tester
+          logo: adblock-tester.com.png
+          url: https://adblock-tester.com/
+          description: 标记美好生活
+        - title: GreasyFork
+          logo: greasyfork.org.png
+          url: https://greasyfork.org/zh-CN
+          description: 标记美好生活
+        - title: 能不能好好说话
+          logo: lab.magiconch.com.png
+          url: https://lab.magiconch.com/nbnhhsh/
+          description: 标记美好生活
+        - title: HowToPronounce
+          logo: howtopronounce.png
+          url: https://www.howtopronounce.com/
+          description: 标记美好生活
+        - title: Forvo
+          logo: forvo.com.png
+          url: https://forvo.com/
+          description: 标记美好生活
+        - title: IFTTT
+          logo: ifttt.com.png
+          url: https://ifttt.com/
+          description: 标记美好生活
+        - title: Windy
+          logo: windy.png
+          url: https://www.windy.com/
+          description: Wind map &amp;amp; weather forecast
+        - title: 米兔上传
+          logo: 97.jpg
+          url: http://u.jiqid.com/
+          description: 小米米兔故事机自定义上传 mp3
+        - title: RSS Source
+          logo: rss-source.com.png
+          url: https://rss-source.com/
+          description: 标记美好生活
+        - title: RSS Hub
+          logo: docs.rsshub.app.png
+          url: https://docs.rsshub.app/
+          description: 标记美好生活
+        - title: Language reactor
+          logo: languagereactor.png
+          url: https://www.languagereactor.com/
+          description: 标记美好生活
+        - title: 笔顺大全
+          logo: bishun.ivtool.com.png
+          url: https://bishun.ivtool.com/
+          description: 笔顺查询 , 笔顺动画演示 , 字帖下载
+        - title: 五子棋课程
+          logo: ku10.com.png
+          url: https://ku10.com/
+          description: RenjuClass 五子棋课程在线学习
+        - title: Wormhole
+          logo: wormhole.app.png
+          url: https://wormhole.app/
+          description: 简单、私密的文件共享
+        - title: FilePursuit
+          logo: filepursuit.com.png
+          url: https://filepursuit.com/
+          description: Search for files, videos, audios, eBooks
+        - title: 用药助手
+          logo: drugs.dxy.cn.png
+          url: https://drugs.dxy.cn/
+          description: 丁香园用药助手
+        - title: Xslist.org
+          logo: xslist.org.png
+          url: https://xslist.org/
+          description: Xslist.org - JAV Model Listing
+        - title: 花体英文转换器
+          logo: iamwawa.png
+          url: https://www.iamwawa.cn/fontchanger.html
+          description: 花体英文转换器可复制 _ 蛙蛙工具
+        - title: MediSearch
+          logo: medisearch.io.png
+          url: https://medisearch.io/zh
+          description: 直接的科学为基础的 医疗问题回答
+        - title: Mastodon Token Generator
+          logo: 408.svg
+          url: https://takahashim.github.io/mastodon-access-token/
+          description: Access Token Generator for Mastodon API
+        - title: Scratch
+          logo: scratch.mit.edu.png
+          url: https://scratch.mit.edu/
+          description: MIT 幼儿编程
+        - title: Enpuz
+          logo: enpuz.com.png
+          url: http://enpuz.com/
+          description: 在线英语句子语法分析
+        - title: 12ft Ladder
+          logo: 12ft.io.png
+          url: https://12ft.io/
+          description: 绕过互联网付费墙
+        - title: Local-First Web
+          logo: localfirstweb.dev.png
+          url: https://localfirstweb.dev/
+          description: Local-First Web Development
+        - title: Pika website screenshots
+          logo: pika.style.png
+          url: https://pika.style/
+          description: Create UI mockups and website screenshots
+        - title: TTSMaker
+          logo: ttsmaker.com.png
+          url: https://ttsmaker.com/zh-cn
+          description: 在线免费文字转语音
+        - title: 批量文件重命名
+          logo: rename.jgrass.xyz.png
+          url: https://rename.jgrass.xyz/
+          description: Rename - 批量文件重命名工具
+        - title: B 站视频下载工具
+          logo: 469.ico
+          url: https://zhouql.vip/bilibili/
+          description: 标记美好生活
+        - title: 扫雷 MineSweeper
+          logo: 478.png
+          url: https://ohminesweeper.online/
+          description: MineSweeper Game Online
+        - title: 3DIMG
+          logo: 481.png
+          url: https://3dimg.com/
+          description: Online Image Editor
+        - title: 手写体文稿生成器 - 手写模拟器
+          logo: 494.svg
+          url: https://vtool.pro/handwriting/index.html
+          description: 标记美好生活
+        - title: Linux 命令大全
+          logo: linuxcool.png
+          url: https://www.linuxcool.com/
+          description: 标记美好生活
+        - title: MSDN i tell u
+          logo: next.itellyou.cn.png
+          url: https://next.itellyou.cn/Original/
+          description: 微软 MSDN 镜像下载我告诉你
+        - title: 在线打字练习
+          logo: type.png
+          url: https://www.type.fun/
+          description: 打字游戏闯关让你轻松学会打字 - Type.fun 打字星球
+        - title: DJI 大疆创新 - 官方网站
+          logo: dji.png
+          url: https://www.dji.com/cn
+          description: 标记美好生活
+        - title: 有用经验
+          logo: 574.jpg
+          url: https://yyjingyan.com/
+          description: 标记美好生活
+        - title: TwitterShots
+          logo: twittershots.com.png
+          url: https://twittershots.com/
+          description: Make beautiful Twitter screenshots
+        - title: 流光卡片
+          logo: fireflycard.shushiai.com.png
+          url: https://fireflycard.shushiai.com/
+          description: 让分享更优雅，最好看具创意的文字卡片工具，文字转图片，小红书图文神器
+        - title: Text to Image
+          logo: texttoimage.svg
+          url: https://willowy-liger-4acb9e.netlify.app/
+          description: Text to Image Converter
+        - title: Crontab Generator
+          logo: freetool.png
+          url: https://www.freetool.dev/crontab-generator
+          description: Crontab Generator with 5 or 6 fields
+        - title: 免费在线拼图游戏
+          logo: jigsawplanet.png
+          url: https://www.jigsawplanet.com/
+          description: 标记美好生活
+        - title: Proxmox VE Helper-Scripts
+          logo: community-scripts.github.io.png
+          url: https://community-scripts.github.io/ProxmoxVE/
+          description: 标记美好生活
+        - title: 图片拼接
+          logo: kejiweixun.com.png
+          url: https://kejiweixun.com/tools/merge-images
+          description: 图片合并 | 长图拼接 | 拼长图
+        - title: iFixit
+          logo: ifixit.png
+          url: https://www.ifixit.com/
+          description: The Free Repair Manual
+        - title: Real-ESRGAN GUI
+          logo: akarin.dev.png
+          url: https://akarin.dev/realesrgan-gui/
+          description: 实用、美观的 AI 图片放大工具
+        - title: City Roads
+          logo: cityroads.png
+          url: https://roads.city/
+          description: Draw all roads in a city at once
+        - title: 萝卜工坊
+          logo: beautifulcarrot.png
+          url: https://www.beautifulcarrot.com/
+          description: 在线生成模拟手写文稿
+        - title: 快打字
+          logo: kuaidazi.ico
+          url: https://www.kuaidazi.cn
+          description: 快打字是国内专业的打字课程和打字练习平台，面向学生、白领以及计算机工作者，提供在线打字课程、在线打字练习和在线打字速度测试等服务。
+
+    - term: 工作工具
+      icon: fa fa-archive
+      links:
+        - title: Google Docs
+          logo: docs.google.com.png
+          url: https://docs.google.com/
+          description: 标记美好生活
+        - title: Wolframalpha
+          logo: wolframalpha.png
+          url: https://www.wolframalpha.com/
+          description: 标记美好生活
+        - title: Dropbox
+          logo: dropbox.png
+          url: https://www.dropbox.com/
+          description: 标记美好生活
+        - title: 微 云
+          logo: weiyun.png
+          url: https://www.weiyun.com/
+          description: 标记美好生活
+        - title: 腾讯文档
+          logo: docs.qq.com.png
+          url: https://docs.qq.com/desktop
+          description: 标记美好生活
+        - title: 微信小商店
+          logo: shop.weixin.qq.com.png
+          url: https://shop.weixin.qq.com/
+          description: 标记美好生活
+        - title: Photopea
+          logo: photopea.png
+          url: https://www.photopea.com/
+          description: 标记美好生活
+        - title: photokit
+          logo: photokit.com.png
+          url: https://photokit.com/?lang=zh
+          description: 标记美好生活
+        - title: Ten·API
+          logo: docs.tenapi.cn.png
+          url: https://docs.tenapi.cn/
+          description: 标记美好生活
+        - title: ProcessOn
+          logo: processon.png
+          url: https://www.processon.com/i/57149131e4b0d89bd25021d3
+          description: 标记美好生活
+        - title: 简数采集
+          logo: keydatas.png
+          url: https://www.keydatas.com/
+          description: 标记美好生活
+        - title: 后羿采集
+          logo: houyicaiji.png
+          url: https://www.houyicaiji.com/
+          description: 标记美好生活
+        - title: ALL to ALL
+          logo: alltoall.png
+          url: https://www.alltoall.net/
+          description: 标记美好生活
+        - title: 在线转换格式
+          logo: aconvert.png
+          url: https://www.aconvert.com/cn/
+          description: 标记美好生活
+        - title: ADB 在线执行
+          logo: adb.png
+          url: https://adb.http.gs/
+          description: 小黑屋 冰箱 黑阈 ADB 在线执行工具
+        - title: tldraw
+          logo: tldraw.svg
+          url: https://www.tldraw.com/
+          description: 标记美好生活
+        - title: Hoppscotch
+          logo: hoppscotch.io.png
+          url: https://hoppscotch.io/
+          description: Open source API development ecosystem
+        - title: Free-for.Dev
+          logo: free-for.dev.png
+          url: https://free-for.dev/#/
+          description: Free for Developers
+        - title: Trello
+          logo: trello.com.png
+          url: https://trello.com/
+          description: 标记美好生活
+        - title: chalk.ist
+          logo: chalk.ist.png
+          url: https://chalk.ist/
+          description: Create beautiful images of your source code
+        - title: Colord
+          logo: 458.png
+          url: https://colord.omgovich.ru/
+          description: JS library for color
+        - title: endoflife.date
+          logo: endoflife.date.png
+          url: https://endoflife.date/
+          description: 标记美好生活
+        - title: Tool.lu 在线工具
+          logo: tool.lu.png
+          url: https://tool.lu/
+          description: 你的工具箱
+        - title: grep.app | code search
+          logo: grep.app.png
+          url: https://grep.app/
+          description: 搜索 GitHub 仓库
+        - title: 去除 URL 追踪工具
+          logo: trimurl.png
+          url: https://tr.lizi.su/
+          description: 标记美好生活
+        - title: 你分享的链接泄露隐私了吗？
+          logo: uid.ejfkdev.com.png
+          url: https://uid.ejfkdev.com/
+          description: 标记美好生活
+        - title: 开源许可证选择器
+          logo: open-source-license-chooser.toolsnav.top.png
+          url: https://open-source-license-chooser.toolsnav.top/zh/
+          description: Open Source License Chooser Find Your Perfect License
+        - title: Notion2go
+          logo: notion2go.ico
+          url: https://notion2go.com/
+          description: 提供丰富的 Notion 工具与资源，助力用户打造最全 Notion 生态，提升工作效率。
+        - title: svg.wtf
+          logo: svg.wtf.png
+          url: https://svg.wtf/
+          description: 标记美好生活
+
+    - term: 网络工具
+      icon: fa fa-globe
+      links:
+        - title: ITDog
+          logo: itdog.cn.png
+          url: https://itdog.cn/ping
+          description: 在线 ping_ 多地 ping_ 多线路 ping_ 持续 ping
+        - title: 站长工具 Ping
+          logo: ping.chinaz.com.png
+          url: https://ping.chinaz.com/
+          description: 多个地点 PING 服务器，网站测速
+        - title: Dig
+          logo: googledig.ico
+          url: https://toolbox.googleapps.com/apps/dig
+          description: 标记美好生活
+        - title: DnsCheck
+          logo: dnscheck.app.png
+          url: https://dnscheck.app/
+          description: 标记美好生活
+        - title: Ping.pe
+          logo: 60.png
+          url: https://ping.pe/
+          description: 标记美好生活
+        - title: Ping.sx
+          logo: ping.sx.png
+          url: https://ping.sx/
+          description: 标记美好生活
+        - title: ip.skk.moe
+          logo: ip.skk.moe.png
+          url: https://ip.skk.moe/
+          description: 查询本机 IP 地址及归属地
+        - title: ip111
+          logo: 67.png
+          url: http://ip111.cn/
+          description: 标记美好生活
+        - title: Globalping
+          logo: jsdelivr.png
+          url: https://www.jsdelivr.com/globalping
+          description: Internet and web infrastructure monitoring and benchmarking
+        - title: 炸了么
+          logo: zhale.me.png
+          url: https://zhale.me/ping/
+          description: PING 检测 ,PING 测试 ,PING 工具
+        - title: IP voidsec
+          logo: 431.png
+          url: https://ip.voidsec.com/
+          description: WebRTC 泄露自查
+        - title: DNS leak test
+          logo: dnsleaktest.com.png
+          url: https://dnsleaktest.com/
+          description: DNS 泄露自查
+        - title: 中国科学技术大学测速网站
+          logo: test.ustc.edu.cn.png
+          url: https://test.ustc.edu.cn/
+          description: 标记美好生活
+        - title: 我的 IP 地址
+          logo: 452.png
+          url: https://ip.eallion.com/
+          description: 标记美好生活
+        - title: 全球 DNS 解析查询
+          logo: dnschecked.com.png
+          url: https://dnschecked.com/zh-CN
+          description: 在线的域名 DNS 解析检测工具
+        - title: 哪煮米
+          logo: nazhumi.png
+          url: https://www.nazhumi.com/
+          description: 标记美好生活
+        - title: DNS.Surf
+          logo: dns.surf.png
+          url: https://dns.surf/
+          description: Querying DNS Resolution Results in Different Regions Worldwide
+
+    - term: 企业工具
+      icon: fa fa-suitcase
+      links:
+        - title: 企业信用信息
+          logo: 118.webp
+          url: http://www.gsxt.gov.cn/index.html
+          description: 国家企业信用信息公示系统
+        - title: 备案查询
+          logo: 115.png
+          url: http://beian.miit.gov.cn/
+          description: 工信部 ICP/IP 地址 / 域名信息备案管理系统
+        - title: 商标查询
+          logo: 117.png
+          url: http://wcjs.sbj.cnipa.gov.cn/home
+          description: 国家知识产权局商标局 中国商标网
+        - title: 湖北省税务局
+          logo: 430.png
+          url: http://hubei.chinatax.gov.cn/
+          description: 标记美好生活
+        - title: 湖北电子税务局
+          logo: 628.png
+          url: https://etax.hubei.chinatax.gov.cn:8443/
+          description: 标记美好生活
+        - title: 湖北政务服务网
+          logo: zwfw.hubei.gov.cn.png
+          url: http://zwfw.hubei.gov.cn/
+          description: 湖北政务服务网
+        - title: 鄂汇办
+          logo: ehuiban.png
+          url: http://zwfw.hubei.gov.cn/webview/ehbptjs/index.html
+          description: 湖北政务服务网
+        - title: 深圳社保
+          logo: 82.png
+          url: http://hrss.sz.gov.cn/szsi/ywxt/content/post_3046484.html
+          description: 标记美好生活
+        - title: 中国裁判文书网
+          logo: 116.png
+          url: https://wenshu.court.gov.cn/
+          description: 标记美好生活
+        - title: 中国物品编码中心
+          logo: ancc.org.png
+          url: http://www.ancc.org.cn/Business/Barcode/Register.aspx
+          description: 中国物品编码中心 条码申请
+
+- taxonomy: 阅读
+  icon: fas fa-book-open
+  list:
+    - term: 知识
+      icon: fab fa-readme
+      links:
+        - title: Archive
+          logo: archive.org.png
+          url: https://archive.org/
+          description: Internet Archive
+        - title: Wikipedia
+          logo: wikipedia.svg
+          url: https://zh.wikipedia.org/
+          description: 维基百科
+        - title: MBAlib
+          logo: mbalib.ico
+          url: http://wiki.mbalib.com/
+          description: 标记美好生活
+        - title: NASA
+          logo: nasa.png
+          url: https://www.nasa.gov/
+          description: 标记美好生活
+        - title: NASA 中文
+          logo: nasachina.png
+          url: https://www.nasachina.cn/
+          description: 保护地球，探索宇宙，发现文明
+        - title: NASA Apod
+          logo: apod.nasa.gov.png
+          url: https://apod.nasa.gov/apod/astropix.html
+          description: A different astronomy and space science related image is featured each day, along with a brief explanation.
+        - title: 台湾成大 APOD
+          logo: sprite.phys.ncku.edu.tw.png
+          url: http://sprite.phys.ncku.edu.tw/astrolab/mirrors/apod/archivepix.html
+          description: 标记美好生活
+        - title: 谷歌学术
+          logo: scholar.google.com.png
+          url: https://scholar.google.com/ncr?gws_rd=ssl
+          description: 标记美好生活
+        - title: SCI Hub
+          logo: sci-hub.st.png
+          url: https://sci-hub.st/
+          description: 标记美好生活
+        - title: 国家地理
+          logo: nationalgeographic.png
+          url: https://www.nationalgeographic.com/
+          description: 标记美好生活
+        - title: 中国国家地理
+          logo: dili360.png
+          url: http://www.dili360.com/
+          description: 标记美好生活
+        - title: 中国大百科全书
+          logo: h.bkzx.cn.png
+          url: http://h.bkzx.cn/
+          description: 标记美好生活
+        - title: 绘画在线博物馆
+          logo: gallerix.asia.png
+          url: https://gallerix.asia/
+          description: 标记美好生活
+        - title: PapersWithCode
+          logo: paperswithcode.com.png
+          url: https://paperswithcode.com/
+          description: 标记美好生活
+        - title: CNNIC
+          logo: cnnic.png
+          url: http://www.cnnic.cn/
+          description: 标记美好生活
+        - title: 知 网
+          logo: cnki.ico
+          url: http://www.cnki.net/
+          description: 标记美好生活
+        - title: 汉 典
+          logo: zdic.png
+          url: http://www.zdic.net/
+          description: 标记美好生活
+        - title: IMDb
+          logo: imdb.png
+          url: http://www.imdb.com/
+          description: 标记美好生活
+        - title: NeoDB
+          logo: neodb.social.png
+          url: https://neodb.social/discover/
+          description: NeoDB 影音游戏播客数据库
+        - title: Vol.moe
+          logo: volmoe.com.png
+          url: https://volmoe.com/
+          description: 标记美好生活
+        - title: 微信读书
+          logo: r.qq.com.png
+          url: https://r.qq.com/
+          description: 标记美好生活
+        - title: Virtual Travel
+          logo: airpano.png
+          url: https://www.airpano.com/
+          description: 标记美好生活
+        - title: News Minimalist
+          logo: newsminimalist.png
+          url: https://www.newsminimalist.com/
+          description: Only significant news by ChatGPT
+        - title: 歪脑 WHYNOT
+          logo: wainao.png
+          url: https://www.wainao.me/
+          description: 有深度的内容
+        - title: 探索高质量内容
+          logo: immersivetranslate.com.png
+          url: https://immersivetranslate.com/docs/sites/
+          description: 标记美好生活
+        - title: IMFD
+          logo: imfdb.org.png
+          url: https://imfdb.org/wiki/Main_Page
+          description: Guns in Movies, TV and Video Games
+        - title: Whole Earth Index
+          logo: wholeearth.info.png
+          url: https://wholeearth.info/
+          description: 标记美好生活
+        - title: 虚拟博物馆导航
+          logo: vrworld.png
+          url: https://www.vrworld.cc/
+          description: 标记美好生活
+        - title: 中国历朝代视频讲解
+          logo: historyline.ico
+          url: https://github.com/liujuntao123/chines-history-video
+          description: 标记美好生活
+        - title: Switch520
+          logo: gamer520.png
+          url: https://www.gamer520.com/
+          description: 全球游戏交流中心 白嫖
+        - title: 元素周期表
+          logo: elements.wlonk.com.png
+          url: https://elements.wlonk.com/
+          description: 标记美好生活
+        - title: Ogden's Basic English
+          logo: zbenglish.net.png
+          url: https://zbenglish.net/sites/basic/basiceng.html
+          description: 标记美好生活
+        - title: Wikipedia Search
+          logo: wikipedia.svg
+          url: https://wikipedia-semantic-search.vercel.app/
+          description: Wikipedia Semantic Search
+        - title: 汉语新解
+          logo: hanyuxinjie.com.png
+          url: https://hanyuxinjie.com/
+          description: 标记美好生活
+        - title: 紫微研习社
+          logo: iztro.com.png
+          url: https://iztro.com/
+          description: 紫微研习社 ziwei.pro
+        - title: Artvee
+          logo: artvee.com.png
+          url: https://artvee.com/
+          description: 标记美好生活
+        - title: DCP Confluence
+          logo: confluence.org.png
+          url: https://confluence.org/
+          description: 标记美好生活
+
+    - term: 资讯
+      icon: fa fa-newspaper-o
+      links:
+        - title: Daily Hot
+          logo: 50.png
+          url: https://hot.baiwumm.com/
+          description: 汇聚全网热点，热门尽览无余
+        - title: Readhub
+          logo: readhub.cn.png
+          url: https://readhub.cn/
+          description: 标记美好生活
+        - title: 小鸡词典
+          logo: jikipedia.com.png
+          url: https://jikipedia.com/
+          description: 标记美好生活
+        - title: 今日热榜
+          logo: tophub.today.png
+          url: https://tophub.today/
+          description: 标记美好生活
+        - title: 一 席
+          logo: 189.png
+          url: https://yixi.tv/
+          description: 标记美好生活
+        - title: 有 据
+          logo: chinafactcheck.com.png
+          url: https://chinafactcheck.com/
+          description: 标记美好生活
+        - title: Houzz
+          logo: houzz.png
+          url: https://www.houzz.com/
+          description: 标记美好生活
+        - title: Buzzing
+          logo: buzzing.png
+          url: https://www.buzzing.cc/
+          description: 标记美好生活
+        - title: 新东方学习库
+          logo: library.koolearn.com.png
+          url: https://library.koolearn.com/index
+          description: 标记美好生活
+        - title: pudding
+          logo: pudding.cool.png
+          url: https://pudding.cool/
+          description: 标记美好生活
+        - title: 自由知乎
+          logo: freezhihu.org.png
+          url: https://freezhihu.org/
+          description: 标记美好生活
+        - title: Favoree
+          logo: favoree.png
+          url: https://www.favoree.io/
+          description: Discover and review YouTube channels, watch top-rated videos based on your interests.
+        - title: 国家中小学智慧教育平台
+          logo: basic.smartedu.cn.png
+          url: https://basic.smartedu.cn/
+          description: 标记美好生活
+
+    - term: 电子书
+      icon: fas fa-book
+      links:
+        - title: Annas Archive
+          logo: annas-archive.org.png
+          url: https://annas-archive.org/
+          description: 安娜的图书馆
+        - title: Z-Library
+          logo: z-library.sk.png
+          url: https://z-library.sk/
+          description: 标记美好生活
+        - title: Lib Gen
+          logo: libgen.svg
+          url: https://libgen.ac/
+          description: 标记美好生活
+        - title: 中国哲学电子书计划
+          logo: ctext.org.png
+          url: http://ctext.org/zhs
+          description: 标记美好生活
+        - title: 图 灵
+          logo: ituring.com.png
+          url: http://www.ituring.com.cn/
+          description: 标记美好生活
+        - title: 无名图书
+          logo: book123.png
+          url: https://www.book123.info/
+          description: 一个好看的电子书网站
+        - title: 10 万本电子书
+          logo: ebooks.svg
+          url: https://kska32.github.io/ebooks/
+          description: 标记美好生活
+        - title: 识典古籍
+          logo: shidianguji.png
+          url: https://www.shidianguji.com/
+          description: 古籍在线阅读平台
+        - title: Goodreads
+          logo: goodreads.png
+          url: https://www.goodreads.com/
+          description: Meet your next favorite book
+        - title: BookStash
+          logo: bookstash.io.png
+          url: https://bookstash.io/
+          description: Ideas from Top Books in 3m or less
+        - title: Volunteer for LibriVox
+          logo: librivox.org.png
+          url: https://librivox.org/pages/volunteer-for-librivox/
+          description: LibriVox Volunteer for LibriVox | free public domain audiobooks
+        - title: Gutenberg
+          logo: gutenberg.org.png
+          url: https://gutenberg.org/
+          description: Free eBooks
+        - title: 开放图书馆
+          logo: openlibrary.org.png
+          url: https://openlibrary.org/
+          description: 标记美好生活
+        - title: getfreeebooks
+          logo: getfreeebooks.png
+          url: https://www.getfreeebooks.com/
+          description: Download Free Ebooks, Legally - Legal Free Ebook Downloads
+        - title: Manybooks
+          logo: manybooks.net.png
+          url: https://manybooks.net/
+          description: 50,000+ Free eBooks in the Genres you Love
+        - title: Free-eBooks.net
+          logo: free-ebooks.png
+          url: https://www.free-ebooks.net/
+          description: Download free Fiction, Health, Romance and many more books
+        - title: PDF Drive
+          logo: pdfdrive.png
+          url: https://www.pdfdrive.com/
+          description: Search and download PDF files for free.
+        - title: 鸠摩搜索
+          logo: jiumodiary.png
+          url: https://www.jiumodiary.com/
+          description: Jiumo Search 鸠摩搜索 - 文档搜索引擎
+        - title: 书伴
+          logo: bookfere.com.png
+          url: https://bookfere.com/
+          description: 你的电子书伴侣
+        - title: 搬书匠
+          logo: banshujiang.cn.png
+          url: http://banshujiang.cn/
+          description: 搬书匠 - 电子书 (EBook)
+        - title: 国学大师
+          logo: guoxuedashi.png
+          url: https://www.guoxuedashi.com/
+          description: 国学网 _ 国学迷 _ 汉字宝典 _ 诗词宝典 _ 国学经典 & 古典文学 _ 古今图书集成 & 四库全书电子版 & 永乐大典
+        - title: 书格
+          logo: shuge.png
+          url: https://www.shuge.org/
+          description: 标记美好生活
+        - title: 熊猫搜书导航
+          logo: xmsoushu.com.png
+          url: https://xmsoushu.com/#/
+          description: 熊猫搜索导航 _ 一站式读书学习导航站 _ 熊猫搜书导航 _ 聚合电子资源及科研文档搜索导航 _ 学习资料检索和分享 __xmsoushu_xmsearch
+        - title: planetebook
+          logo: planetebook.png
+          url: https://www.planetebook.com/
+          description: 100% Free eBooks for All Devices
+        - title: DigiLibraries
+          logo: digilibraries.com.png
+          url: https://digilibraries.com/
+          description: Free Book Library and Publishing Platform
+        - title: ISTA
+          logo: ista.jpg
+          url: https://sacred-texts.com/
+          description: Internet Sacred Text Archive
+        - title: Bookboon
+          logo: bookboon.com.png
+          url: https://bookboon.com/en
+          description: Download free eBooks for students and read business books for professionals online
+        - title: Digital Magazines
+          logo: worldmags.net.png
+          url: https://worldmags.net/
+          description: Digital Magazines, PDF, True PDF
+
+- taxonomy: 电子商务
+  icon: fab fa-shopify fa-lg
+  list:
+    - term: 购物
+      icon: fas fa-cart-plus
+      links:
+        - title: 酷白菜
+          logo: 197.png
+          url: https://www.kubaicai.com/
+          description: 淘宝、京东、拼多多内部优惠券
+        - title: 淘宝
+          logo: 198.ico
+          url: https://www.taobao.com/
+          description: 淘宝网 - 亚洲较大的网上交易平台，提供各类服饰、美容、家居、数码、话费 / 点卡充值… 数亿优质商品，同时提供担保交易 ( 先收货后付款 ) 等安全交易保障服务，并由商家提供退货承诺、破损补寄等消费者保障服务，让你安心享受网上购物乐趣！
+        - title: 京东 (JD.COM)
+          logo: 199.png
+          url: http://www.jd.com/
+          description: 京东 JD.COM- 正品低价、品质保障、配送及时、轻松购物！专业的综合网上购物商城，为您提供正品低价的购物选择、优质便捷的服务体验。商品来自全球数十万品牌商家，囊括家电、手机、电脑、服装、居家、母婴、美妆、个护、食品、生鲜等丰富品类，满足各种购物需求。
+        - title: 苏宁易购
+          logo: 200.png
+          url: https://www.suning.com/
+          description: 苏宁易购苏宁易购 - 综合网上购物平台，商品涵盖家电、手机、电脑、超市、母婴、服装、百货、海外购等品类。送货更准时、价格更超值、上新货更快，正品行货、全国联保、可门店自提，全网更低价，让您放心去喜欢！
+        - title: 网易严选
+          logo: you163.svg
+          url: http://you.163.com/
+          description: 以严谨的态度，为中国消费者甄选天下优品
+        - title: Amazon
+          logo: amazon.svg
+          url: https://www.amazon.com/
+          description: 亚马逊 Amazon
+        - title: eBay
+          logo: ebay.svg
+          url: https://www.ebay.com/
+          description: 标记美好生活
+        - title: Gmarket
+          logo: gmarket.svg
+          url: http://global.gmarket.co.kr/Home/Main
+          description: 标记美好生活
+        - title: 楽 天
+          logo: rakuten.svg
+          url: https://www.rakuten.co.jp/
+          description: 标记美好生活
+        - title: 三越伊勢丹
+          logo: mistore.png
+          url: https://isetan.mistore.jp/onlinestore
+          description: 标记美好生活
+        - title: 松本清
+          logo: matsukiyo.png
+          url: https://www.matsukiyococokara-online.com/store/
+          description: 标记美好生活
+        - title: 无印良品
+          logo: 210.png
+          url: https://www.muji.com/
+          description: 标记美好生活
+        - title: 美 团
+          logo: meituan.svg
+          url: http://www.meituan.com/
+          description: 标记美好生活
+        - title: 小米有品
+          logo: xiaomiyoupin.png
+          url: https://www.xiaomiyoupin.com/
+          description: 小米有品是小米旗下新生活方式电商，致力于成为新中产优选的精品电商平台。有品坚持依从小米产品观进行选品及育品，为用户提供具备高品质、高颜值、科技感的好产品，为生活提供全场景解决方案。
+        - title: 闲鱼
+          logo: goofish.png
+          url: https://www.goofish.com/
+          description: 闲不住？上闲鱼！
+        - title: Flyway
+          logo: inflyway.png
+          url: https://www.inflyway.com/
+          description: 外贸收款：链接 / 二维码 / 银行账号收款；免费开通海外银行账号；全球主流币种收款；实时汇率 0 汇损，阳光结汇安全合规。跨境电商收款：一账号管理多店铺资金，店铺提现效率高，速度快。国际收银台：多个建站平台，对接零门槛；60+ 支付方式，70+ 交易币种。全球付：供应商收款信息管理，付款更高效；全球通道布局，付款最快 5 分钟到账。金融服务：极速提现 / 超前收款订单回款先拿到手；飞业融安全、合规、高效的快捷融资支持；飞先付可为优质卖家实现信用付款
+
+    - term: 卖家
+      icon: fa fa-amazon
+      links:
+        - title: 千牛工作台
+          logo: 653.png
+          url: https://myseller.taobao.com/home.htm
+          description: 商家一站式经营阵地
+        - title: 京麦工作台
+          logo: 656.ico
+          url: https://login.shop.jd.com/
+          description: 京麦工作台 京东商家
+        - title: 拼多多商家后台
+          logo: 654.png
+          url: https://mms.pinduoduo.com/
+          description: 拼多多 - 社交电商引领者，官方入驻平台，0 元开店 1 分钟入驻。开网店就选拼多多，新电商新机遇。社交电商流量红利期，获客成本超低，抢占巨额流量入口极速打造爆款。拼多多商家后台，全流程开店教程，从新手入门到进阶玩法，手把手教你开网店，已经有上千万卖家在拼多多入驻赚钱了。入驻、上新、货源、客服、物流、售后，一切问题在拼多多都迎刃而解。海量资源位，超多无门槛活动，新店老店都能上。超多店铺营销推广工具，新手开店不怕没客源。专属对接小二，帮你解决店铺运营困惑。
+        - title: 抖店商家
+          logo: 655.png
+          url: https://fxg.jinritemai.com/
+          description: 抖店官网是抖音电商官方商家入驻平台的登录入口，提供了一站式的商家开店服务。在这里，商家可以轻松地注册账号、创建店铺、管理商品、处理订单等。抖店官网致力于为广大商家提供高效便捷的电商运营解决方案，助力商家实现商业成功。
+        - title: 电商运营导航
+          logo: coonav.png
+          url: https://www.coonav.com/
+          description: 标记美好生活
+        - title: 电商头条
+          logo: coonav.png
+          url: https://www.coonav.com/hotnews/
+          description: 标记美好生活
+        - title: 店查查
+          logo: dianchacha.png
+          url: https://www.dianchacha.com/
+          description: 标记美好生活
+        - title: 电商记
+          logo: dianshangji.png
+          url: http://www.dianshangji.com/
+          description: 标记美好生活
+        - title: 淘大象
+          logo: taodaxiang.png
+          url: http://www.taodaxiang.com/
+          description: 标记美好生活
+        - title: 魔镜市场情报
+          logo: mktindex.png
+          url: https://www.mktindex.com/static/home/
+          description: 标记美好生活
+        - title: 排名易
+          logo: 248.png
+          url: http://www.paimingyi.cn/?i=63708
+          description: 标记美好生活
+        - title: OneSight
+          logo: onesight.png
+          url: https://www.onesight.com/
+          description: 标记美好生活
+        - title: 电商报
+          logo: dsb.png
+          url: http://www.dsb.cn/
+          description: 标记美好生活
+        - title: 天下网商
+          logo: wshang.ico
+          url: https://i.wshang.com/
+          description: 标记美好生活
+        - title: 网经社
+          logo: 100ec.png
+          url: http://www.100ec.cn/
+          description: 标记美好生活
+        - title: 雨果网
+          logo: cifnews.png
+          url: https://www.cifnews.com/
+          description: 标记美好生活
+        - title: Agiso 阿奇索自动发货软件
+          logo: agiso.png
+          url: https://www.agiso.com/
+          description: 阿奇索自动发货软件
+
+    - term: 淘客
+      icon: fa fa-anchor
+      links:
+        - title: 淘客导航
+          logo: taokenav.png
+          url: https://www.taokenav.com/
+          description: 做淘客必备的淘客工具合集网站
+        - title: 什么值得买
+          logo: smzdm.png
+          url: https://www.smzdm.com/
+          description: 科学消费 认真生活
+        - title: 大淘客联盟
+          logo: 219.webp
+          url: http://www.dataoke.com/
+          description: 大淘客联盟 dataoke.com 专注优质商品内容打造，为广大淘宝客提供精选商品，优质采集群跟推，节省时间及人力成本！联盟本着专注单品、极致转化的使命，提供业务包括精选商品库、实时销量榜单、优质采集群，以及淘宝客运营干货，帮助大家实现利益最大化，同时帮助淘宝卖家打造爆款，带动销售！
+        - title: 淘宝联盟
+          logo: pub.alimama.com.png
+          url: https://pub.alimama.com/portal/v2/pages/promo/goods/index.htm
+          description: 标记美好生活
+        - title: 多多进宝
+          logo: jinbao.pinduoduo.com.png
+          url: http://jinbao.pinduoduo.com/
+          description: 大量高佣金、多优惠券商品在这里等你，可以随时随地登录该网站推广商品赚钱，商品优惠券多、佣金高，让您轻松赚钱！
+        - title: 京东联盟
+          logo: 216.png
+          url: https://union.jd.com/
+          description: 京东联盟 - 网络赚钱，流量变现，专业电商 CPS 联盟平台，包含京粉、CPS 联盟，依托于京东商城推出的电商广告联盟赚钱平台，通过京东海量数据精细定向目标用户，开放京东电商整合能力，打造精准、高效、高转化的营销生态圈。
+        - title: 美团联盟
+          logo: union.meituan.com.png
+          url: https://union.meituan.com/
+          description: 标记美好生活
+        - title: 实选
+          logo: shixuan.png
+          url: https://www.shixuan.com/
+          description: 专注直播带货选品，8 年数字化选品服务商！
+        - title: 懒懒
+          logo: lanlanlife.png
+          url: http://www.lanlanlife.com/
+          description: 标记美好生活
+        - title: 好京客
+          logo: 221.ico
+          url: https://www.haojingke.com/
+          description: 标记美好生活
+        - title: 多麦联盟
+          logo: home.duomai.com.png
+          url: https://home.duomai.com/account/register?refer=213524
+          description: 标记美好生活
+        - title: 好单库
+          logo: publish.haodanku.com.png
+          url: http://publish.haodanku.com/Reg/index.html?i=16031
+          description: 标记美好生活
+        - title: 选单网
+          logo: xuandan.png
+          url: http://www.xuandan.com/NewUcenter/register?uid=13908
+          description: 标记美好生活
+        - title: 淘客助手
+          logo: 231.png
+          url: http://www.taokezhushou.com/
+          description: 标记美好生活
+        - title: 霍常亮
+          logo: 233.ico
+          url: http://www.huochangliang.com/
+          description: 教你副业变现，分享互联网创业项目，分析互联网创业项目赚钱思维，聚焦互联网创业项目行业内容分享，帮助创业者了解互联网创业的知识，推荐靠谱的互联网创业项目。
+        - title: 蒲公英
+          logo: 52892.png
+          url: http://www.52892.com/
+          description: 标记美好生活
+        - title: 聚推客联盟
+          logo: 399.ico
+          url: https://www.jutuike.com/
+          description: CPS 广告联盟平台
+
+    - term: 数据
+      icon: fa fa-database
+      links:
+        - title: 数据导航
+          logo: hao.199it.com.png
+          url: http://hao.199it.com/
+          description: 标记美好生活
+        - title: 国研网 - 综合版
+          logo: drcnet.com.png
+          url: https://www.drcnet.com.cn/
+          description: 标记美好生活
+        - title: 东方财富网
+          logo: data.eastmoney.com.png
+          url: http://data.eastmoney.com/center/
+          description: 标记美好生活
+        - title: 生意参谋
+          logo: 270.png
+          url: https://sycm.taobao.com/
+          description: 标记美好生活
+        - title: 蚂蚁金服
+          logo: tech.antfin.com.png
+          url: https://tech.antfin.com/
+          description: 标记美好生活
+        - title: 亿 邦
+          logo: ebrun.png
+          url: http://www.ebrun.com/data/
+          description: 标记美好生活
+        - title: 艾 瑞
+          logo: iresearch.ico
+          url: http://www.iresearch.com.cn/Datas.shtml/
+          description: 标记美好生活
+        - title: eMarketer
+          logo: emarketer.png
+          url: https://www.emarketer.com/
+          description: 标记美好生活
+        - title: 易 观
+          logo: analysys.png
+          url: https://www.analysys.cn/
+          description: 标记美好生活
+        - title: 谷歌指数
+          logo: google.png
+          url: https://www.google.com/trends/explore
+          description: 标记美好生活
+        - title: 百度指数
+          logo: index.baidu.com.png
+          url: http://index.baidu.com/
+          description: 标记美好生活
+        - title: 360 指数
+          logo: index.so.com.png
+          url: http://index.so.com/
+          description: 标记美好生活
+        - title: 微指数
+          logo: data.weibo.com.png
+          url: http://data.weibo.com/index
+          description: 标记美好生活
+        - title: 灰豚数据
+          logo: huitun.png
+          url: https://www.huitun.com/
+          description: 短视频 & 直播电商数据分析平台
+        - title: 考古加数据
+          logo: kaogujia.png
+          url: https://www.kaogujia.com/
+          description: 兴趣电商数据专家
+
+- taxonomy: 设计
+  icon: fas fa-fill-drip
+  list:
+    - term: 设计导航
+      icon: fas fa-layer-group
+      links:
+        - title: 腾讯设计导航
+          logo: codesign.qq.com.png
+          url: https://codesign.qq.com/#!index/site
+          description: 标记美好生活
+        - title: 优设导航
+          logo: hao.uisdc.com.png
+          url: http://hao.uisdc.com/
+          description: 标记美好生活
+        - title: 开发者武器库
+          logo: devtool.tech.png
+          url: https://devtool.tech/
+          description: 标记美好生活
+        - title: Microsoft Designer
+          logo: designer.microsoft.com.png
+          url: https://designer.microsoft.com/
+          description: Stunning designs in a flash
+
+    - term: 设计工具
+      icon: fas fa-highlighter
+      links:
+        - title: ImagesTool
+          logo: imagestool.com.png
+          url: https://imagestool.com/zh_CN/
+          description: 标记美好生活
+        - title: Squoosh
+          logo: squoosh.app.png
+          url: https://squoosh.app/
+          description: 标记美好生活
+        - title: TinyPNG
+          logo: tinypng.com.png
+          url: https://tinypng.com/
+          description: 标记美好生活
+        - title: Magic Eraser
+          logo: magiceraser.png
+          url: https://www.magiceraser.io/
+          description: 标记美好生活
+        - title: RemoveBG
+          logo: remove.png
+          url: https://www.remove.bg/
+          description: 标记美好生活
+        - title: Slazzer
+          logo: slazzer.com.png
+          url: https://slazzer.com/
+          description: Remove Image Background Automatically
+        - title: Unscreen
+          logo: unscreen.png
+          url: https://www.unscreen.com/
+          description: Remove Video Background
+        - title: Trace
+          logo: stickermule.png
+          url: https://www.stickermule.com/trace
+          description: Background remover
+        - title: TinEye
+          logo: tineye.com.png
+          url: https://tineye.com/
+          description: 标记美好生活
+        - title: Mixkit Sounds
+          logo: mixkit.co.png
+          url: https://mixkit.co/free-sound-effects/
+          description: 标记美好生活
+        - title: Toools design
+          logo: toools.png
+          url: https://www.toools.design/
+          description: 标记美好生活
+        - title: Quality Sounds
+          logo: open.sampld.app.png
+          url: https://open.sampld.app/
+          description: 标记美好生活
+        - title: Vectorizer.AI
+          logo: vectorizer.ai.png
+          url: https://vectorizer.ai/
+          description: Trace Pixels To Vectors in Full Color Using AI
+        - title: Pixian.AI
+          logo: pixian.ai.png
+          url: https://pixian.ai/
+          description: Remove Image Backgrounds
+        - title: Clipdrop
+          logo: clipdrop.co.png
+          url: https://clipdrop.co/tools
+          description: AI 图像工具
+        - title: Flowbite
+          logo: flowbite.com.png
+          url: https://flowbite.com/
+          description: Tailwind CSS 模板
+        - title: 极速图片压缩器
+          logo: ticompressor.png
+          url: https://www.ticompressor.com/online/
+          description: 标记美好生活
+        - title: NavNav+
+          logo: navnav.png
+          url: https://navnav.co/
+          description: 标记美好生活
+        - title: 独立开发者导航站
+          logo: indiehackers.png
+          url: https://www.indiehackers.site/zh/group/new
+          description: 发掘最优秀的工具，助力你快速发布下一个应用
+        - title: IndieHub
+          logo: indiehub.svg
+          url: https://saas101.notion.site/SaaS-101-1c19217fefe54312b1ad7702701ccd12
+          description: 标记美好生活
+        - title: Edit•Photo
+          logo: edit.photo.png
+          url: https://edit.photo/
+          description: The Free Online Photo Editor In Your Browser
+        - title: 在线拼图
+          logo: fulicat.com.png
+          url: https://fulicat.com/lab/pintu/
+          description: 拼接图片 - 合并长图 - 免费拼图 - Combine images Online with HTML5 canvas, Stitch, Merge
+        - title: Taro
+          logo: taro.zone.png
+          url: https://taro.zone/
+          description: 多端统一开发解决方案
+        - title: AI BG Remover
+          logo: html.zone.png
+          url: https://html.zone/background-remover
+          description: HTML.ZONE
+        - title: Notion Avatar Maker
+          logo: notionavatarmaker.png
+          url: https://www.notionavatarmaker.com/zh
+          description: 使用 Notion Avatar Maker 创建独特的 Notion 风格头像
+        - title: URL2Tailwind
+          logo: url2tailwind.png
+          url: https://www.url2tailwind.com/
+          description: Convert Any URL to Tailwind CSS HTML
+        - title: Text Behind Image
+          logo: textbehindimage.rexanwong.xyz.png
+          url: https://textbehindimage.rexanwong.xyz/
+          description: 标记美好生活
+        - title: player.style
+          logo: player.style.png
+          url: https://player.style/
+          description: Video & audio player themes for every web player & framework
+        - title: Color.review
+          logo: color.review.png
+          url: https://color.review/
+          description: Colors that look and work great for everyone
+
+    - term: 设计素材
+      icon: fas fa-object-group
+      links:
+        - title: Unsplash
+          logo: unsplash.com.png
+          url: https://unsplash.com/
+          description: 标记美好生活
+        - title: iconify
+          logo: icon-sets.iconify.design.png
+          url: https://icon-sets.iconify.design/
+          description: 标记美好生活
+        - title: Water Effect
+          logo: watereffect.net.png
+          url: http://watereffect.net/
+          description: 标记美好生活
+        - title: iconfont
+          logo: iconfont.png
+          url: http://www.iconfont.cn/
+          description: 标记美好生活
+        - title: illustration
+          logo: 2.flexiple.com.png
+          url: https://2.flexiple.com/scale/all-illustrations
+          description: 标记美好生活
+        - title: 花 瓣
+          logo: huaban.com.png
+          url: http://huaban.com/
+          description: 标记美好生活
+        - title: 站 酷
+          logo: zcool.com.png
+          url: http://www.zcool.com.cn/
+          description: 标记美好生活
+        - title: 90 设计
+          logo: 90sheji.com.png
+          url: http://90sheji.com/
+          description: 标记美好生活
+        - title: 致设计
+          logo: zhisheji.ico
+          url: http://www.zhisheji.com/
+          description: 标记美好生活
+        - title: 昵 图
+          logo: nipic.com.png
+          url: http://nipic.com/
+          description: 标记美好生活
+        - title: 千 图
+          logo: 58pic.png
+          url: http://www.58pic.com/
+          description: 标记美好生活
+        - title: 千 库
+          logo: 588ku.com.png
+          url: http://588ku.com/member/2336589/
+          description: 标记美好生活
+        - title: 我扒图
+          logo: 58tu.png
+          url: http://www.58tu.com/
+          description: 标记美好生活
+        - title: Cool Backgrounds
+          logo: coolbackgrounds.io.png
+          url: https://coolbackgrounds.io/
+          description: 标记美好生活
+        - title: Emoji All
+          logo: emojiall.png
+          url: https://www.emojiall.com/zh-hans
+          description: 标记美好生活
+        - title: gitmoji
+          logo: gitmoji.dev.png
+          url: https://gitmoji.dev/
+          description: 标记美好生活
+        - title: 电商模板
+          logo: ecomm.design.png
+          url: https://ecomm.design/
+          description: 标记美好生活
+        - title: 必应壁纸
+          logo: bing.wdbyte.com.png
+          url: https://bing.wdbyte.com/
+          description: Bing Wallpaper
+        - title: PBRMAX
+          logo: pbrmax.png
+          url: https://www.pbrmax.cn/scene-detail?id=SCyvqga7
+          description: pbr 素材库平台
+        - title: Tailwind CSS Components
+          logo: tailwindcomponents.com.png
+          url: https://tailwindcomponents.com/
+          description: 600+ Free Examples and Templates
+        - title: Yeslogo
+          logo: yesicon.app.png
+          url: https://yesicon.app/
+          description: 精选全球高品质、开源、免费的矢量图标库
+        - title: Emoji Kitchen
+          logo: emojikitchen.dev.png
+          url: https://emojikitchen.dev/
+          description: 标记美好生活
+        - title: Free TailwindCSS
+          logo: tailspark.co.png
+          url: https://tailspark.co/
+          description: 300+ High-quality TailwindCSS Components
+        - title: Bing Wallpaper
+          logo: bing.gifposter.com.png
+          url: https://bing.gifposter.com/
+          description: All of Bing Wallpaper Gallery
+        - title: shadcn/ui
+          logo: ui.shadcn.com.png
+          url: https://ui.shadcn.com/
+          description: 标记美好生活
+        - title: daisyUI
+          logo: daisyui.com.png
+          url: https://daisyui.com/
+          description: Tailwind CSS Components
+        - title: Mobbin
+          logo: mobbin.com.png
+          url: https://mobbin.com/browse/ios/apps
+          description: 标记美好生活
+        - title: SearchEmoji
+          logo: searchemoji.app.png
+          url: https://searchemoji.app/zh-hans
+          description: 支持 30 个语言的 Emoji 搜索引擎。
+        - title: 猫咪免扣素材图
+          logo: catpng.ico
+          url: https://catpng.net/
+          description: 一个只有猫猫的透明 PNG 资源站，收录超过一万张高清猫咪图片，全部真人实拍、人工挑选、非 AI 生成，并且完全免费、可商用、无需署名！没有水印、不用登录、打开就能用。
+        - title: unplugin/unplugin-icons
+          logo: github.com.png
+          url: https://github.com/unplugin/unplugin-icons
+          description: 标记美好生活
+        - title: 别墅图纸超市
+          logo: bstzcs.png
+          url: http://www.bstzcs.com/
+          description: 别墅设计图纸 | 农村房屋设计图 | 农村自建房 | 别墅设计图纸及效果图大全
+
+- taxonomy: 影音
+  icon: fas fa-video
+  list:
+    - term: 影视
+      icon: fas fa-film
+      links:
+        - title: 影视
+          logo: fnos-media.webp
+          url: https://nas.eallion.com/v
+          description: 飞牛私有云影视
+        - title: MoonTV
+          logo: moontv.png
+          url: https://moontv.eallion.com/
+          description: 一个开箱即用的、跨平台的影视聚合播放站
+        - title: LibreTV
+          logo: libretv.png
+          url: https://libretv.eallion.com/
+          description: 一分钟搭建影视站，支持 Vercel/Docker 等部署方式
+        - title: OrionTV
+          logo: oriontv.png
+          url: https://github.com/zimplexing/OrionTV
+          description: 一个基于 React Native TVOS 和 Expo 构建的播放器，旨在提供流畅的视频观看体验。
+        - title: 影视森林
+          logo: 312.png
+          url: https://www.549.tv/
+          description: 标记美好生活
+        - title: 低端影视
+          logo: ddys.png
+          url: https://ddys.site/
+          description: 超清在线视频站
+        - title: 爱壹帆
+          logo: iyf.png
+          url: https://www.iyf.tv/
+          description: 海量高清视频免费在线观看
+        - title: 音范丝
+          logo: yinfans.ico
+          url: https://www.yinfans.cc/
+          description: 标记美好生活
+        - title: 奈飞工厂
+          logo: netflixgc.png
+          url: https://www.netflixgc.com/
+          description: 标记美好生活
+        - title: 农民影视
+          logo: nmdvd.png
+          url: https://www.nmdvd.cc/
+          description: 标记美好生活
+        - title: 大米星球
+          logo: gdxsg.ico
+          url: http://www.gdxsg.com/
+          description: 标记美好生活
+        - title: 观影
+          logo: gying.png
+          url: https://www.gying.net
+          description: 观影 GYING
+        - title: 爱看机器人
+          logo: v.ikanbot.com.png
+          url: https://v.ikanbot.com/
+          description: 最新追剧网站
+        - title: Tubi
+          logo: tubitv.com.png
+          url: https://tubitv.com/home
+          description: Watch Free Movies and TV Shows Online
+        - title: 在线之家
+          logo: zxzjhd.ico
+          url: https://www.zxzjhd.com/
+          description: 在线观看最新美剧 | 最新韩剧 | 天天美剧 | 人人美剧
+        - title: Vidhub 视频库
+          logo: vidhub.png
+          url: https://vidhub.me/
+          description: 在线视频网站 - 海量高清视频在线观看
+        - title: 网飞猫
+          logo: ncat.app.png
+          url: https://ncat.app
+          description: 网飞猫 - 一起看更好的世界
+        - title: AvHub
+          logo: avhub.vercel.app.png
+          url: https://avhub.vercel.app/
+          description: 成人资源管理平台
+
+    - term: 音乐
+      icon: fas fa-music
+      links:
+        - title: Navidrome
+          logo: navidrome.svg
+          url: https://music.eallion.com
+          description: Navidrome NAS 音乐
+        - title: 方格音乐
+          logo: fonger.png
+          url: https://fonger.top/
+          description: 方格音乐
+
+    - term: 下载
+      icon: fa fa-download
+      links:
+
+        - title: Tracker
+          logo: 309.png
+          url: https://trackerslist.com/#/zh
+          description: Tracker 用得对，下载快十倍。
+        - title: 片源网
+          logo: pianyuan.ico
+          url: https://pianyuan.org/
+          description: 电影电视资源下载站
+        - title: HDHive - 影巢
+          logo: hdhive.online.png
+          url: https://hdhive.online/
+          description: 标记美好生活
+        - title: AIPAN.ME
+          logo: aipan.png
+          url: https://www.aipan.me/
+          description: 网盘资源搜索引擎
+        - title: SeedHub
+          logo: seedhub.png
+          url: https://www.seedhub.cc/
+          description: 影视 & 动漫分享
+        - title: TheRARBG
+          logo: therarbg.png
+          url: https://therarbg.com/
+          description: RARBG 重制版
+        - title: 易搜
+          logo: 313.png
+          url: https://yiso.fun/
+          description: 标记美好生活
+        - title: 人人字幕组
+          logo: yysub.png
+          url: https://www.yysub.cc/
+          description: 标记美好生活
+        - title: 弯弯字幕组
+          logo: wanwansub.com.png
+          url: http://wanwansub.com/
+          description: 标记美好生活
+        - title: 美剧天堂
+          logo: meijutt.png
+          url: https://www.meijutt.tv/
+          description: 标记美好生活
+        - title: 茶杯狐
+          logo: cupfox.png
+          url: https://cupfox.love/
+          description: 标记美好生活
+        - title: 比特大雄
+          logo: btdx8.png
+          url: https://www.btdx8.vip
+          description: 标记美好生活
+        - title: FIX 字幕侠
+          logo: zimuxia.png
+          url: https://www.zimuxia.cn/
+          description: 标记美好生活
+        - title: 点点字幕
+          logo: 323.png
+          url: http://www.ddzimu.com/
+          description: 标记美好生活
+        - title: AioSearch
+          logo: aiosearch.png
+          url: https://www.aiosearch.com/
+          description: 标记美好生活
+        - title: 海盗湾
+          logo: thepiratebay.org.png
+          url: https://thepiratebay.org/
+          description: 标记美好生活
+        - title: CHD
+          logo: chd.ico
+          url: https://chdbits.co/
+          description: 标记美好生活
+        - title: 种子帝
+          logo: zhongzilou.png
+          url: https://www.zhongzilou.com/
+          description: 标记美好生活
+        - title: TorrentSafe
+          logo: torrentsafe.png
+          url: https://www.torrentsafe.com/cn/
+          description: 标记美好生活
+        - title: Offcloud
+          logo: offcloud.com.png
+          url: https://offcloud.com/?=4387a966
+          description: 标记美好生活
+        - title: Bitport
+          logo: bitport.io.png
+          url: https://bitport.io/
+          description: 标记美好生活

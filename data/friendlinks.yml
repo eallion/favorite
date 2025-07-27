@@ -1,0 +1,27 @@
+- title: 博客
+  url: https://www.eallion.com/
+  description: 个人博客
+
+- title: Mastodon
+  url: https://e5n.cc/@eallion
+  description: 个人 Mastodon 实例
+
+- title: GitHub
+  url: https://github.com/eallion
+  description: 个人 GitHub
+
+- title: Hugo
+  url: https://gohugo.io
+  description: Hugo 官方网站
+
+- title: Webstack
+  url: https://github.com/shenweiyan/WebStack-Hugo
+  description: WebStack Hugo 版
+
+- title: Aliyun
+  url: https://www.aliyun.com
+  description: 阿里云官方网站
+
+- title: UptimeRobot
+  url: https://www.uptimerobot.com
+  description: Uptime Robot 网站在线状态监控

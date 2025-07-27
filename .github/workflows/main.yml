@@ -1,0 +1,44 @@
+name: Build Hugo and Deploy
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+   - cron: '0 0 1 * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [build-hugo]
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: 'latest'
+          extended: true
+
+      - name: Build Hugo
+        run: |
+          hugo --minify --enableGitInfo
+
+      - name: Deploy to Aliyun OSS
+        uses: docker://fangbinwei/aliyun-oss-website-action:v1
+        env:
+          ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+          ACCESS_KEY_SECRET: ${{ secrets.ACCESS_KEY_SECRET }}
+          BUCKET: s-eallion-com
+          ENDPOINT: oss-cn-shanghai.aliyuncs.com
+          FOLDER: public
+          SKIP_SETTING: true
+          INCREMENTAL: true
+
+

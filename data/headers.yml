@@ -1,0 +1,38 @@
+- item: 首页
+  icon: fa fa-home
+  link: "/"
+
+- item: 常用
+  icon: fas fa-star
+  link: "#f7e68bde2caa2cb5696d6a37fe4a23a4"
+
+- item: NAS Apps
+  icon: fab fa-docker
+  link: "#f1589610a17ed5047b913203566fc87d"
+
+- item: About
+  icon: fa fa-info-circle
+  link: /about
+
+# - item: 博客
+#   icon: fa fa-blog
+#   link: https://www.eallion.com/
+
+- item: 'Status <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 5H8.2c-1.12 0-1.68 0-2.108.218a2 2 0 0 0-.874.874C5 6.52 5 7.08 5 8.2v7.6c0 1.12 0 1.68.218 2.108a2 2 0 0 0 .874.874c.427.218.987.218 2.105.218h7.606c1.118 0 1.677 0 2.104-.218c.377-.192.683-.498.875-.874c.218-.428.218-.987.218-2.105V14m1-5V4m0 0h-5m5 0l-7 7"/></svg>'
+  icon: fa fa-database
+  link: https://stats.uptimerobot.com/LvmZRfkNGP/789572222
+  target: _blank
+
+# - item: 关于
+#   icon: fa fa-cog
+#   link: ""
+#   list:
+#     - name: 源码
+#       icon: fab fa-github-alt
+#       link: ""
+#     - name: 图标
+#       icon: fab fa-font-awesome
+#       link: ""
+#     - name: 文档
+#       icon: fas fa-file-alt
+#       link: ""

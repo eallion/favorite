@@ -185,7 +185,7 @@ $("#search-bg").css("background-image", "url({{ $.Site.Params.images.searchImage
 function switchNightMode(){
     var night = document.cookie.replace(/(?:(?:^|.*;\s*)night\s*\=\s*([^;]*).*$)|^.*$/, "$1") || '0';
     if(night == '0'){
-	$("#search-bg").css("background-image", "url({{ $.Site.Params.images.searchImageL }})");
+    $("#search-bg").css("background-image", "url({{ $.Site.Params.images.searchImageL }})");
         document.body.classList.remove('io-grey-mode');
         document.body.classList.add('io-black-mode');
         document.cookie = "night=1;path=/"
@@ -194,7 +194,7 @@ function switchNightMode(){
         $(".mode-ico").removeClass("icon-night");
         $(".mode-ico").addClass("icon-light");
     }else{
-	$("#search-bg").css("background-image", "url({{ $.Site.Params.images.searchImageD }})")
+    $("#search-bg").css("background-image", "url({{ $.Site.Params.images.searchImageD }})")
         document.body.classList.remove('io-black-mode');
         document.body.classList.add('io-grey-mode');
         document.cookie = "night=0;path=/"

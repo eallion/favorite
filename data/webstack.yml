@@ -213,12 +213,12 @@
       server: bwh-la-docker
       container: synapse
 
-    - title: AllinSSL
-      logo: allinssl.svg
-      url: https://ssl.eallion.com/admin
-      description: Open Source, Self-hosted, Your Notes, Your Way
+    - title: Certimate
+      logo: certimate.svg
+      url: https://ssl.eallion.com/
+      description: An open-source SSL certificate management tool that helps you automatically apply for and deploy SSL certificates, as well as automatically renew them when they are about to expire.
       server: bwh-la-docker
-      container: allinssl
+      container: certimate
 
     - title: Umami
       logo: umami.svg

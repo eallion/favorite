@@ -389,7 +389,7 @@
       description: Mastodon Web Client
     - title: Delta Chat
       logo: delta-chat.svg
-      url: openpgp4fpr:eallion@e5n.cc
+      url: https://i.delta.chat/#a=eallion%40e5n.cc&n=Charles%20Chin
       description: 去中心化的安全聊天软件
     - title: GoToSocial
       logo: gotosocial.svg

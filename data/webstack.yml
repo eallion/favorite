@@ -389,8 +389,7 @@
       description: Mastodon Web Client
     - title: Delta Chat
       logo: delta-chat.svg
-      qrcode: assets/images/deltachat_eallion_e5n_cc.svg
-      url: https://i.delta.chat/#D0A986902C90835C0C89AB3DC94378E55054798A&a=eallion%40e5n.cc&n=Charles%20Chin&i=at-15Z0wXVpLYe0xxexIuWo6&s=5dE_UjFa0R-U5m3umyqsgrYt
+      url: openpgp4fpr:eallion@e5n.cc
       description: 去中心化的安全聊天软件
     - title: GoToSocial
       logo: gotosocial.svg

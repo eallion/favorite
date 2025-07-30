@@ -28,7 +28,7 @@ jobs:
 
       - name: Build Hugo
         run: |
-          hugo --minify --enableGitInfo
+          hugo --minify
 
       - name: Deploy to Aliyun OSS
         uses: docker://fangbinwei/aliyun-oss-website-action:v1

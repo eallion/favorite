@@ -21,7 +21,7 @@
                                 <a href="{{ .url }}" target="_blank" data-id="" data-url="{{ .url }}" class="card no-c mb-4" title="{{ .title }}">
                     去除 Tooltip -->
                     {{ if .qrcode }}
-                        <a href="javascript:" target="" class="card no-c mb-4" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<img src='{{ .qrcode }}' width='128'>">
+                        <a href="{{ .url }}" target="_blank" class="card no-c mb-4" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<img src='{{ .qrcode }}' width='128'>">
                     {{ else }}
                         <a href="{{ .url }}" target="_blank" data-id="" data-url="{{ .url }}" class="card no-c mb-4" data-toggle="tooltip" data-placement="bottom" data-original-title="{{ .description }}">
                     {{ end }}
@@ -43,7 +43,7 @@
                                 </div>
                             </div>
                         </a>
-                        <a href="{{ .url }}" class="togo text-center text-muted is-views" data-id="689" data-toggle="tooltip" data-placement="right" title="直达" rel="nofollow">
+                        <a href="{{ .url }}" target="_blank" class="togo text-center text-muted is-views" data-id="689" data-toggle="tooltip" data-placement="right" title="直达" rel="nofollow">
                             <i class="iconfont icon-goto"></i>
                         </a>
                     </div>
@@ -74,7 +74,7 @@
                     <a href="{{ .url }}" target="_blank" data-id="" data-url="{{ .url }}" class="card no-c mb-4" title="{{ .title }}">
                     -->
                     {{ if .qrcode }}
-                        <a href="javascript:" target="" class="card no-c mb-4" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<img src='{{ .qrcode }}' width='128'>">
+                        <a href="{{ .url }}" target="_blank" class="card no-c mb-4" data-toggle="tooltip" data-placement="bottom" data-html="true" title="<img src='{{ .qrcode }}' width='128'>">
                     {{ else }}
                         <a href="{{ .url }}" target="_blank" data-id="" data-url="{{ .url }}"  class="card no-c mb-4" data-toggle="tooltip" data-placement="bottom" data-original-title="{{ .description }}">
                     {{ end }}
@@ -96,7 +96,7 @@
                                 </div>
                             </div>
                         </a>
-                        <a href="{{ .url }}" class="togo text-center text-muted is-views" data-id="689"
+                        <a href="{{ .url }}" target="_blank" class="togo text-center text-muted is-views" data-id="689"
                             data-toggle="tooltip" data-placement="right" title="直达" rel="nofollow">
                             <i class="iconfont icon-goto"></i>
                         </a>

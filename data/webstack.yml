@@ -301,10 +301,10 @@
       logo: selfh-st.svg
       url: https://selfh.st/
       description: Self-hosted content and software
-    - title: Eallion's Status
-      logo: uptimerobot.svg
-      url: https://stats.uptimerobot.com/LvmZRfkNGP
-      description: Web Service status on Uptimerobot
+    - title: Uptime Kuma Status
+      logo: uptimekuma.svg
+      url: https://status.eallion.com
+      description: Web Service status on Uptime Kuma
     - title: Phanpy
       logo: phanpy.svg
       url: https://app.e5n.cc/

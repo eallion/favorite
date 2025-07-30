@@ -2301,6 +2301,10 @@
           logo: navidrome.svg
           url: https://music.eallion.com
           description: Navidrome NAS 音乐
+        - title: LX Music
+          logo: lxmusic.svg
+          url: lyswhut.github.io/lx-music-doc/
+          description: 一个免费&开源的音乐查找工具
         - title: 方格音乐
           logo: fonger.png
           url: https://fonger.top/

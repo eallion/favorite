@@ -232,24 +232,31 @@ class ConfigManager {
    */
   async syncToKV(authToken: string): Promise<boolean> {
     try {
-      const response = await fetch('/api/storage', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-password': authToken,
-        },
-        body: JSON.stringify({
-          key: STORAGE_KEYS.CONFIG_KEY,
-          value: JSON.stringify(this.config),
-        }),
-      });
+      const sections: Record<string, any> = {};
+      if (this.config.ai) sections.ai = this.config.ai;
+      if (this.config.website) sections.website = this.config.website;
+      if (this.config.search) sections.search = this.config.search;
+      if (this.config.icon) sections.icon = this.config.icon;
+      if (this.config.ticker) sections.mastodon = this.config.ticker;
+      if (this.config.weather) sections.weather = this.config.weather;
+      if (this.config.view) sections.view = this.config.view;
+      if (this.config.ui) sections.ui = this.config.ui;
 
-      if (response.ok) {
-        return true;
-      } else {
-        console.error('同步配置到 KV 失败:', response.statusText);
-        return false;
-      }
+      const results = await Promise.all(
+        Object.entries(sections).map(async ([key, config]) => {
+          const res = await fetch('/api/storage', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-auth-password': authToken,
+            },
+            body: JSON.stringify({ saveConfig: key, config }),
+          });
+          return res.ok;
+        })
+      );
+
+      return results.every(Boolean);
     } catch (error) {
       console.error('同步配置到 KV 出错:', error);
       return false;

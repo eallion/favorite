@@ -89,12 +89,12 @@ export class IconService {
 
 // 默认图标配置
 export const DEFAULT_ICON_CONFIG: IconConfig = {
-  source: 'faviconextractor',
+  source: 'google',
   faviconextractor: {
     enabled: true
   },
   google: {
-    enabled: false
+    enabled: true
   },
   customapi: {
     enabled: false,

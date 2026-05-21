@@ -4,22 +4,24 @@ import { Copy, QrCode, Edit2, Trash2, Pin } from 'lucide-react';
 interface ContextMenuProps {
   isOpen: boolean;
   position: { x: number; y: number };
+  link: LinkItem | null;
   onClose: () => void;
   onCopyLink: () => void;
-  onShowQRCode: () => void;
-  onEditLink: () => void;
-  onDeleteLink: () => void;
+  onShowQRCode: (url: string, title: string) => void;
+  onEdit: () => void;
+  onDelete: () => void;
   onTogglePin: () => void;
 }
 
 const ContextMenu: React.FC<ContextMenuProps> = ({
   isOpen,
   position,
+  link,
   onClose,
   onCopyLink,
   onShowQRCode,
-  onEditLink,
-  onDeleteLink,
+  onEdit,
+  onDelete,
   onTogglePin
 }) => {
   const menuRef = useRef<HTMLDivElement>(null);
@@ -62,10 +64,10 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
 
   const menuItems = [
     { icon: Copy, label: '复制链接', onClick: onCopyLink },
-    { icon: QrCode, label: '显示二维码', onClick: onShowQRCode },
-    { icon: Edit2, label: '编辑链接', onClick: onEditLink },
+    { icon: QrCode, label: '显示二维码', onClick: () => link && onShowQRCode(link.url, link.title) },
+    { icon: Edit2, label: '编辑链接', onClick: onEdit },
     { icon: Pin, label: '置顶/取消置顶', onClick: onTogglePin },
-    { icon: Trash2, label: '删除链接', onClick: onDeleteLink, className: 'text-red-600 dark:text-red-400' }
+    { icon: Trash2, label: '删除链接', onClick: onDelete, className: 'text-red-600 dark:text-red-400' }
   ];
 
   return (

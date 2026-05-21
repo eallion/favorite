@@ -26,6 +26,64 @@ const ImportModal: React.FC<ImportModalProps> = ({
   const [step, setStep] = useState<'upload' | 'preview'>('upload');
   const [file, setFile] = useState<File | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
+  const [analyzingMsg, setAnalyzingMsg] = useState('正在分析文件...');
+
+  const restoreUploadedIcons = async (
+    uploadedIcons: Array<{ key: string, platform: 'edgeone' | 'cloudflare', data: string }>,
+    linksList: LinkItem[],
+    onProgress?: (current: number, total: number) => void
+  ) => {
+    const updatedLinks = [...linksList];
+    const total = uploadedIcons.length;
+    let current = 0;
+
+    const authToken = localStorage.getItem('cloudnav_auth_token') || localStorage.getItem('authToken') || '';
+
+    for (const icon of uploadedIcons) {
+      current++;
+      if (onProgress) onProgress(current, total);
+
+      try {
+        const res = await fetch(icon.data);
+        const blob = await res.blob();
+        const filename = icon.key.split('/').pop() || 'icon.png';
+        const file = new File([blob], filename, { type: blob.type });
+
+        const categoryName = icon.key.split('/')[0] || 'common';
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('categoryName', categoryName);
+        formData.append('platform', icon.platform);
+
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          headers: {
+            'x-auth-password': authToken
+          },
+          body: formData
+        });
+
+        if (uploadRes.ok) {
+          const result = await uploadRes.json();
+          if (result.success && result.url) {
+            const oldUrl = `/api/favicon?key=${icon.key}`;
+            const newUrl = result.url;
+
+            updatedLinks.forEach(l => {
+              if (l.icon === oldUrl) l.icon = newUrl;
+              if (l.edgeoneBlobUrl === oldUrl) l.edgeoneBlobUrl = newUrl;
+              if (l.cloudflareR2Url === oldUrl) l.cloudflareR2Url = newUrl;
+            });
+          }
+        }
+      } catch (e) {
+        console.error(`Failed to restore icon: ${icon.key}`, e);
+      }
+    }
+
+    return updatedLinks;
+  };
   
   // Analysis Results
   const [newLinksCount, setNewLinksCount] = useState(0);
@@ -135,20 +193,30 @@ const ImportModal: React.FC<ImportModalProps> = ({
 
       // Smart icon detection and configuration
       let iconUrl = link.icon;
-      let detectedIconType: 'faviconextractor' | 'google' | 'customurl' | 'customapi' = 'faviconextractor';
+      let detectedIconType: 'faviconextractor' | 'google' | 'customurl' | 'customapi' | 'upload' = 'google';
       let iconConfig: any = undefined;
 
       // Fallback to default if no icon is provided
       if (!iconUrl) {
         const domain = new URL(link.url).hostname;
-        iconUrl = `https://www.faviconextractor.com/favicon/${domain}?larger=true`;
-        detectedIconType = 'faviconextractor';
+        iconUrl = `/api/favicon?domain=${domain}`;
+        detectedIconType = 'google';
       } else {
         // Detect icon type from URL pattern
-        if (iconUrl.includes('faviconextractor.com')) {
-          detectedIconType = 'faviconextractor';
-        } else if (iconUrl.includes('google.com/s2/favicons') || iconUrl.includes('gstatic.com')) {
+        if (iconUrl.startsWith('/api/favicon?key=')) {
+          detectedIconType = 'upload';
+        } else if (iconUrl.startsWith('/api/favicon') || iconUrl.includes('google.com/s2/favicons') || iconUrl.includes('gstatic.com')) {
           detectedIconType = 'google';
+          try {
+            const domain = new URL(link.url).hostname;
+            iconUrl = `/api/favicon?domain=${domain}`;
+          } catch (e) {}
+        } else if (iconUrl.includes('faviconextractor.com')) {
+          detectedIconType = 'faviconextractor';
+          try {
+            const domain = new URL(link.url).hostname;
+            iconUrl = `/api/favicon?domain=${domain}`;
+          } catch (e) {}
         } else if (iconUrl.includes('?') && (iconUrl.includes('url=') || iconUrl.includes('domain=') || iconUrl.includes('URL=') || iconUrl.includes('DOMAIN='))) {
           // Detect custom API pattern - has query parameters with url/domain
           detectedIconType = 'customapi';
@@ -314,8 +382,10 @@ const ImportModal: React.FC<ImportModalProps> = ({
         let result: { links: LinkItem[], categories: Category[], searchConfig?: SearchConfig, aiConfig?: AIConfig };
 
         if (type === 'html') {
+            setAnalyzingMsg('正在解析 HTML 书签...');
             result = await parseBookmarks(selectedFile);
         } else if (type === 'links') {
+            setAnalyzingMsg('正在解析 JSON 链接...');
             const linksResult = await parseLinksJson(selectedFile);
             result = {
                 links: linksResult.links,
@@ -324,7 +394,28 @@ const ImportModal: React.FC<ImportModalProps> = ({
                 aiConfig: undefined
             };
         } else {
-            result = await parseJsonBackup(selectedFile);
+            setAnalyzingMsg('正在解析 JSON 备份文件...');
+            const text = await selectedFile.text();
+            const data = JSON.parse(text);
+
+            if (!data.links || !Array.isArray(data.links) || !data.categories || !Array.isArray(data.categories)) {
+              throw new Error('Invalid backup file format');
+            }
+
+            let finalLinks = data.links;
+            if (data.uploadedIcons && Array.isArray(data.uploadedIcons) && data.uploadedIcons.length > 0) {
+              setAnalyzingMsg('正在导入并还原备份图标...');
+              finalLinks = await restoreUploadedIcons(data.uploadedIcons, data.links, (curr, tot) => {
+                setAnalyzingMsg(`正在还原图标 (${curr}/${tot})...`);
+              });
+            }
+
+            result = {
+              links: finalLinks,
+              categories: data.categories,
+              searchConfig: data.searchConfig,
+              aiConfig: data.aiConfig
+            };
         }
         
         // 2. Diff Logic - Enhanced with duplicate handling
@@ -564,7 +655,7 @@ const ImportModal: React.FC<ImportModalProps> = ({
                         {analyzing && importType === 'html' ? (
                             <div className="flex flex-col items-center">
                                 <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mb-2"></div>
-                                <span className="text-slate-500">正在分析书签文件...</span>
+                                <span className="text-slate-500">{analyzingMsg}</span>
                             </div>
                         ) : (
                             <>
@@ -593,7 +684,7 @@ const ImportModal: React.FC<ImportModalProps> = ({
                         {analyzing && importType === 'json' ? (
                             <div className="flex flex-col items-center">
                                 <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-500 mb-2"></div>
-                                <span className="text-slate-500">正在分析备份文件...</span>
+                                <span className="text-slate-500">{analyzingMsg}</span>
                             </div>
                         ) : (
                             <>
@@ -622,7 +713,7 @@ const ImportModal: React.FC<ImportModalProps> = ({
                         {analyzing && importType === 'links' ? (
                             <div className="flex flex-col items-center">
                                 <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-purple-500 mb-2"></div>
-                                <span className="text-slate-500">正在分析链接文件...</span>
+                                <span className="text-slate-500">{analyzingMsg}</span>
                             </div>
                         ) : (
                             <>

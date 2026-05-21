@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { X, Save, Settings, Clock, LayoutGrid, MessageCircle, Cloud, BookOpen, Upload, CloudCog, LogOut, Loader2, Plus, Trash2, Search } from 'lucide-react';
-import { AIConfig, PasswordExpiryConfig, TickerConfig, WeatherConfig, WeatherProvider, TickerSource, SearchConfig } from '../types';
+import { AIConfig, PasswordExpiryConfig, TickerConfig, WeatherConfig, WeatherProvider, TickerSource, SearchConfig, IconConfig } from '../types';
 import { toast } from './Toast';
-import { SEARCH_ENGINES } from '../src/constants';
+import { SEARCH_ENGINES, DEFAULT_ICON_CONFIG } from '../src/constants';
 
 interface SettingsData {
   ai: AIConfig;
@@ -12,16 +12,31 @@ interface SettingsData {
   showPinnedWebsites: boolean;
   defaultViewMode: 'compact' | 'detailed';
   search: SearchConfig;
+  icon: IconConfig;
 }
 
 const DEFAULT_SETTINGS: SettingsData = {
-  ai: { provider: 'google', apiKey: '', baseUrl: '', model: 'gemini-3.1-flash-lite', websiteTitle: '', navigationName: '', faviconUrl: '' },
+  ai: { 
+    provider: 'google', 
+    apiKey: '', 
+    baseUrl: 'https://generativelanguage.googleapis.com', 
+    model: 'gemini-3.1-flash-lite', 
+    websiteTitle: '', 
+    navigationName: '', 
+    faviconUrl: '',
+    providers: {
+      google: { apiKey: '', baseUrl: 'https://generativelanguage.googleapis.com', model: 'gemini-3.1-flash-lite' },
+      openai: { apiKey: '', baseUrl: 'https://api.openai.com/v1', model: 'gpt-5-nano' },
+      claude: { apiKey: '', baseUrl: 'https://api.anthropic.com', model: 'claude-haiku-4-5' },
+    }
+  },
   passwordExpiry: { value: 1, unit: 'week' },
   ticker: { enabled: false, source: 'mastodon', customItems: [] },
   weather: { enabled: false, provider: 'jinrishici', unit: 'celsius' },
   showPinnedWebsites: true,
   defaultViewMode: 'detailed',
   search: { mode: 'internal', externalSources: [], selectedSource: null, defaultEngine: 'google' },
+  icon: DEFAULT_ICON_CONFIG,
 };
 
 const AI_MODELS: Record<string, { label: string; defaultModel: string; defaultBaseUrl: string }> = {
@@ -37,14 +52,16 @@ interface SettingsModalProps {
   onSettingsLoaded: (settings: SettingsData) => void;
   onImportClick: () => void;
   onBackupClick: () => void;
+  supportsUpload?: boolean;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
-  isOpen, onClose, authToken, onSettingsLoaded, onImportClick, onBackupClick
+  isOpen, onClose, authToken, onSettingsLoaded, onImportClick, onBackupClick, supportsUpload = true
 }) => {
   const [settings, setSettings] = useState<SettingsData>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [migrating, setMigrating] = useState(false);
   const [mastodonInput, setMastodonInput] = useState('');
 
   useEffect(() => {
@@ -59,15 +76,31 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         if (data?.value) {
           // Mapping AppConfig to SettingsData structure
           const appConfig = JSON.parse(data.value);
+          
+          // Ensure providers map exists
+          const aiConfig = appConfig.ai || DEFAULT_SETTINGS.ai;
+          if (!aiConfig.providers) {
+            aiConfig.providers = { ...DEFAULT_SETTINGS.ai.providers };
+            // Migration: put current active settings into the map
+            if (aiConfig.provider && aiConfig.providers[aiConfig.provider]) {
+              aiConfig.providers[aiConfig.provider] = {
+                apiKey: aiConfig.apiKey || '',
+                baseUrl: aiConfig.baseUrl || AI_MODELS[aiConfig.provider]?.defaultBaseUrl || '',
+                model: aiConfig.model || AI_MODELS[aiConfig.provider]?.defaultModel || '',
+              };
+            }
+          }
+
           setSettings(prev => ({
             ...prev,
-            ai: appConfig.ai || prev.ai,
+            ai: aiConfig,
             passwordExpiry: appConfig.website?.passwordExpiry || prev.passwordExpiry,
             ticker: appConfig.ticker || appConfig.mastodon || prev.ticker,
             weather: appConfig.weather || prev.weather,
             showPinnedWebsites: appConfig.ui?.showPinnedWebsites ?? prev.showPinnedWebsites,
             defaultViewMode: appConfig.view?.defaultMode || appConfig.view?.mode || prev.defaultViewMode,
             search: appConfig.search || prev.search,
+            icon: appConfig.icon || prev.icon || DEFAULT_ICON_CONFIG,
           }));
           
           const ticker = appConfig.ticker || appConfig.mastodon;
@@ -95,48 +128,80 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
       }
 
       const finalSettings = { ...settings, ticker: tickerConfig };
-      
-      // Fetch existing config to avoid overwriting other sections like search, webdav, etc.
-      const currentConfigRes = await fetch('/api/storage?key=config');
-      let currentConfig: any = {};
-      if (currentConfigRes.ok) {
-        const data = await currentConfigRes.json();
-        if (data.value) currentConfig = JSON.parse(data.value);
-      }
-      
-      const newConfig = {
-        ...currentConfig,
+
+      const sections: Record<string, any> = {
         ai: finalSettings.ai,
-        website: { ...(currentConfig.website || {}), passwordExpiry: finalSettings.passwordExpiry },
-        ticker: finalSettings.ticker,
+        website: { passwordExpiry: finalSettings.passwordExpiry },
         mastodon: finalSettings.ticker,
         weather: finalSettings.weather,
-        ui: { ...(currentConfig.ui || {}), showPinnedWebsites: finalSettings.showPinnedWebsites },
-        view: { ...(currentConfig.view || {}), defaultMode: finalSettings.defaultViewMode, mode: currentConfig.view?.mode || finalSettings.defaultViewMode },
         search: finalSettings.search,
+        icon: finalSettings.icon,
+        ui: { showPinnedWebsites: finalSettings.showPinnedWebsites },
+        view: { defaultMode: finalSettings.defaultViewMode },
       };
 
-      const res = await fetch('/api/storage', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-auth-password': authToken },
-        body: JSON.stringify({ key: 'config', value: JSON.stringify(newConfig) }),
-      });
+      const results = await Promise.all(
+        Object.entries(sections).map(async ([key, config]) => {
+          const res = await fetch('/api/storage', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'x-auth-password': authToken },
+            body: JSON.stringify({ saveConfig: key, config }),
+          });
+          return { key, ok: res.ok, error: res.ok ? null : ((await res.json().catch(() => ({}))).error || res.statusText) };
+        })
+      );
 
-      if (res.ok) {
+      const errors = results.filter(r => !r.ok).map(r => `${r.key}: ${r.error}`);
+      if (errors.length > 0) {
+        console.error('Settings save partial errors:', errors);
+        toast.error(`部分设置保存失败: ${errors.join('; ')}`);
+      } else {
         setSettings(finalSettings);
         onSettingsLoaded(finalSettings);
         toast.success('设置已保存');
         onClose();
-      } else { toast.error('保存失败'); }
-    } catch (e) { toast.error('保存失败'); } finally { setSaving(false); }
+      }
+    } catch (e) { console.error('Settings save error:', e); toast.error(`保存失败: ${e instanceof Error ? e.message : '未知错误'}`); } finally { setSaving(false); }
   };
 
   const update = <K extends keyof SettingsData>(key: K, value: SettingsData[K]) => {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 
-  const updateAI = (key: keyof AIConfig, value: string) => {
-    setSettings(prev => ({ ...prev, ai: { ...prev.ai, [key]: value } }));
+  const updateAI = (key: keyof AIConfig, value: any) => {
+    setSettings(prev => {
+      const newAi = { ...prev.ai, [key]: value };
+      
+      // If updating provider, load stored settings for new provider
+      if (key === 'provider') {
+        const provider = value as keyof typeof AI_MODELS;
+        const stored = newAi.providers?.[provider];
+        if (stored) {
+          newAi.apiKey = stored.apiKey;
+          newAi.baseUrl = stored.baseUrl;
+          newAi.model = stored.model;
+        } else {
+          // Fallback to defaults if no stored config
+          const defaults = AI_MODELS[provider];
+          if (defaults) {
+            newAi.apiKey = '';
+            newAi.baseUrl = defaults.defaultBaseUrl;
+            newAi.model = defaults.defaultModel;
+          }
+        }
+      } 
+      // If updating specific field, sync with providers map
+      else if (['apiKey', 'baseUrl', 'model'].includes(key as string)) {
+        const provider = newAi.provider;
+        if (!newAi.providers) newAi.providers = {};
+        newAi.providers[provider] = {
+          ...(newAi.providers[provider] || { apiKey: '', baseUrl: '', model: '' }),
+          [key]: value
+        };
+      }
+      
+      return { ...prev, ai: newAi };
+    });
   };
 
   const handleLogout = () => {
@@ -145,6 +210,28 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     window.dispatchEvent(new CustomEvent('authStateChanged', { detail: { isAuthenticated: false } }));
     onClose();
     toast.success('已成功退出登录');
+  };
+
+  const handleMigrateIcons = async () => {
+    if (!authToken) { toast.error('请先登录'); return; }
+    if (migrating) return;
+    setMigrating(true);
+    try {
+      const res = await fetch('/api/migrate-icons', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-auth-password': authToken },
+      });
+      const result = await res.json();
+      if (res.ok) {
+        toast.success(`迁移完成: 共 ${result.total} 个链接，缓存 ${result.cached} 个，失败 ${result.failed} 个，跳过 ${result.skipped} 个`);
+      } else {
+        toast.error(`迁移失败: ${result.error || res.statusText}`);
+      }
+    } catch (e) {
+      toast.error(`迁移请求失败: ${e instanceof Error ? e.message : 'Unknown error'}`);
+    } finally {
+      setMigrating(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -287,6 +374,40 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                   <input type="checkbox" checked={settings.showPinnedWebsites} onChange={(e) => update('showPinnedWebsites', e.target.checked)} className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
                   <span className="text-sm text-slate-700 dark:text-slate-300">显示置顶网站区域</span>
                 </label>
+              </section>
+
+              {/* 图标自托管与缓存 */}
+              <section className="pt-6 border-t border-slate-200 dark:border-slate-700">
+                <h4 className="font-bold dark:text-white mb-3 text-sm flex items-center gap-2">
+                  <LayoutGrid size={16} /> 图标自托管与缓存
+                </h4>
+                <div className="space-y-4">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={settings.icon?.cacheEnabled !== false} 
+                      onChange={(e) => update('icon', { ...(settings.icon || { source: 'google' }), cacheEnabled: e.target.checked })} 
+                      className="w-5 h-5 mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500" 
+                    />
+                    <div>
+                      <span className="text-sm text-slate-700 dark:text-slate-300 block font-medium">启用边缘抓取缓存</span>
+                      <span className="text-xs text-slate-400 block mt-0.5">开启后，域名图标首次抓取后自动缓存到平台存储（EdgeOne → Blob，Cloudflare → R2）。免费用户可取消以节省存储空间。</span>
+                    </div>
+                  </label>
+                    {supportsUpload && (
+                      <>
+                        <button
+                          onClick={handleMigrateIcons}
+                          disabled={migrating}
+                          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 rounded-lg transition-colors"
+                        >
+                          {migrating ? <Loader2 className="animate-spin w-4 h-4" /> : <Upload size={16} />}
+                          {migrating ? '迁移中...' : '迁移历史图标到平台存储'}
+                        </button>
+                        <p className="text-[10px] text-slate-400 text-center">将历史链接的域名图标抓取后缓存到平台存储（EdgeOne → Blob，Cloudflare → R2），系统自动检测。关闭「边缘抓取缓存」后改用上游源。</p>
+                      </>
+                    )}
+                  </div>
               </section>
 
               {/* 滚动 Ticker */}
@@ -508,13 +629,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                       {settings.ai.provider === 'claude' && <a href="https://docs.anthropic.com/en/api/getting-started" target="_blank" rel="noreferrer" className="text-[10px] text-blue-500 hover:underline">Claude API</a>}
                     </div>
                     <select value={settings.ai.provider} onChange={(e) => {
-                      const provider = e.target.value as keyof typeof AI_MODELS;
-                      const defaults = AI_MODELS[provider];
-                      updateAI('provider', provider);
-                      if (defaults) {
-                        updateAI('model', defaults.defaultModel);
-                        updateAI('baseUrl', defaults.defaultBaseUrl);
-                      }
+                      updateAI('provider', e.target.value as any);
                     }} className="w-full h-11 px-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
                       {Object.entries(AI_MODELS).map(([key, val]) => (
                         <option key={key} value={key}>{val.label}</option>

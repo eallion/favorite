@@ -12,16 +12,32 @@ export function useSearch() {
   const { search: searchConfig, setSearch } = useConfigContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   
   // 站内搜索勾选状态，默认为 false (外网优先)
   const [isInternal, setIsInternal] = useState(false);
+
+  // 访客自定义的搜索引擎 ID (持久化在本地)
+  const [visitorEngineId, setVisitorEngineId] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('visitor_search_engine') || '';
+    }
+    return '';
+  });
+
+  const updateVisitorEngine = useCallback((id: string) => {
+    setVisitorEngineId(id);
+    localStorage.setItem('visitor_search_engine', id);
+  }, []);
+
+  const defaultEngineId = searchConfig?.defaultEngine || 'google';
+  const currentEngineId = visitorEngineId || defaultEngineId;
 
   const searchMode = searchConfig?.mode || 'internal';
   const externalSources = searchConfig?.externalSources?.length > 0 
     ? searchConfig.externalSources 
     : DEFAULT_SEARCH_SOURCES;
   const selectedSource = searchConfig?.selectedSource || null;
-  const defaultEngineId = searchConfig?.defaultEngine || 'google';
   const customEngineUrl = searchConfig?.customEngineUrl || '';
 
   const setSearchMode = useCallback((mode: SearchMode) => {
@@ -76,16 +92,16 @@ export function useSearch() {
     if (!isInternal) {
       // 外部搜索
       let searchUrl = '';
-      if (defaultEngineId === 'custom' && customEngineUrl) {
+      if (currentEngineId === 'custom' && customEngineUrl) {
         searchUrl = customEngineUrl + encodeURIComponent(query);
       } else {
-        const engine = SEARCH_ENGINES.find(e => e.id === defaultEngineId) || SEARCH_ENGINES[0];
+        const engine = SEARCH_ENGINES.find(e => e.id === currentEngineId) || SEARCH_ENGINES[0];
         searchUrl = engine.url + encodeURIComponent(query);
       }
       if (searchUrl) window.open(searchUrl, '_blank');
     }
     setSearchQuery(query);
-  }, [isInternal, defaultEngineId, customEngineUrl]);
+  }, [isInternal, currentEngineId, customEngineUrl]);
 
   return {
     searchQuery, setSearchQuery,
@@ -95,6 +111,9 @@ export function useSearch() {
     searchResults,
     handleSearch,
     isMobileSearchOpen, setIsMobileSearchOpen,
+    isSearchExpanded, setIsSearchExpanded,
     isInternal, setIsInternal,
+    visitorEngineId: currentEngineId,
+    setVisitorEngineId: updateVisitorEngine,
   };
 }

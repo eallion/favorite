@@ -99,15 +99,20 @@ const WeatherDisplay: React.FC<WeatherDisplayProps> = ({ config }) => {
 
   return (
     <div
-      className="flex items-center gap-2 bg-slate-200 dark:bg-slate-700 rounded-full px-3 py-2 h-9 min-w-10 leading-none cursor-default group"
+      className="relative flex items-center gap-2 bg-slate-200 dark:bg-slate-700 rounded-full px-3 py-2 h-9 min-w-10 leading-none cursor-default group"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
-      title={region || ''}
     >
       {getWeatherIcon(weatherText)}
       <span className="text-xs text-slate-700 dark:text-slate-300 whitespace-nowrap">
         {weatherText}
       </span>
+      {isHovering && region && (
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-slate-800 dark:bg-slate-900 text-white text-xs rounded-lg shadow-lg whitespace-nowrap z-50 pointer-events-none">
+          <div className="text-slate-300">城市：{region}</div>
+          <div>天气：{weatherText}</div>
+        </div>
+      )}
     </div>
   );
 };

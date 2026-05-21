@@ -22,18 +22,26 @@ interface TickerItem {
 
 interface TickerProps {
   config?: TickerConfig;
+  isCollapsed?: boolean;
 }
 
-const MastodonTicker: React.FC<TickerProps> = ({ config }) => {
+const MastodonTicker: React.FC<TickerProps> = ({ config, isCollapsed }) => {
   const [items, setItems] = useState<TickerItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const intervalRef = useRef<NodeJS.Timeout>();
+  const currentIndexRef = useRef(0);
+
+  const defaultItems: TickerItem[] = [
+    { id: 'default-1', content: '机会总是垂青于有准备的人！', url: '' },
+    { id: 'default-2', content: 'Chance favors the prepared mind!', url: '' },
+  ];
 
   useEffect(() => {
     if (!config || !config.enabled) {
+      setItems(defaultItems);
       setLoading(false);
       return;
     }
@@ -54,6 +62,8 @@ const MastodonTicker: React.FC<TickerProps> = ({ config }) => {
               content: processTickerContent(item), 
               url: '' 
             }));
+        } else {
+          fetchedItems = defaultItems;
         }
 
         setItems(fetchedItems);
@@ -74,10 +84,11 @@ const MastodonTicker: React.FC<TickerProps> = ({ config }) => {
   useEffect(() => {
     if (items.length <= 1 || isPaused) return;
 
-    let index = 0;
     const scroll = () => {
-      if (!isPaused && contentRef.current) {
-        index++;
+      if (contentRef.current) {
+        currentIndexRef.current++;
+        const index = currentIndexRef.current;
+        
         contentRef.current.style.transition = 'transform 0.5s ease-in-out';
         contentRef.current.style.transform = `translateY(${-index * 36}px)`;
 
@@ -87,7 +98,7 @@ const MastodonTicker: React.FC<TickerProps> = ({ config }) => {
             if (contentRef.current) {
               contentRef.current.style.transition = 'none';
               contentRef.current.style.transform = 'translateY(0)';
-              index = 0;
+              currentIndexRef.current = 0;
             }
           }, 500); // 等待过渡动画完成
         }
@@ -100,13 +111,11 @@ const MastodonTicker: React.FC<TickerProps> = ({ config }) => {
     };
   }, [items.length, isPaused]);
 
-  if (!config || !config.enabled) return null;
-
   if (loading) {
     return (
-      <div className="flex items-center gap-2 px-3 py-2 bg-slate-200 dark:bg-slate-700 rounded-full text-xs text-slate-500 dark:text-slate-400 h-9 min-w-[40px] leading-none">
-        <MastodonIcon size={12} className="animate-spin" />
-        <span className="hidden md:inline">加载中...</span>
+      <div className="flex items-center justify-center bg-slate-200 dark:bg-slate-700 rounded-full h-9 w-9 md:w-auto md:px-3 text-slate-500 dark:text-slate-400 leading-none">
+        <MastodonIcon size={12} />
+        <span className="hidden md:inline ml-2">加载中...</span>
       </div>
     );
   }
@@ -121,36 +130,43 @@ const MastodonTicker: React.FC<TickerProps> = ({ config }) => {
   }
 
   return (
-    <div className="flex items-center gap-2 bg-slate-200 dark:bg-slate-700 rounded-full px-3 py-2 h-9 min-w-0 flex-1 leading-none">
-      <MastodonIcon size={12} className="text-blue-500 shrink-0" />
+    <div 
+      className={`flex items-center bg-slate-200 dark:bg-slate-700 rounded-full h-9 leading-none transition-all duration-300 ease-in-out overflow-hidden ${
+        isCollapsed ? 'w-9 px-0 justify-center' : 'w-full px-3 gap-2'
+      }`}
+    >
+      <MastodonIcon size={14} className="text-blue-500 shrink-0" />
+      
       <div
-        className="relative overflow-hidden flex-1 h-9"
+        className={`relative overflow-hidden h-9 transition-all duration-300 ease-in-out ${
+          isCollapsed ? 'w-0 opacity-0' : 'flex-1 opacity-100'
+        }`}
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
       >
-        <div ref={contentRef} className="flex flex-col transition-transform duration-500 ease-in-out items-start">
+        <div ref={contentRef} className="flex flex-col items-start">
           {items.map((item) => (
-            <div key={item.id} className="shrink-0 h-9 flex items-center justify-center">
+            <div key={item.id} className="shrink-0 h-9 flex items-center justify-center min-w-0">
               <div
-                className="cursor-pointer hover:text-blue-500 transition-colors flex items-center gap-1 w-full"
+                className="cursor-pointer hover:text-blue-500 transition-colors flex items-center gap-1 w-full min-w-0"
                 onClick={() => item.url && window.open(item.url, '_blank')}
                 title={item.content.replace(/<[^>]*>/g, '')}
               >
                 <span 
-                  className="text-xs text-slate-700 dark:text-slate-300 truncate max-w-[400px] lg:max-w-[500px] 2xl:max-w-[600px]"
+                  className="text-xs text-slate-700 dark:text-slate-300 truncate w-full"
                   dangerouslySetInnerHTML={{ __html: item.content }}
                 />
               </div>
             </div>
           ))}
-          <div className="shrink-0 h-9 flex items-center">
+          <div className="shrink-0 h-9 flex items-center min-w-0">
             <div
-              className="cursor-pointer hover:text-blue-500 transition-colors flex items-center gap-1 w-full"
+              className="cursor-pointer hover:text-blue-500 transition-colors flex items-center gap-1 w-full min-w-0"
               onClick={() => items[0]?.url && window.open(items[0].url, '_blank')}
               title={items[0]?.content.replace(/<[^>]*>/g, '')}
             >
               <span 
-                className="text-xs text-slate-700 dark:text-slate-300 truncate max-w-[400px] lg:max-w-[500px] 2xl:max-w-[600px]"
+                className="text-xs text-slate-700 dark:text-slate-300 truncate w-full"
                 dangerouslySetInnerHTML={{ __html: items[0]?.content || '' }}
               />
             </div>

@@ -1,11 +1,12 @@
 import React from 'react';
-import { Search, Plus, Moon, Sun, Menu, Settings, Upload, CheckSquare, LogOut, Lock, GripVertical, Edit3 } from 'lucide-react';
+import { Search, X, Plus, Moon, Sun, Menu, Settings, Upload, CheckSquare, LogOut, Lock, GripVertical, Edit3, ChevronLeft, ChevronRight, Layers } from 'lucide-react';
 import { useConfigContext } from '../../contexts/ConfigContext';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { useLinksContext } from '../../contexts/LinksContext';
 import MastodonTicker from '../../../components/MastodonTicker';
 import WeatherDisplay from '../../../components/WeatherDisplay';
 import { useState, useRef, useEffect } from 'react';
+import { SEARCH_ENGINES } from '../../constants';
 
 import { 
   GoogleLogo, 
@@ -36,6 +37,8 @@ interface HeaderProps {
   onSearch: (q: string) => void;
   onAddLink: () => void;
   onOpenSettings: () => void;
+  onOpenCatManager: () => void;
+  onOpenBackup: () => void;
   onOpenImport: () => void;
   onOpenAuth: () => void;
   onToggleSidebar: () => void;
@@ -43,10 +46,65 @@ interface HeaderProps {
   onToggleBatchEditMode: () => void;
   isMobileSearchOpen: boolean;
   onToggleMobileSearch: () => void;
+  isSearchExpanded: boolean;
+  setIsSearchExpanded: (val: boolean) => void;
   isDragSortMode: boolean;
   onToggleDragSortMode: () => void;
   isEditMode: boolean;
   onToggleEditMode: () => void;
+  visitorEngineId?: string;
+  onVisitorEngineChange?: (id: string) => void;
+}
+
+// Search Engine Options Component
+function SearchEngineOptions({ 
+  onSelect, 
+  onClose,
+  currentEngine,
+  customEngineIcon,
+  isInternal
+}: { 
+  onSelect: (id: string) => void; 
+  onClose: () => void;
+  currentEngine: string;
+  customEngineIcon?: string;
+  isInternal: boolean;
+}) {
+  const { search } = useConfigContext();
+  const hasCustom = !!search?.customEngineUrl;
+
+  const allEngines = [
+    ...SEARCH_ENGINES,
+    ...(hasCustom ? [{ id: 'custom', name: '自定义' }] : [])
+  ];
+
+  return (
+    <div 
+      className="absolute top-full left-0 mt-1 py-2 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 w-32 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+      onMouseLeave={onClose}
+    >
+      {allEngines.map((eng) => (
+        <button
+          key={eng.id}
+          onClick={() => {
+            onSelect(eng.id);
+            onClose();
+          }}
+          className={`w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors ${
+            currentEngine === eng.id ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-slate-600 dark:text-slate-300'
+          }`}
+        >
+          <RenderEngineLogo 
+            engine={eng.id} 
+            customIcon={customEngineIcon} 
+            isInternal={isInternal} 
+            className="w-3.5 h-3.5"
+          />
+          <span>{eng.name}</span>
+        </button>
+      ))}
+    </div>
+  );
 }
 
 // Helper to render search engine logo
@@ -94,16 +152,36 @@ function RenderEngineLogo({
 
 export function Header({
   searchQuery, onSearchChange, isInternal, onInternalChange, onSearch, onAddLink, onOpenSettings,
+  onOpenCatManager, onOpenBackup,
   onOpenImport, onOpenAuth, onToggleSidebar, isBatchEditMode, onToggleBatchEditMode,
   isMobileSearchOpen, onToggleMobileSearch,
+  isSearchExpanded, setIsSearchExpanded,
   isDragSortMode, onToggleDragSortMode,
   isEditMode, onToggleEditMode,
+  visitorEngineId, onVisitorEngineChange,
 }: HeaderProps) {
   const { ai, darkMode, setDarkMode, viewMode, setViewMode, ticker, weather, search } = useConfigContext();
   const { authToken, logout } = useAuthContext();
   const { syncStatus } = useLinksContext();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isToolsExpanded, setIsToolsExpanded] = useState(false);
+  const dropdownTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const engine = search?.defaultEngine || 'google';
+  const engine = visitorEngineId || search?.defaultEngine || 'google';
+
+  const handleMouseEnter = () => {
+    if (dropdownTimer.current) clearTimeout(dropdownTimer.current);
+    setShowDropdown(true);
+  };
+
+  const handleMouseLeave = () => {
+    dropdownTimer.current = setTimeout(() => setShowDropdown(false), 300);
+  };
+
+  // 每次登录状态改变（登录或退出）时，重置工具栏为折叠状态
+  useEffect(() => {
+    setIsToolsExpanded(false);
+  }, [authToken]);
 
   return (
     <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-800/95 md:bg-white/80 md:dark:bg-slate-800/50 md:backdrop-blur-md border-b border-slate-200 dark:border-slate-700">
@@ -122,17 +200,32 @@ export function Header({
         {isMobileSearchOpen && (
           <div className="flex-1 flex items-center gap-2 md:hidden ml-2">
             <div className="relative flex-1">
-              <button
-                onClick={() => onInternalChange(!isInternal)}
-                className="absolute left-3 top-1/2 -translate-y-1/2 shrink-0 w-5 h-5 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
-                title={isInternal ? "切换到互联网搜索" : "切换到站内搜索"}
+              <div 
+                className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center h-full"
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
               >
-                <RenderEngineLogo 
-                  engine={engine} 
-                  customIcon={search?.customEngineIcon} 
-                  isInternal={isInternal} 
-                />
-              </button>
+                <button
+                  onClick={() => onInternalChange(!isInternal)}
+                  className="shrink-0 w-5 h-5 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
+                  title={isInternal ? "切换到互联网搜索" : "切换到站内搜索"}
+                >
+                  <RenderEngineLogo 
+                    engine={engine} 
+                    customIcon={search?.customEngineIcon} 
+                    isInternal={isInternal} 
+                  />
+                </button>
+                {showDropdown && onVisitorEngineChange && (
+                  <SearchEngineOptions 
+                    onSelect={onVisitorEngineChange} 
+                    onClose={() => setShowDropdown(false)}
+                    currentEngine={engine}
+                    customEngineIcon={search?.customEngineIcon}
+                    isInternal={isInternal}
+                  />
+                )}
+              </div>
               <input
                 id="search-input"
                 type="text"
@@ -171,20 +264,27 @@ export function Header({
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2">
-          {/* Desktop Search Bar - Expandable */}
-          <div className="hidden md:flex items-center gap-2 relative">
-            <HeaderSearch
-              searchQuery={searchQuery}
-              onSearchChange={onSearchChange}
-              isInternal={isInternal}
-              onInternalChange={onInternalChange}
-              onSearch={onSearch}
-            />
-          </div>
+          {/* Ticker & Search Shared Container */}
+          <div className="hidden md:flex items-center gap-2 w-[240px] lg:w-[360px] xl:w-[512px] shrink-0">
+            {/* 1. Ticker (Now First) */}
+            <div className={`transition-all duration-300 min-w-0 overflow-hidden ${isSearchExpanded ? 'w-9' : 'flex-1'}`}>
+              <MastodonTicker config={ticker} isCollapsed={isSearchExpanded} />
+            </div>
 
-          {/* Mastodon ticker - Back to original position */}
-          <div className="hidden md:flex items-center shrink-0 max-w-[440px] lg:max-w-[560px]">
-            <MastodonTicker config={ticker} />
+            {/* 2. Search (Now Second) */}
+            <div className={`transition-all duration-300 min-w-0 ${isSearchExpanded ? 'flex-1' : 'w-9'}`}>
+              <HeaderSearch
+                searchQuery={searchQuery}
+                onSearchChange={onSearchChange}
+                isInternal={isInternal}
+                onInternalChange={onInternalChange}
+                onSearch={onSearch}
+                visitorEngineId={visitorEngineId}
+                onVisitorEngineChange={onVisitorEngineChange}
+                isExpanded={isSearchExpanded}
+                setIsExpanded={setIsSearchExpanded}
+              />
+            </div>
           </div>
 
           {/* Mobile search toggle */}
@@ -199,10 +299,7 @@ export function Header({
             <WeatherDisplay config={weather} />
           </div>
 
-          {/* Sync status indicator */}
-          {syncStatus === 'saving' && <span className="text-xs text-blue-500 hidden sm:inline">同步中...</span>}
-          {syncStatus === 'saved' && <span className="text-xs text-green-500 hidden sm:inline">已保存</span>}
-          {syncStatus === 'error' && <span className="text-xs text-red-500 hidden sm:inline">同步失败</span>}
+          {/* Removed sync status indicators */}
 
           {/* View mode toggle */}
           <div 
@@ -236,58 +333,109 @@ export function Header({
             {darkMode ? <Sun size={18} /> : <Moon size={18} />}
           </button>
 
+          {/* GitHub link */}
+          <a
+            href="https://github.com/eallion/favorite"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${isMobileSearchOpen ? 'hidden' : 'flex'} items-center justify-center p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[36px] min-w-[36px] transition-colors`}
+            title="Favorite on GitHub"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12c0 5.303 3.438 9.8 8.205 11.385c.6.113.82-.258.82-.577c0-.285-.01-1.04-.015-2.04c-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729c1.205.084 1.838 1.236 1.838 1.236c1.07 1.835 2.809 1.305 3.495.998c.108-.776.417-1.305.76-1.605c-2.665-.3-5.466-1.332-5.466-5.93c0-1.31.465-2.38 1.235-3.22c-.135-.303-.54-1.523.105-3.176c0 0 1.005-.322 3.3 1.23c.96-.267 1.98-.399 3-.405c1.02.006 2.04.138 3 .405c2.28-1.552 3.285-1.23 3.285-1.23c.645 1.653.24 2.873.12 3.176c.765.84 1.23 1.91 1.23 3.22c0 4.61-2.805 5.625-5.475 5.92c.42.36.81 1.096.81 2.22c0 1.606-.015 2.896-.015 3.286c0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          </a>
+
+          {/* Removed sync status indicator block */}
+
           {authToken ? (
-            <>
-              {/* Settings */}
-              <button
-                onClick={onOpenSettings}
-                className={`${isMobileSearchOpen ? 'hidden' : 'flex'} lg:flex items-center justify-center p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[36px] min-w-[36px] cursor-pointer`}
-                title="设置"
-              >
-                <Settings size={18} />
+            <div className={`${isMobileSearchOpen ? 'hidden' : 'flex'} items-center gap-1`}>
+              {/* Add link - Always visible as primary action */}
+              <button onClick={onAddLink} className="flex items-center justify-center p-2 rounded-full text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 h-[36px] min-w-[36px] cursor-pointer" title="添加链接">
+                <Plus size={20} />
               </button>
 
-              {/* Add link */}
-              <button onClick={onAddLink} className={`${isMobileSearchOpen ? 'hidden' : 'flex'} lg:flex items-center justify-center p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[36px] min-w-[36px] cursor-pointer`} title="添加链接">
-                <Plus size={18} />
-              </button>
+              <div className="h-4 w-[1px] bg-slate-300 dark:bg-slate-600 mx-1" />
 
-              {/* Drag sort toggle */}
-              <button
-                onClick={onToggleDragSortMode}
-                className={`${isMobileSearchOpen ? 'hidden' : 'flex'} lg:flex items-center justify-center p-2 rounded-full h-[36px] min-w-[36px] cursor-pointer transition-colors ${
-                  isDragSortMode
-                    ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400'
-                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+              {/* Collapsible Tools Area */}
+              <div 
+                className={`flex items-center gap-1 transition-all duration-500 ease-in-out overflow-hidden ${
+                  isToolsExpanded ? 'max-w-[400px] opacity-100' : 'max-w-0 opacity-0'
                 }`}
-                title={isDragSortMode ? '退出拖动排序' : '拖动排序'}
               >
-                <GripVertical size={18} />
-              </button>
+                <div className="flex items-center gap-1 pr-1">
+                  {/* Settings */}
+                  <button
+                    onClick={onOpenSettings}
+                    className="flex items-center justify-center p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[36px] min-w-[36px] cursor-pointer"
+                    title="系统设置"
+                  >
+                    <Settings size={18} />
+                  </button>
 
-              {/* Edit mode toggle */}
-              <button
-                onClick={onToggleEditMode}
-                className={`${isMobileSearchOpen ? 'hidden' : 'flex'} lg:flex items-center justify-center p-2 rounded-full h-[36px] min-w-[36px] cursor-pointer transition-colors ${
-                  isEditMode
-                    ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
-                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
-                }`}
-                title={isEditMode ? '退出编辑卡片' : '编辑卡片'}
+                  {/* Manage Categories */}
+                  <button
+                    onClick={onOpenCatManager}
+                    className="flex items-center justify-center p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[36px] min-w-[36px] cursor-pointer"
+                    title="分类管理"
+                  >
+                    <Layers size={18} />
+                  </button>
+
+                  {/* Backup/Restore */}
+                  <button
+                    onClick={onOpenBackup}
+                    className="flex items-center justify-center p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[36px] min-w-[36px] cursor-pointer"
+                    title="备份恢复"
+                  >
+                    <Upload size={18} />
+                  </button>
+
+                  {/* Drag sort toggle */}
+                  <button
+                    onClick={onToggleDragSortMode}
+                    className={`flex items-center justify-center p-2 rounded-full h-[36px] min-w-[36px] cursor-pointer transition-colors ${
+                      isDragSortMode
+                        ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400'
+                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                    }`}
+                    title={isDragSortMode ? '退出拖动排序' : '拖动排序'}
+                  >
+                    <GripVertical size={18} />
+                  </button>
+
+                  {/* Edit mode toggle */}
+                  <button
+                    onClick={onToggleEditMode}
+                    className={`flex items-center justify-center p-2 rounded-full h-[36px] min-w-[36px] cursor-pointer transition-colors ${
+                      isEditMode
+                        ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                    }`}
+                    title={isEditMode ? '退出编辑卡片' : '编辑卡片'}
+                  >
+                    <Edit3 size={18} />
+                  </button>
+
+                  {/* Batch edit */}
+                  <button onClick={onToggleBatchEditMode} className={`flex items-center justify-center p-2 rounded-full h-[36px] min-w-[36px] cursor-pointer ${isBatchEditMode ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`} title="批量编辑">
+                    <CheckSquare size={18} />
+                  </button>
+
+                  {/* Logout */}
+                  <button onClick={logout} className="flex items-center justify-center p-2 rounded-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 h-[36px] min-w-[36px] cursor-pointer" title="退出登录">
+                    <LogOut size={18} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Toggle Button */}
+              <button 
+                onClick={() => setIsToolsExpanded(!isToolsExpanded)}
+                className={`flex items-center justify-center p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all ${isToolsExpanded ? 'rotate-180' : 'rotate-0'}`}
+                title={isToolsExpanded ? "折叠工具栏" : "展开工具栏"}
               >
-                <Edit3 size={18} />
+                <ChevronLeft size={20} />
               </button>
-
-              {/* Batch edit */}
-              <button onClick={onToggleBatchEditMode} className={`${isMobileSearchOpen ? 'hidden' : 'flex'} lg:flex items-center justify-center p-2 rounded-full h-[36px] min-w-[36px] cursor-pointer ${isBatchEditMode ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`} title="批量编辑">
-                <CheckSquare size={18} />
-              </button>
-
-              {/* Logout */}
-              <button onClick={logout} className={`${isMobileSearchOpen ? 'hidden' : 'flex'} lg:flex items-center justify-center p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[36px] min-w-[36px] cursor-pointer`} title="退出登录">
-                <LogOut size={18} />
-              </button>
-            </>
+            </div>
           ) : (
             <button
               onClick={onOpenAuth}
@@ -306,18 +454,24 @@ export function Header({
 
 // Sub-component for the expandable desktop search
 function HeaderSearch({ 
-  searchQuery, onSearchChange, isInternal, onInternalChange, onSearch 
+  searchQuery, onSearchChange, isInternal, onInternalChange, onSearch,
+  visitorEngineId, onVisitorEngineChange, isExpanded, setIsExpanded
 }: { 
   searchQuery: string; 
   onSearchChange: (q: string) => void; 
   isInternal: boolean; 
   onInternalChange: (val: boolean) => void;
   onSearch: (q: string) => void;
+  visitorEngineId?: string;
+  onVisitorEngineChange?: (id: string) => void;
+  isExpanded: boolean;
+  setIsExpanded: (val: boolean) => void;
 }) {
-  const [isExpanded, setIsExpanded] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const { search } = useConfigContext();
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownTimer = useRef<NodeJS.Timeout | null>(null);
 
   const handleExpand = () => {
     setIsExpanded(true);
@@ -327,12 +481,21 @@ function HeaderSearch({
   const handleClose = () => {
     setIsExpanded(false);
     onSearchChange('');
+    if (inputRef.current) {
+      inputRef.current.blur();
+    }
   };
 
   // Close when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const target = event.target as HTMLElement;
+      // Do not close if clicking inside the search container or on a link card
+      if (
+        containerRef.current && 
+        !containerRef.current.contains(target) &&
+        !target.closest('.link-card')
+      ) {
         handleClose();
       }
     };
@@ -342,45 +505,94 @@ function HeaderSearch({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isExpanded]);
 
-  const engine = search?.defaultEngine || 'google';
+  const engine = visitorEngineId || search?.defaultEngine || 'google';
+
+  const handleMouseEnter = () => {
+    if (dropdownTimer.current) clearTimeout(dropdownTimer.current);
+    setShowDropdown(true);
+  };
+
+  const handleMouseLeave = () => {
+    dropdownTimer.current = setTimeout(() => setShowDropdown(false), 300);
+  };
 
   return (
-    <div ref={containerRef} className="flex items-center justify-end">
-      {!isExpanded ? (
-        <button
-          onClick={handleExpand}
-          className="w-9 h-9 flex items-center justify-center rounded-full bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600 transition-all cursor-pointer"
-        >
-          <Search size={18} />
-        </button>
-      ) : (
-        <div className="flex items-center bg-slate-200 dark:bg-slate-700 rounded-full h-9 px-3 animate-in fade-in zoom-in duration-200 md:w-64 lg:w-80 xl:w-96 shadow-sm border border-slate-200 dark:border-slate-600">
-          {/* Engine Icon - Click to toggle mode */}
-          <button
-            onClick={() => onInternalChange(!isInternal)}
-            className="shrink-0 w-5 h-5 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform mr-2"
-            title={isInternal ? "切换到互联网搜索" : "切换到站内搜索"}
+    <div ref={containerRef} className="flex items-center justify-end w-full h-full">
+      <div 
+        className={`flex items-center rounded-full h-9 transition-all duration-300 ease-in-out w-full ${
+          isExpanded 
+            ? 'bg-slate-200 dark:bg-slate-700 px-3 shadow-sm border border-slate-200 dark:border-slate-600' 
+            : 'bg-slate-200 dark:bg-slate-700 justify-center cursor-pointer hover:bg-slate-300 dark:hover:bg-slate-600'
+        }`}
+        onClick={() => {
+          if (!isExpanded) {
+            handleExpand();
+          }
+        }}
+      >
+        {isExpanded && (
+          <div 
+            className="relative flex items-center h-full mr-2 shrink-0"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
           >
-            <RenderEngineLogo 
-              engine={engine} 
-              customIcon={search?.customEngineIcon} 
-              isInternal={isInternal} 
-            />
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onInternalChange(!isInternal);
+              }}
+              className="shrink-0 w-5 h-5 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
+              title={isInternal ? "切换到互联网搜索" : "切换到站内搜索"}
+            >
+              <RenderEngineLogo 
+                engine={engine} 
+                customIcon={search?.customEngineIcon} 
+                isInternal={isInternal} 
+              />
+            </button>
+            {showDropdown && onVisitorEngineChange && (
+              <SearchEngineOptions 
+                onSelect={onVisitorEngineChange} 
+                onClose={() => setShowDropdown(false)}
+                currentEngine={engine}
+                customEngineIcon={search?.customEngineIcon}
+                isInternal={isInternal}
+              />
+            )}
+          </div>
+        )}
+
+        <input
+          ref={inputRef}
+          id="search-input"
+          type="text"
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') onSearch(searchQuery);
+            if (e.key === 'Escape') handleClose();
+          }}
+          placeholder={isInternal ? "搜索站内链接，点击图标（彩色时）搜索互联网" : "搜索互联网，点击图标（灰色时）站内搜索"}
+          className={`bg-transparent border-none text-xs focus:ring-0 dark:text-white placeholder-slate-400 outline-none h-full transition-all duration-300 ${
+            isExpanded ? 'flex-1 min-w-0 opacity-100' : 'w-0 opacity-0 pointer-events-none'
+          }`}
+          tabIndex={isExpanded ? 0 : -1}
+        />
+
+        {isExpanded && searchQuery ? (
+          <button 
+            onClick={(e) => {
+              e.stopPropagation();
+              handleClose();
+            }}
+            className="p-1 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-full transition-colors text-slate-500 shrink-0"
+          >
+            <X size={14} />
           </button>
-
-          <input
-            ref={inputRef}
-            type="text"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && onSearch(searchQuery)}
-            placeholder={isInternal ? "搜索站内链接，点击图标（彩色时）搜索互联网" : "搜索互联网，点击图标（灰色时）站内搜索"}
-            className="flex-1 bg-transparent border-none text-xs focus:ring-0 dark:text-white placeholder-slate-400 outline-none h-full"
-          />
-
-          <Search size={16} className="text-slate-400 shrink-0 ml-2" />
-        </div>
-      )}
+        ) : (
+          <Search size={isExpanded ? 16 : 18} className={`${isExpanded ? 'text-slate-400 shrink-0 ml-2' : 'text-slate-500 dark:text-slate-400'}`} />
+        )}
+      </div>
     </div>
   );
 }

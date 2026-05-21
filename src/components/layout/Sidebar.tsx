@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { LayoutGrid, Settings, Upload, X, GitFork, Loader2, CheckCircle2, AlertCircle, Lock, ChevronDown, ChevronRight, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { LayoutGrid, Settings, Upload, X, Loader2, CheckCircle2, AlertCircle, Lock, ChevronDown, ChevronRight, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { useCategoriesContext, CategoryWithChildren } from '../../contexts/CategoriesContext';
 import { useConfigContext } from '../../contexts/ConfigContext';
 import { useAuthContext } from '../../contexts/AuthContext';
@@ -152,52 +152,8 @@ export function Sidebar({ isOpen, onClose, activeCategoryId, onOpenCatManager, o
           {categoryTree.map(cat => renderCategoryNode(cat, 0))}
         </div>
 
-        {/* Footer */}
-        <div className={`p-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50 shrink-0 transition-all duration-300 ${isCollapsed ? 'px-2' : 'px-4'}`}>
-          {authToken && (
-            <div className="space-y-1 mb-3">
-              <button
-                onClick={onOpenCatManager}
-                className={`w-full flex items-center rounded-lg text-sm transition-all duration-300 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 ${isCollapsed ? 'justify-center p-2' : 'px-3 py-2'}`}
-                title="管理分类"
-              >
-                <Settings size={14} className="shrink-0" />
-                <span className={`whitespace-nowrap overflow-hidden transition-all ease-in-out ${isCollapsed ? 'max-w-0 opacity-0 ml-0 duration-150' : 'max-w-[200px] opacity-100 ml-2 duration-300 delay-150'}`}>管理分类</span>
-              </button>
-              <button
-                onClick={onOpenBackup}
-                className={`w-full flex items-center rounded-lg text-sm transition-all duration-300 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 ${isCollapsed ? 'justify-center p-2' : 'px-3 py-2'}`}
-                title="备份恢复"
-              >
-                <Upload size={14} className="shrink-0" />
-                <span className={`whitespace-nowrap overflow-hidden transition-all ease-in-out ${isCollapsed ? 'max-w-0 opacity-0 ml-0 duration-150' : 'max-w-[200px] opacity-100 ml-2 duration-300 delay-150'}`}>备份恢复</span>
-              </button>
-            </div>
-          )}
-
-          <div className={`flex transition-all duration-300 ${isCollapsed ? 'flex-col items-center gap-3 mt-2' : 'flex-row items-center justify-between text-xs px-2'}`}>
-            {authToken && (
-              <div className="flex items-center gap-1 text-slate-400 shrink-0">
-                {syncStatus === 'saving' && <Loader2 className="animate-spin w-3 h-3 text-blue-500" />}
-                {syncStatus === 'saved' && <CheckCircle2 className="w-3 h-3 text-green-500" />}
-                {syncStatus === 'error' && <AlertCircle className="w-3 h-3 text-red-500" />}
-                <span className={`whitespace-nowrap overflow-hidden transition-all ease-in-out ${isCollapsed ? 'max-w-0 opacity-0' : 'max-w-[100px] opacity-100 text-green-600'}`}>
-                  {authToken ? '已同步' : '离线'}
-                </span>
-              </div>
-            )}
-            <a
-                href="https://github.com/eallion/favorite"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`flex items-center gap-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors shrink-0 ${!authToken && !isCollapsed ? 'w-full justify-center' : ''}`}
-                title="Favorite on GitHub"
-            >
-                <GitFork size={14} />
-                <span className={`whitespace-nowrap overflow-hidden transition-all ease-in-out ${isCollapsed ? 'max-w-0 opacity-0' : 'max-w-[100px] opacity-100 ml-1'}`}>Favorite</span>
-            </a>
-          </div>
-        </div>
+        {/* Footer - Spacer or simple copyright if needed */}
+        <div className="flex-shrink-0" />
       </aside>
     </>
   );

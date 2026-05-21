@@ -90,6 +90,7 @@ export function MainContent({
                 authToken={authToken}
                 isEditMode={isEditMode}
                 onWeightChange={onWeightChange}
+                isDraggable={false}
               />
             ))}
           </div>

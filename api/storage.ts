@@ -2,11 +2,46 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getKV, getCorsHeaders, verifyAuth } from './_kvHelper.js';
 
+const CONFIG_SECTIONS = ['ai', 'website', 'mastodon', 'weather', 'search', 'icon', 'view', 'ui'];
+
 const STORAGE_KEYS = {
   CONFIG_KEY: 'config',
   CATEGORIES_CONFIG_KEY: 'cate_config',
-  LINKS_CONFIG_KEY: 'links_config', // 兼容旧版全量存储
+  LINKS_CONFIG_KEY: 'links_config',
 };
+
+async function readConfigSection(kv: any, section: string) {
+  const sectionStr = await kv.get(`config:${section}`);
+  if (sectionStr) return typeof sectionStr === 'string' ? JSON.parse(sectionStr) : sectionStr;
+  const configStr = await kv.get('config');
+  const config = configStr ? (typeof configStr === 'string' ? JSON.parse(configStr) : configStr) : {};
+  return config[section] || null;
+}
+
+async function mergeAllConfigSections(kv: any) {
+  const merged: Record<string, any> = {};
+  let hasAnyIndividual = false;
+  const results = await Promise.all(CONFIG_SECTIONS.map(async (s) => {
+    const v = await kv.get(`config:${s}`);
+    if (v) { hasAnyIndividual = true; return [s, typeof v === 'string' ? JSON.parse(v) : v]; }
+    return null;
+  }));
+  for (const r of results) {
+    if (r) merged[r[0]] = r[1];
+  }
+  if (hasAnyIndividual) {
+    const configStr = await kv.get('config');
+    if (configStr) {
+      const legacy = typeof configStr === 'string' ? JSON.parse(configStr) : configStr;
+      for (const s of CONFIG_SECTIONS) {
+        if (!merged[s] && legacy[s]) merged[s] = legacy[s];
+      }
+    }
+    return merged;
+  }
+  const configStr = await kv.get('config');
+  return configStr ? (typeof configStr === 'string' ? JSON.parse(configStr) : configStr) : {};
+}
 
 // 生成分类链接 key
 function categoryLinksKey(categoryId: string) {
@@ -85,16 +120,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           hasPassword: !!process.env.PASSWORD,
           requiresAuth: !!process.env.PASSWORD,
           readOnlyAccess: true,
+          capabilities: { upload: false },
         });
       }
 
-      if (['ai', 'website', 'search', 'mastodon', 'weather', 'icon', 'view', 'ui'].includes(getConfig as string)) {
-        const configStr = await kv.get('config');
-        const config = configStr ? (typeof configStr === 'string' ? JSON.parse(configStr) : configStr) : {};
+      if (CONFIG_SECTIONS.includes(getConfig as string)) {
+        const sectionVal = await readConfigSection(kv, getConfig as string);
         const defaults: Record<string, any> = {
           website: { passwordExpiry: { value: 1, unit: 'week' } },
         };
-        return res.status(200).json(config[getConfig as string] || defaults[getConfig as string] || {});
+        return res.status(200).json(sectionVal || defaults[getConfig as string] || {});
       }
 
       if (getConfig === 'favicon') {
@@ -122,6 +157,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       if (key) {
+        if (key === STORAGE_KEYS.CONFIG_KEY) {
+          const merged = await mergeAllConfigSections(kv);
+          return res.status(200).json({ key, value: JSON.stringify(merged) });
+        }
         const value = await kv.get(key as string);
         return res.status(200).json({ key, value });
       }
@@ -167,11 +206,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(200).json({ success: true });
       }
 
-      if (['search', 'ai', 'website', 'mastodon', 'weather', 'icon', 'view', 'ui'].includes(body.saveConfig)) {
-        const configStr = await kv.get('config');
-        const config = configStr ? (typeof configStr === 'string' ? JSON.parse(configStr) : configStr) : {};
-        config[body.saveConfig] = body.config;
-        await kv.set('config', JSON.stringify(config));
+      if (CONFIG_SECTIONS.includes(body.saveConfig)) {
+        await kv.set(`config:${body.saveConfig}`, JSON.stringify(body.config));
         return res.status(200).json({ success: true });
       }
 

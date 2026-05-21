@@ -143,7 +143,7 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
   // 按分类获取链接（按 weight 排序，weight 相同按 order 排序）
   const getLinksByCategory = useCallback((categoryId: string) =>
     state.links
-      .filter(l => l.categoryId === categoryId && !l.pinned)
+      .filter(l => l.categoryId === categoryId)
       .sort((a, b) => {
         const wa = a.weight ?? Infinity;
         const wb = b.weight ?? Infinity;

@@ -9,6 +9,41 @@ const STORAGE_KEYS = {
   CATEGORIES_CONFIG_KEY: 'cate_config',
 };
 
+const CONFIG_SECTIONS = ['ai', 'website', 'mastodon', 'weather', 'search', 'icon', 'view', 'ui'];
+
+async function readConfigSection(kv, section) {
+  const sectionStr = await kv.get(`config:${section}`);
+  if (sectionStr) return JSON.parse(sectionStr);
+  const configStr = await kv.get('config');
+  const config = configStr ? JSON.parse(configStr) : {};
+  return config[section] || null;
+}
+
+async function mergeAllConfigSections(kv) {
+  const merged = {};
+  let hasAnyIndividual = false;
+  const results = await Promise.all(CONFIG_SECTIONS.map(async (s) => {
+    const v = await kv.get(`config:${s}`);
+    if (v) { hasAnyIndividual = true; return [s, JSON.parse(v)]; }
+    return null;
+  }));
+  for (const r of results) {
+    if (r) merged[r[0]] = r[1];
+  }
+  if (hasAnyIndividual) {
+    const configStr = await kv.get('config');
+    if (configStr) {
+      const legacy = JSON.parse(configStr);
+      for (const s of CONFIG_SECTIONS) {
+        if (!merged[s] && legacy[s]) merged[s] = legacy[s];
+      }
+    }
+    return merged;
+  }
+  const configStr = await kv.get('config');
+  return configStr ? JSON.parse(configStr) : {};
+}
+
 // 生成分类链接 key
 function categoryLinksKey(categoryId) {
   return `links:${categoryId}`;
@@ -78,17 +113,17 @@ export async function onRequest(context) {
           hasPassword: !!env.PASSWORD,
           requiresAuth: !!env.PASSWORD,
           readOnlyAccess: true,
+          capabilities: { upload: true },
         }, 200, corsHeaders);
       }
 
-      // 获取子配置
-      if (['ai', 'website', 'search', 'mastodon', 'weather', 'icon', 'view', 'ui'].includes(getConfig)) {
-        const configStr = await kv.get('config');
-        const config = configStr ? JSON.parse(configStr) : {};
+      // 获取子配置（优先读独立 key，fallback 到旧 config 的子字段）
+      if (CONFIG_SECTIONS.includes(getConfig)) {
+        const sectionVal = await readConfigSection(kv, getConfig);
         const defaults = {
           website: { passwordExpiry: { value: 1, unit: 'week' } },
         };
-        return jsonResponse(config[getConfig] || defaults[getConfig] || {}, 200, corsHeaders);
+        return jsonResponse(sectionVal || defaults[getConfig] || {}, 200, corsHeaders);
       }
 
       // 获取 Favicon 缓存
@@ -127,6 +162,10 @@ export async function onRequest(context) {
 
       // 按 Key 读取
       if (key) {
+        if (key === STORAGE_KEYS.CONFIG_KEY) {
+          const merged = await mergeAllConfigSections(kv);
+          return jsonResponse({ key, value: JSON.stringify(merged) }, 200, corsHeaders);
+        }
         const value = await kv.get(key);
         return jsonResponse({ key, value }, 200, corsHeaders);
       }
@@ -188,12 +227,9 @@ export async function onRequest(context) {
         return jsonResponse({ success: true }, 200, corsHeaders);
       }
 
-      // 保存子配置
-      if (['search', 'ai', 'website', 'mastodon', 'weather', 'icon', 'view', 'ui'].includes(body.saveConfig)) {
-        const configStr = await kv.get('config');
-        const config = configStr ? JSON.parse(configStr) : {};
-        config[body.saveConfig] = body.config;
-        await kv.put('config', JSON.stringify(config));
+      // 保存子配置（写入独立 KV key，避免读取全量 config）
+      if (CONFIG_SECTIONS.includes(body.saveConfig)) {
+        await kv.put(`config:${body.saveConfig}`, JSON.stringify(body.config));
         return jsonResponse({ success: true }, 200, corsHeaders);
       }
 

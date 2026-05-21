@@ -3,6 +3,7 @@ import { X, Sparkles, Loader2, Pin, Wand2, Trash2 } from 'lucide-react';
 import { LinkItem, Category, AIConfig, IconSourceType, IconConfig } from '../types';
 import { generateLinkDescription, suggestCategory } from '../services/geminiService';
 import { toast } from './Toast';
+import { STORAGE_KEYS } from '../src/constants';
 
 interface LinkModalProps {
   isOpen: boolean;
@@ -14,16 +15,133 @@ interface LinkModalProps {
   aiConfig: AIConfig;
   defaultCategoryId?: string;
   iconConfig?: IconConfig;
+  supportsUpload?: boolean;
 }
 
-const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete, categories, initialData, aiConfig, defaultCategoryId, iconConfig }) => {
+const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete, categories, initialData, aiConfig, defaultCategoryId, iconConfig, supportsUpload = true }) => {
   const [title, setTitle] = useState('');
   const [url, setUrl] = useState('');
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState(categories[0]?.id || 'common');
   const [pinned, setPinned] = useState(false);
   const [icon, setIcon] = useState('');
-  const [iconType, setIconType] = useState<IconSourceType>('faviconextractor');
+  const [iconType, setIconType] = useState<IconSourceType>('google');
+  const [isUploading, setIsUploading] = useState(false);
+
+  const [customIconUrl, setCustomIconUrl] = useState('');
+  const [edgeoneBlobUrl, setEdgeoneBlobUrl] = useState('');
+  const [cloudflareR2Url, setCloudflareR2Url] = useState('');
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, targetType: 'upload-edgeone' | 'upload-cloudflare') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('图片大小不能超过 2MB');
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const authToken = localStorage.getItem(STORAGE_KEYS.AUTH_KEY) || localStorage.getItem('authToken') || '';
+      const currentCategory = categories.find(c => c.id === categoryId);
+      const categoryName = currentCategory ? currentCategory.name : 'common';
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('categoryName', categoryName);
+      formData.append('platform', targetType === 'upload-cloudflare' ? 'cloudflare' : 'edgeone');
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          'x-auth-password': authToken
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || '上传失败');
+      }
+
+      const result = await response.json();
+      if (result.success && result.url) {
+        setIcon(result.url);
+        if (targetType === 'upload-edgeone') {
+          setEdgeoneBlobUrl(result.url);
+        } else {
+          setCloudflareR2Url(result.url);
+        }
+        toast.success('图标上传成功！');
+      } else {
+        throw new Error('未返回有效的图标地址');
+      }
+    } catch (err: any) {
+      console.error('上传失败:', err);
+      toast.error(`上传失败: ${err.message}`);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleConvertUrlToStorage = async (targetPlatform: 'edgeone' | 'cloudflare') => {
+    if (!icon || !icon.trim()) {
+      toast.error('请先输入有效的图片 URL');
+      return;
+    }
+
+    if (icon.startsWith('/api/favicon?key=')) {
+      toast.info('该图标已经是本地存储图标，无需转换');
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const authToken = localStorage.getItem(STORAGE_KEYS.AUTH_KEY) || localStorage.getItem('authToken') || '';
+      const currentCategory = categories.find(c => c.id === categoryId);
+      const categoryName = currentCategory ? currentCategory.name : 'common';
+
+      const formData = new FormData();
+      formData.append('url', icon.trim());
+      formData.append('categoryName', categoryName);
+      formData.append('platform', targetPlatform);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          'x-auth-password': authToken
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || '转存失败');
+      }
+
+      const result = await response.json();
+      if (result.success && result.url) {
+        setIcon(result.url);
+        if (targetPlatform === 'edgeone') {
+          setEdgeoneBlobUrl(result.url);
+          setIconType('upload-edgeone');
+        } else {
+          setCloudflareR2Url(result.url);
+          setIconType('upload-cloudflare');
+        }
+        toast.success(`转存到 ${targetPlatform === 'edgeone' ? 'EdgeOne Blob' : 'Cloudflare R2'} 成功！`);
+      } else {
+        throw new Error('未返回有效的图标地址');
+      }
+    } catch (err: any) {
+      console.error('转存失败:', err);
+      toast.error(`转存失败: ${err.message}`);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const [customApiUrl, setCustomApiUrl] = useState('');
   const [customApiParam, setCustomApiParam] = useState<'URL' | 'DOMAIN'>('URL');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -31,7 +149,17 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
   const [autoFetchIcon, setAutoFetchIcon] = useState(true);
   const [batchMode, setBatchMode] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [weight, setWeight] = useState(0);
+  const [pinnedOrder, setPinnedOrder] = useState(0);
   
+  // 当不支持上传时，将图标类型降级为默认
+  useEffect(() => {
+    if (!supportsUpload && (iconType === 'upload-edgeone' || iconType === 'upload-cloudflare')) {
+      setIconType('google');
+      setIcon('');
+    }
+  }, [supportsUpload, iconType]);
+
   // 当模态框关闭时，重置批量模式为默认关闭状态
   useEffect(() => {
     if (!isOpen) {
@@ -82,10 +210,54 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
         setCategoryId(initialData.categoryId);
         setPinned(initialData.pinned || false);
         setIcon(initialData.icon || '');
+        setWeight(initialData.weight || 0);
+        setPinnedOrder(initialData.pinnedOrder || 0);
+
+        // 智能还原图标获取方式
+        let detectedType: IconSourceType = 'google';
+        if (initialData.iconType) {
+          if (initialData.iconType === 'upload') {
+            detectedType = 'upload-edgeone';
+          } else {
+            detectedType = initialData.iconType as IconSourceType;
+          }
+        } else {
+          if (initialData.icon?.includes('faviconextractor.com')) {
+            detectedType = 'faviconextractor';
+          } else if (initialData.icon?.includes('google.com/s2/favicons') || initialData.icon?.includes('/api/favicon?domain=')) {
+            detectedType = 'google';
+          } else if (initialData.icon?.includes('/api/favicon?key=')) {
+            detectedType = 'upload-edgeone';
+          } else if (initialData.icon) {
+            detectedType = 'customurl';
+          } else {
+            detectedType = 'google';
+          }
+        }
+        setIconType(detectedType);
+
+        // 初始化历史记录状态
+        const initialCustom = initialData.customIconUrl || (detectedType === 'customurl' ? initialData.icon : '') || '';
+        const initialEdgeone = initialData.edgeoneBlobUrl || (detectedType === 'upload-edgeone' ? initialData.icon : '') || '';
+        const initialCloudflare = initialData.cloudflareR2Url || (detectedType === 'upload-cloudflare' ? initialData.icon : '') || '';
+        
+        setCustomIconUrl(initialCustom);
+        setEdgeoneBlobUrl(initialEdgeone);
+        setCloudflareR2Url(initialCloudflare);
+
+        if (initialData.iconType === 'customapi' && initialData.iconConfig) {
+          setCustomApiUrl((initialData.iconConfig.customApiUrl as string) || '');
+          setCustomApiParam((initialData.iconConfig.customApiParam as 'URL' | 'DOMAIN') || 'URL');
+        } else {
+          setCustomApiUrl('');
+          setCustomApiParam('URL');
+        }
       } else {
         setTitle('');
         setUrl('');
         setDescription('');
+        setWeight(0);
+        setPinnedOrder(0);
         // 如果有默认分类ID，使用它；否则使用第一个可用的分类
         if (defaultCategoryId && categories.find(cat => cat.id === defaultCategoryId)) {
           setCategoryId(defaultCategoryId);
@@ -98,6 +270,10 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
         }
         setPinned(false);
         setIcon('');
+        setIconType('google');
+        setCustomIconUrl('');
+        setEdgeoneBlobUrl('');
+        setCloudflareR2Url('');
         setCustomApiUrl('');
         setCustomApiParam('URL');
       }
@@ -172,11 +348,18 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
       icon,
       description,
       categoryId,
-      pinned
+      pinned,
+      weight,
+      pinnedOrder,
+      iconType,
+      iconConfig: iconType === 'customapi' ? { iconType, customApiUrl, customApiParam } : undefined,
+      customIconUrl,
+      edgeoneBlobUrl,
+      cloudflareR2Url
     });
     
     // 如果有自定义图标URL，缓存到KV空间
-    if (icon && !icon.includes('faviconextractor.com')) {
+    if (icon && !icon.startsWith('/api/favicon') && !icon.includes('faviconextractor.com')) {
       cacheCustomIcon(finalUrl, icon);
     }
     
@@ -255,37 +438,14 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
       // 根据选择的图标类型生成图标URL
       switch (iconType) {
         case 'faviconextractor':
-          iconUrl = `https://www.faviconextractor.com/favicon/${domain}?larger=true`;
-          break;
         case 'google':
-          iconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+          iconUrl = `/api/favicon?domain=${domain}`;
           break;
         default:
-          iconUrl = `https://www.faviconextractor.com/favicon/${domain}?larger=true`;
+          iconUrl = `/api/favicon?domain=${domain}`;
       }
 
       setIcon(iconUrl);
-
-      // 将图标保存到KV缓存（仅对faviconextractor和google）
-      try {
-        const authToken = localStorage.getItem('authToken');
-        if (authToken && (iconType === 'faviconextractor' || iconType === 'google')) {
-          await fetch('/api/storage', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'x-auth-password': authToken
-            },
-            body: JSON.stringify({
-              saveConfig: 'favicon',
-              domain: domain,
-              icon: iconUrl
-            })
-          });
-        }
-      } catch (error) {
-        console.log("Failed to cache icon", error);
-      }
     } catch (e) {
       console.error("Failed to fetch icon", e);
       toast.error("无法获取图标，请检查URL是否正确");
@@ -366,14 +526,14 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
           <div>
             <label className="block text-sm font-medium mb-1 dark:text-slate-300">URL 链接</label>
             <div className="flex gap-2">
-                <input
+              <input
                 type="text"
                 required
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                 placeholder="example.com 或 https://..."
-                />
+              />
             </div>
           </div>
 
@@ -383,31 +543,65 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
               {/* 图标类型选择 */}
               <select
                 value={iconType}
-                onChange={(e) => {
-                  setIconType(e.target.value as IconSourceType);
-                  // 如果切换到需要手动输入的类型，清空图标URL
-                  if (e.target.value === 'customurl' || e.target.value === 'customapi') {
-                    setIcon('');
-                  }
-                }}
-                className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-              >
-                <option value="faviconextractor">Favicon Extractor (默认)</option>
-                <option value="google">Google Favicon API</option>
-                <option value="customurl">自定义图片URL</option>
-                <option value="customapi">自定义API</option>
+                  onChange={(e) => {
+                    const newType = e.target.value as IconSourceType;
+                    setIconType(newType);
+                    // 当切换类型时，从历史记录中还原，而不是变成空白！
+                    if (newType === 'customurl') {
+                      setIcon(customIconUrl);
+                    } else if (newType === 'upload-edgeone') {
+                      setIcon(edgeoneBlobUrl);
+                    } else if (newType === 'upload-cloudflare') {
+                      setIcon(cloudflareR2Url);
+                    } else {
+                      setIcon('');
+                    }
+                  }}
+                  className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                >
+                  <option value="google">Google Favicon API (默认)</option>
+                  <option value="faviconextractor">Favicon Extractor</option>
+                  <option value="customurl">自定义图片URL</option>
+                  <option value="customapi">自定义API</option>
+                  {supportsUpload && <option value="upload-edgeone">上传到 Edgeone Pages Blob</option>}
+                  {supportsUpload && <option value="upload-cloudflare">上传到 Cloudflare R2</option>}
                 </select>
 
               {/* 图标输入框 - 根据类型显示不同界面 */}
               {iconType === 'customurl' && (
-                <div className="flex gap-2">
-                  <input
-                    type="url"
-                    value={icon}
-                    onChange={(e) => setIcon(e.target.value)}
-                    className="flex-1 p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                    placeholder="https://example.com/icon.png"
-                  />
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      value={icon}
+                      onChange={(e) => {
+                        setIcon(e.target.value);
+                        setCustomIconUrl(e.target.value);
+                      }}
+                      className="flex-1 p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                      placeholder="https://example.com/icon.png"
+                    />
+                  </div>
+                  {supportsUpload && icon && icon.trim() && !icon.startsWith('/api/favicon?key=') && (
+                    <div className="flex gap-2 pt-1">
+                      <button
+                        type="button"
+                        disabled={isUploading}
+                        onClick={() => handleConvertUrlToStorage('edgeone')}
+                        className="flex-1 py-1.5 px-3 rounded-lg text-xs font-medium bg-blue-50 text-blue-600 border border-blue-200 dark:bg-blue-900/20 dark:text-blue-400 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
+                      >
+                        {isUploading ? '正在转存...' : '📥 转存到 EdgeOne Blob'}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={isUploading}
+                        onClick={() => handleConvertUrlToStorage('cloudflare')}
+                        className="flex-1 py-1.5 px-3 rounded-lg text-xs font-medium bg-purple-50 text-purple-600 border border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800 hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
+                      >
+                        {isUploading ? '正在转存...' : '📥 转存到 Cloudflare R2'}
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -449,6 +643,36 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
                       >
                         生成地址
                       </button>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {(iconType === 'upload-edgeone' || iconType === 'upload-cloudflare') && (
+                <div className="space-y-2">
+                  <div className="flex gap-2 items-center">
+                    <input
+                      type="url"
+                      value={icon}
+                      readOnly
+                      className="flex-1 p-2 rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-400 text-sm"
+                      placeholder="上传图标后将自动生成路径"
+                    />
+                    <label className="cursor-pointer px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors flex items-center gap-1 font-medium shrink-0">
+                      {isUploading ? '正在上传...' : '上传图标'}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleFileUpload(e, iconType as 'upload-edgeone' | 'upload-cloudflare')}
+                        disabled={isUploading}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                  {icon && (
+                    <div className="flex items-center gap-2 p-2 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-700">
+                      <img src={icon} alt="Preview" className="w-8 h-8 object-contain rounded" />
+                      <span className="text-xs text-slate-500 truncate">{icon}</span>
                     </div>
                   )}
                 </div>
@@ -534,6 +758,32 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
                 ))}
             </select>
           </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1 dark:text-slate-300">权重 (Weight)</label>
+            <input
+              type="number"
+              value={weight}
+              onChange={(e) => setWeight(parseInt(e.target.value) || 0)}
+              className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+              placeholder="数值越小越靠前"
+            />
+            <p className="text-[10px] text-slate-400 mt-1">控制在分类中的排序，数值越小越靠前。</p>
+          </div>
+
+          {pinned && (
+            <div>
+              <label className="block text-sm font-medium mb-1 dark:text-slate-300">置顶权重 (Pinned Order)</label>
+              <input
+                type="number"
+                value={pinnedOrder}
+                onChange={(e) => setPinnedOrder(parseInt(e.target.value) || 0)}
+                className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                placeholder="数值越小越靠前"
+              />
+              <p className="text-[10px] text-slate-400 mt-1">控制在置顶区域的排序，数值越小越靠前。</p>
+            </div>
+          )}
 
           <div className="pt-2 relative">
             {/* 成功提示 */}

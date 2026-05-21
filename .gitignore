@@ -575,3 +575,5 @@ $RECYCLE.BIN/
 
 # KV 备份数据（包含敏感信息）
 kv/
+
+.idea/

@@ -27,6 +27,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(401).json({ error: '密码错误' });
     }
 
+    // 清理旧 Token
+    try {
+      const oldToken = await kv.get('last_token');
+      if (oldToken) {
+        await kv.del(`auth_token:${oldToken}`);
+      }
+    } catch (e) {
+      console.warn('Failed to clean old token:', e);
+    }
+
     const token = generateSecureToken();
 
     let expirationTtl = 24 * 60 * 60;
@@ -46,8 +56,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await kv.set('last_auth_time', Date.now().toString());
     if (expirationTtl) {
       await kv.set(`auth_token:${token}`, 'valid', { ex: expirationTtl });
+      await kv.set('last_token', token, { ex: expirationTtl });
     } else {
       await kv.set(`auth_token:${token}`, 'valid');
+      await kv.set('last_token', token);
     }
 
     return res.status(200).json({ success: true, token, message: '认证成功' });

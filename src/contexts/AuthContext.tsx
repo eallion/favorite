@@ -6,12 +6,14 @@ interface AuthState {
   authToken: string | null;
   requiresAuth: boolean | null;
   isCheckingAuth: boolean;
+  capabilities: { upload: boolean };
 }
 
 type AuthAction =
   | { type: 'SET_TOKEN'; payload: string | null }
   | { type: 'SET_REQUIRES_AUTH'; payload: boolean }
   | { type: 'SET_CHECKING'; payload: boolean }
+  | { type: 'SET_CAPABILITIES'; payload: { upload: boolean } }
   | { type: 'LOGOUT' };
 
 interface AuthContextValue extends AuthState {
@@ -29,6 +31,8 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
       return { ...state, requiresAuth: action.payload };
     case 'SET_CHECKING':
       return { ...state, isCheckingAuth: action.payload };
+    case 'SET_CAPABILITIES':
+      return { ...state, capabilities: action.payload };
     case 'LOGOUT':
       return { ...state, authToken: null };
     default:
@@ -45,6 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     authToken: localStorage.getItem(STORAGE_KEYS.AUTH_KEY),
     requiresAuth: null,
     isCheckingAuth: true,
+    capabilities: { upload: true },
   });
 
   const checkAuth = useCallback(async () => {
@@ -53,6 +58,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const res = await fetch(`${API_ENDPOINTS.STORAGE}?checkAuth=true`);
       const data = await res.json();
       dispatch({ type: 'SET_REQUIRES_AUTH', payload: data.requiresAuth });
+      if (data.capabilities) {
+        dispatch({ type: 'SET_CAPABILITIES', payload: data.capabilities });
+      }
     } catch (e) {
       console.error('Check auth failed:', e);
       dispatch({ type: 'SET_REQUIRES_AUTH', payload: false });

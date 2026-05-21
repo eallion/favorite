@@ -24,13 +24,17 @@ const QRCodeModal = lazy(() => import('../../../components/QRCodeModal'));
 
 export function AppLayout() {
   // Contexts
-  const { authToken, requiresAuth, isCheckingAuth, login, logout } = useAuthContext();
+  const { authToken, requiresAuth, isCheckingAuth, capabilities, login, logout } = useAuthContext();
   const { links = [], addLink, updateLink, deleteLink, deleteLinks, setLinksAndSync } = useLinksContext();
   const { categories = [], categoryTree = [], setCategoriesAndSync, unlockedCategoryIds = new Set(), unlockCategory } = useCategoriesContext();
-  const { ai: aiConfig, icon: iconConfig, viewMode, showPinnedWebsites, ticker, weather, website, webdav, search, setAI, setWebsite, setShowPinned, setMastodon, setWeather, setWebDav, setSearch, setViewMode } = useConfigContext();
+  const { ai: aiConfig, icon: iconConfig, viewMode, showPinnedWebsites, ticker, weather, website, webdav, search, setAI, setIcon, setWebsite, setShowPinned, setMastodon, setWeather, setWebDav, setSearch, setViewMode } = useConfigContext();
 
   // Hooks
-  const { searchQuery, setSearchQuery, searchResults, isMobileSearchOpen, setIsMobileSearchOpen, isInternal, setIsInternal, handleSearch } = useSearch();
+  const { 
+    searchQuery, setSearchQuery, searchResults, isMobileSearchOpen, setIsMobileSearchOpen, 
+    isSearchExpanded, setIsSearchExpanded,
+    isInternal, setIsInternal, handleSearch, visitorEngineId, setVisitorEngineId 
+  } = useSearch();
   const { initData } = useDataSync();
 
   // UI State
@@ -92,14 +96,46 @@ export function AppLayout() {
       
       if (isInput) return;
 
+      // Global Escape handler to close and clear search
+      if (e.key === 'Escape') {
+        if (isSearchExpanded) {
+          setIsSearchExpanded(false);
+          setSearchQuery('');
+          document.getElementById('search-input')?.blur();
+        }
+        return;
+      }
+
       // Ignore modifier keys and special keys
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.key.length !== 1 && e.key !== 'Process') return; // 'Process' is for IME
 
-      const searchInput = document.getElementById('search-input');
-      if (searchInput) {
-        searchInput.focus();
+      // Don't trigger if any modal is open or in edit modes
+      if (isModalOpen || isAuthOpen || isCatManagerOpen || isBackupModalOpen || 
+          isImportModalOpen || isSettingsModalOpen || isSearchConfigModalOpen ||
+          isEditMode || isBatchEditMode || isDragSortMode) {
+        return;
       }
+
+      // Open search if collapsed
+      if (!isSearchExpanded && !isMobileSearchOpen) {
+        setIsSearchExpanded(true);
+      }
+
+      // If it's a normal English character, the browser's keypress event is usually swallowed
+      // because the focus is moving from the body to the input. We must manually capture it.
+      if (e.key !== 'Process') {
+        setSearchQuery(prev => prev + e.key);
+        e.preventDefault(); // Prevent double insertion just in case
+      }
+
+      // Delay micro-seconds to focus, allowing the character to naturally fall into the input box to wake up the IME
+      setTimeout(() => {
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+          searchInput.focus();
+        }
+      }, 0);
     };
 
     window.addEventListener('keydown', handleGlobalKeyDown);
@@ -157,10 +193,61 @@ export function AppLayout() {
 
   const handleDeleteLink = useCallback((id: string) => {
     if (confirm('确定删除此链接吗？')) {
+      const linkToDelete = links.find(l => l.id === id);
+      if (linkToDelete) {
+        // 1. 清理 EdgeOne Blob 历史图标
+        if (linkToDelete.edgeoneBlobUrl && linkToDelete.edgeoneBlobUrl.startsWith('/api/favicon?key=')) {
+          try {
+            const url = new URL(linkToDelete.edgeoneBlobUrl, window.location.origin);
+            const key = url.searchParams.get('key');
+            if (key) {
+              fetch(`/api/upload?key=${encodeURIComponent(key)}&platform=edgeone`, {
+                method: 'DELETE',
+                headers: { 'x-auth-password': authToken || '' }
+              }).catch(err => console.error('Failed to delete edgeone historical icon:', err));
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        // 2. 清理 Cloudflare R2 历史图标
+        if (linkToDelete.cloudflareR2Url && linkToDelete.cloudflareR2Url.startsWith('/api/favicon?key=')) {
+          try {
+            const url = new URL(linkToDelete.cloudflareR2Url, window.location.origin);
+            const key = url.searchParams.get('key');
+            if (key) {
+              fetch(`/api/upload?key=${encodeURIComponent(key)}&platform=cloudflare`, {
+                method: 'DELETE',
+                headers: { 'x-auth-password': authToken || '' }
+              }).catch(err => console.error('Failed to delete cloudflare historical icon:', err));
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+        // 3. 兼容旧版本数据或当前选中的图标（如果没有被前面的历史记录覆盖）
+        if (linkToDelete.icon && linkToDelete.icon.startsWith('/api/favicon?key=') &&
+            linkToDelete.icon !== linkToDelete.edgeoneBlobUrl &&
+            linkToDelete.icon !== linkToDelete.cloudflareR2Url) {
+          try {
+            const url = new URL(linkToDelete.icon, window.location.origin);
+            const key = url.searchParams.get('key');
+            if (key) {
+              const platform = linkToDelete.iconType === 'upload-cloudflare' ? 'cloudflare' : 'edgeone';
+              fetch(`/api/upload?key=${encodeURIComponent(key)}&platform=${platform}`, {
+                method: 'DELETE',
+                headers: { 'x-auth-password': authToken || '' }
+              }).catch(err => console.error('Failed to delete current icon:', err));
+            }
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      }
       deleteLink(id);
       setLinksAndSync(links.filter(l => l.id !== id), categories);
     }
-  }, [deleteLink, links, categories, setLinksAndSync]);
+  }, [deleteLink, links, categories, setLinksAndSync, authToken]);
 
   const handleSaveLink = useCallback((data: Omit<LinkItem, 'id' | 'createdAt'>) => {
     if (editingLink) {
@@ -177,7 +264,7 @@ export function AppLayout() {
     setIsModalOpen(false);
     setEditingLink(undefined);
     setPrefillLink(undefined);
-  }, [editingLink, links, categories, setLinksAndSync]);
+  }, [editingLink, links, categories, setLinksAndSync, authToken]);
 
   // Context menu handlers
   const handleContextMenu = useCallback((e: React.MouseEvent, link: LinkItem) => {
@@ -236,12 +323,65 @@ export function AppLayout() {
   const handleBatchDelete = useCallback(() => {
     if (selectedLinks.size === 0) return;
     if (confirm(`确定要删除选中的 ${selectedLinks.size} 个链接吗？`)) {
+      // 批量删除关联的自定义及历史图标
+      links.forEach(l => {
+        if (selectedLinks.has(l.id)) {
+          // 1. 清理 EdgeOne Blob 历史图标
+          if (l.edgeoneBlobUrl && l.edgeoneBlobUrl.startsWith('/api/favicon?key=')) {
+            try {
+              const url = new URL(l.edgeoneBlobUrl, window.location.origin);
+              const key = url.searchParams.get('key');
+              if (key) {
+                fetch(`/api/upload?key=${encodeURIComponent(key)}&platform=edgeone`, {
+                  method: 'DELETE',
+                  headers: { 'x-auth-password': authToken || '' }
+                }).catch(err => console.error('Failed to delete edgeone historical icon during batch delete:', err));
+              }
+            } catch (e) {
+              console.error(e);
+            }
+          }
+          // 2. 清理 Cloudflare R2 历史图标
+          if (l.cloudflareR2Url && l.cloudflareR2Url.startsWith('/api/favicon?key=')) {
+            try {
+              const url = new URL(l.cloudflareR2Url, window.location.origin);
+              const key = url.searchParams.get('key');
+              if (key) {
+                fetch(`/api/upload?key=${encodeURIComponent(key)}&platform=cloudflare`, {
+                  method: 'DELETE',
+                  headers: { 'x-auth-password': authToken || '' }
+                }).catch(err => console.error('Failed to delete cloudflare historical icon during batch delete:', err));
+              }
+            } catch (e) {
+              console.error(e);
+            }
+          }
+          // 3. 兼容旧版本数据或当前图标
+          if (l.icon && l.icon.startsWith('/api/favicon?key=') &&
+              l.icon !== l.edgeoneBlobUrl &&
+              l.icon !== l.cloudflareR2Url) {
+            try {
+              const url = new URL(l.icon, window.location.origin);
+              const key = url.searchParams.get('key');
+              if (key) {
+                const platform = l.iconType === 'upload-cloudflare' ? 'cloudflare' : 'edgeone';
+                fetch(`/api/upload?key=${encodeURIComponent(key)}&platform=${platform}`, {
+                  method: 'DELETE',
+                  headers: { 'x-auth-password': authToken || '' }
+                }).catch(err => console.error('Failed to delete current icon during batch delete:', err));
+              }
+            } catch (e) {
+              console.error(e);
+            }
+          }
+        }
+      });
       const newLinks = links.filter(l => !selectedLinks.has(l.id));
       setLinksAndSync(newLinks, categories);
       setSelectedLinks(new Set());
       setIsBatchEditMode(false);
     }
-  }, [selectedLinks, links, categories, setLinksAndSync]);
+  }, [selectedLinks, links, categories, setLinksAndSync, authToken]);
 
   // Weight change handler
   const handleWeightChange = useCallback((linkId: string, weight: number) => {
@@ -317,6 +457,8 @@ export function AppLayout() {
           onSearch={handleSearch}
           onAddLink={handleAddLink}
           onOpenSettings={() => setIsSettingsModalOpen(true)}
+          onOpenCatManager={() => setIsCatManagerOpen(true)}
+          onOpenBackup={() => setIsBackupModalOpen(true)}
           onOpenImport={() => setIsImportModalOpen(true)}
           onOpenAuth={() => setIsAuthOpen(true)}
           onToggleSidebar={() => setSidebarOpen(prev => !prev)}
@@ -324,10 +466,14 @@ export function AppLayout() {
           onToggleBatchEditMode={toggleBatchEditMode}
           isMobileSearchOpen={isMobileSearchOpen}
           onToggleMobileSearch={() => setIsMobileSearchOpen(prev => !prev)}
+          isSearchExpanded={isSearchExpanded}
+          setIsSearchExpanded={setIsSearchExpanded}
           isDragSortMode={isDragSortMode}
           onToggleDragSortMode={toggleDragSortMode}
           isEditMode={isEditMode}
           onToggleEditMode={toggleEditMode}
+          visitorEngineId={visitorEngineId}
+          onVisitorEngineChange={setVisitorEngineId}
         />
 
         <MainContent
@@ -366,6 +512,7 @@ export function AppLayout() {
             aiConfig={aiConfig}
             defaultCategoryId={undefined}
             iconConfig={iconConfig}
+            supportsUpload={capabilities?.upload ?? true}
           />
         )}
 
@@ -422,9 +569,13 @@ export function AppLayout() {
               if (settings.defaultViewMode) {
                 setViewMode(settings.defaultViewMode);
               }
+              if (settings.icon) {
+                setIcon(settings.icon);
+              }
             }}
             onImportClick={() => { setIsImportModalOpen(true); setIsSettingsModalOpen(false); }}
             onBackupClick={() => { setIsBackupModalOpen(true); setIsSettingsModalOpen(false); }}
+            supportsUpload={capabilities?.upload ?? true}
           />
         )}
 

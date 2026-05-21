@@ -56,12 +56,13 @@ export const UI_CONFIG = {
 } as const
 
 export const DEFAULT_ICON_CONFIG = {
-  source: 'faviconextractor' as const,
+  source: 'google' as const,
+  cacheEnabled: true,
   faviconextractor: {
     enabled: true,
   },
   google: {
-    enabled: false,
+    enabled: true,
   },
   customapi: {
     enabled: false,

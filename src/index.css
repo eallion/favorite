@@ -403,3 +403,9 @@ html.dark .dark\:placeholder-slate-400 {
 html.dark .dark\:focus\:ring-blue-500:focus {
   --tw-ring-color: var(--github-dimmed-accent) !important;
 }
+
+/* 离屏分类懒渲染 - 浏览器跳过不可见区域的布局和绘制 */
+section[data-category-section] {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 320px;
+}

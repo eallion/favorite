@@ -43,7 +43,7 @@ export function CategorySection({
     : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-10';
 
   return (
-    <section id={`cat-${category.id}`} className="mb-8 scroll-mt-20">
+    <section id={`cat-${category.id}`} data-category-section className="mb-8 scroll-mt-20">
       <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2 mb-4">
         <span>{category.name}</span>
         <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 rounded-full">

@@ -29,7 +29,9 @@ export function LinkCard({
   const [color, setColor] = useState<ExtractedColor | null>(null);
   const [isEditingWeight, setIsEditingWeight] = useState(false);
   const [weightValue, setWeightValue] = useState(link.weight?.toString() || '0');
+  const [isVisible, setIsVisible] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   const {
     attributes, listeners, setNodeRef, transform, transition, isDragging,
@@ -51,8 +53,30 @@ export function LinkCard({
   const isDetailedView = viewMode === 'detailed';
   const iconSrc = link.icon && !imgError ? link.icon : null;
 
-  // 提取图标颜色
+  // 观察可见性，离屏卡片延迟执行颜色提取
   useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      setIsVisible(true);
+      return;
+    }
+    observerRef.current = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observerRef.current?.disconnect();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+    observerRef.current.observe(el);
+    return () => observerRef.current?.disconnect();
+  }, []);
+
+  // 提取图标颜色 - 仅在卡片可见时执行
+  useEffect(() => {
+    if (!isVisible) return;
     if (!iconSrc) {
       setColor(generateColorFromText(link.title));
       return;
@@ -63,7 +87,7 @@ export function LinkCard({
         setColor(result);
       }
     });
-  }, [iconSrc, link.title]);
+  }, [iconSrc, link.title, isVisible]);
 
   // 鼠标位置追踪
   const rafRef = useRef<number | null>(null);
@@ -126,7 +150,7 @@ export function LinkCard({
       {/* 背景模糊图标 */}
       <div className="icon-bg">
         {iconSrc ? (
-          <img src={iconSrc} alt="" onError={() => setImgError(true)} />
+          <img src={iconSrc} alt="" loading="lazy" onError={() => setImgError(true)} />
         ) : (
           <span style={{ fontSize: '48px', fontWeight: 'bold' }}>{link.title.charAt(0).toUpperCase()}</span>
         )}

@@ -71,11 +71,10 @@ function SearchEngineOptions({
   isInternal: boolean;
 }) {
   const { search } = useConfigContext();
-  const hasCustom = !!search?.customEngineUrl;
 
   const allEngines = [
-    ...SEARCH_ENGINES,
-    ...(hasCustom ? [{ id: 'custom', name: '自定义' }] : [])
+    ...SEARCH_ENGINES.filter(e => e.id !== 'internal'),
+    ...(search?.customEngineUrl ? [{ id: 'custom', name: '自定义' }] : []),
   ];
 
   return (
@@ -120,8 +119,12 @@ function RenderEngineLogo({
   className?: string;
 }) {
   const LogoComponent = ENGINE_LOGOS[engine];
-  const filterClass = isInternal ? 'grayscale opacity-50' : 'grayscale-0 opacity-100';
+  const filterClass = isInternal && engine !== 'internal' ? 'grayscale opacity-50' : 'grayscale-0 opacity-100';
   const combinedClass = `${className} transition-all ${filterClass}`;
+
+  if (engine === 'internal') {
+    return <Search size={16} className={combinedClass} />;
+  }
 
   if (engine === 'custom' && customIcon) {
     if (customIcon.trim().startsWith('<svg')) {
@@ -167,7 +170,7 @@ export function Header({
   const [isToolsExpanded, setIsToolsExpanded] = useState(false);
   const dropdownTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const engine = visitorEngineId || search?.defaultEngine || 'google';
+  const engine = visitorEngineId || search?.defaultEngine || 'internal';
 
   const handleMouseEnter = () => {
     if (dropdownTimer.current) clearTimeout(dropdownTimer.current);
@@ -472,9 +475,12 @@ function HeaderSearch({
   const { search } = useConfigContext();
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownTimer = useRef<NodeJS.Timeout | null>(null);
+  const ignoreHover = useRef(false);
 
   const handleExpand = () => {
     setIsExpanded(true);
+    ignoreHover.current = true;
+    setTimeout(() => { ignoreHover.current = false; }, 300);
     setTimeout(() => inputRef.current?.focus(), 100);
   };
 
@@ -505,9 +511,10 @@ function HeaderSearch({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isExpanded]);
 
-  const engine = visitorEngineId || search?.defaultEngine || 'google';
+  const engine = visitorEngineId || search?.defaultEngine || 'internal';
 
   const handleMouseEnter = () => {
+    if (ignoreHover.current) return;
     if (dropdownTimer.current) clearTimeout(dropdownTimer.current);
     setShowDropdown(true);
   };

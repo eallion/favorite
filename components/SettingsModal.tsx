@@ -35,7 +35,7 @@ const DEFAULT_SETTINGS: SettingsData = {
   weather: { enabled: false, provider: 'jinrishici', unit: 'celsius' },
   showPinnedWebsites: true,
   defaultViewMode: 'detailed',
-  search: { mode: 'internal', externalSources: [], selectedSource: null, defaultEngine: 'google' },
+  search: { mode: 'internal', externalSources: [], selectedSource: null, defaultEngine: 'internal' },
   icon: DEFAULT_ICON_CONFIG,
 };
 
@@ -315,7 +315,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                   <div>
                     <label className="block text-xs font-medium text-slate-500 mb-1">默认搜索引擎</label>
                     <select 
-                      value={settings.search.defaultEngine || 'google'} 
+                      value={settings.search.defaultEngine || 'internal'} 
                       onChange={(e) => update('search', { ...settings.search, defaultEngine: e.target.value })} 
                       className="w-full h-11 px-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
                     >
@@ -324,7 +324,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                       ))}
                       <option value="custom">自定义</option>
                     </select>
-                    <p className="text-[10px] text-slate-400 mt-1">未勾选“站内搜索”时使用的外部搜索引擎。</p>
+                    <p className="text-[10px] text-slate-400 mt-1">选择“站内搜索”时，搜索框默认搜索本站链接；选择其他搜索引擎则默认搜索互联网。</p>
                   </div>
                   {settings.search.defaultEngine === 'custom' && (
                     <div className="space-y-4">

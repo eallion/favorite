@@ -14,8 +14,14 @@ export function useSearch() {
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   
-  // 站内搜索勾选状态，默认为 false (外网优先)
-  const [isInternal, setIsInternal] = useState(false);
+  // 站内搜索勾选状态，根据默认引擎初始化
+  const [isInternal, setIsInternal] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('visitor_search_engine');
+      if (saved) return saved === 'internal';
+    }
+    return (searchConfig?.defaultEngine || 'internal') === 'internal';
+  });
 
   // 访客自定义的搜索引擎 ID (持久化在本地)
   const [visitorEngineId, setVisitorEngineId] = useState<string>(() => {
@@ -28,9 +34,12 @@ export function useSearch() {
   const updateVisitorEngine = useCallback((id: string) => {
     setVisitorEngineId(id);
     localStorage.setItem('visitor_search_engine', id);
+    if (id === 'internal') {
+      setIsInternal(true);
+    }
   }, []);
 
-  const defaultEngineId = searchConfig?.defaultEngine || 'google';
+  const defaultEngineId = searchConfig?.defaultEngine || 'internal';
   const currentEngineId = visitorEngineId || defaultEngineId;
 
   const searchMode = searchConfig?.mode || 'internal';
@@ -90,13 +99,18 @@ export function useSearch() {
     if (!query.trim()) return;
     
     if (!isInternal) {
-      // 外部搜索
       let searchUrl = '';
-      if (currentEngineId === 'custom' && customEngineUrl) {
+      let engineId = currentEngineId;
+      if (engineId === 'internal') {
+        engineId = 'google';
+      }
+      if (engineId === 'custom' && customEngineUrl) {
         searchUrl = customEngineUrl + encodeURIComponent(query);
       } else {
-        const engine = SEARCH_ENGINES.find(e => e.id === currentEngineId) || SEARCH_ENGINES[0];
-        searchUrl = engine.url + encodeURIComponent(query);
+        const engine = SEARCH_ENGINES.find(e => e.id === engineId);
+        if (engine && engine.url) {
+          searchUrl = engine.url + encodeURIComponent(query);
+        }
       }
       if (searchUrl) window.open(searchUrl, '_blank');
     }

@@ -76,6 +76,7 @@ export const DEFAULT_ICON_CONFIG = {
 } as const
 
 export const SEARCH_ENGINES = [
+  { id: 'internal', name: '站内搜索', url: '' },
   { id: 'google', name: 'Google', url: 'https://www.google.com/search?q=' },
   { id: 'duckduckgo', name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q=' },
   { id: 'bing', name: 'Bing', url: 'https://www.bing.com/search?q=' },

@@ -69,7 +69,7 @@ const defaultSearch: SearchConfig = {
   mode: 'internal',
   externalSources: [],
   selectedSource: null,
-  defaultEngine: 'google',
+  defaultEngine: 'internal',
 };
 
 const defaultTicker: TickerConfig = {

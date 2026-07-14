@@ -167,7 +167,7 @@ export function Header({
   const { authToken, logout } = useAuthContext();
   const { syncStatus } = useLinksContext();
   const [showDropdown, setShowDropdown] = useState(false);
-  const [isToolsExpanded, setIsToolsExpanded] = useState(false);
+  const [isToolsExpanded, setIsToolsExpanded] = useState(true);
   const dropdownTimer = useRef<NodeJS.Timeout | null>(null);
 
   const engine = visitorEngineId || search?.defaultEngine || 'internal';
@@ -187,7 +187,7 @@ export function Header({
   }, [authToken]);
 
   return (
-    <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-800/95 md:bg-white/80 md:dark:bg-slate-800/50 md:backdrop-blur-md border-b border-slate-200 dark:border-slate-700">
+    <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-800/95 md:bg-white/80 md:dark:bg-slate-800/50 md:backdrop-blur-md border-b border-slate-200 dark:border-slate-700 safe-area-top">
       <div className="relative flex items-center justify-between px-4 lg:px-8 h-16">
         {/* Left: Menu + Logo */}
         <div className="flex items-center gap-3">

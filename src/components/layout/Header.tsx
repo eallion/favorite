@@ -473,58 +473,76 @@ export function Header({
 
           {/* Tools Grid */}
           <div className="grid grid-cols-2 gap-2">
-            {authToken && (
-              <button onClick={onAddLink} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-medium">
-                <Plus size={16} />
-                <span>添加链接</span>
-              </button>
-            )}
-            <button onClick={onOpenSettings} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm">
+            <button 
+              onClick={() => {
+                if (authToken) { onAddLink(); setIsMobileToolsOpen(false); }
+                else { onOpenAuth(); }
+              }} 
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium ${authToken ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400' : 'bg-slate-50 dark:bg-slate-700 text-slate-400 dark:text-slate-500'}`}
+            >
+              <Plus size={16} />
+              <span>添加链接{!authToken && ' (需登录)'}</span>
+            </button>
+            <button onClick={() => { onOpenSettings(); setIsMobileToolsOpen(false); }} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm">
               <Settings size={16} />
               <span>设置</span>
             </button>
-            {authToken && (
-              <button onClick={onOpenCatManager} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm">
-                <FolderTree size={16} />
-                <span>分类管理</span>
-              </button>
-            )}
-            <button onClick={onOpenBackup} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm">
+            <button 
+              onClick={() => {
+                if (authToken) { onOpenCatManager(); setIsMobileToolsOpen(false); }
+                else { onOpenAuth(); }
+              }} 
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${authToken ? 'bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300' : 'bg-slate-50 dark:bg-slate-700 text-slate-400 dark:text-slate-500'}`}
+            >
+              <FolderTree size={16} />
+              <span>分类管理{!authToken && ' (需登录)'}</span>
+            </button>
+            <button onClick={() => { onOpenBackup(); setIsMobileToolsOpen(false); }} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm">
               <Upload size={16} />
               <span>备份</span>
             </button>
-            {authToken && (
-              <button onClick={onToggleDragSortMode} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${isDragSortMode ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : 'bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300'}`}>
-                <GripVertical size={16} />
-                <span>{isDragSortMode ? '完成排序' : '拖动排序'}</span>
-              </button>
-            )}
-            {authToken && (
-              <button onClick={onToggleEditMode} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${isEditMode ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : 'bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300'}`}>
-                <Pencil size={16} />
-                <span>{isEditMode ? '完成编辑' : '编辑模式'}</span>
-              </button>
-            )}
-            {authToken && (
-              <button onClick={onToggleBatchEditMode} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${isBatchEditMode ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : 'bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300'}`}>
-                <CheckSquare size={16} />
-                <span>{isBatchEditMode ? '完成批量' : '批量编辑'}</span>
-              </button>
-            )}
-            {authToken && (
-              <button onClick={onLogout} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm">
+            <button 
+              onClick={() => {
+                if (authToken) { onToggleDragSortMode(); setIsMobileToolsOpen(false); }
+                else { onOpenAuth(); }
+              }} 
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${isDragSortMode ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : authToken ? 'bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300' : 'bg-slate-50 dark:bg-slate-700 text-slate-400 dark:text-slate-500'}`}
+            >
+              <GripVertical size={16} />
+              <span>{isDragSortMode ? '完成排序' : '拖动排序'}{!authToken && ' (需登录)'}</span>
+            </button>
+            <button 
+              onClick={() => {
+                if (authToken) { onToggleEditMode(); setIsMobileToolsOpen(false); }
+                else { onOpenAuth(); }
+              }} 
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${isEditMode ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : authToken ? 'bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300' : 'bg-slate-50 dark:bg-slate-700 text-slate-400 dark:text-slate-500'}`}
+            >
+              <Pencil size={16} />
+              <span>{isEditMode ? '完成编辑' : '编辑模式'}{!authToken && ' (需登录)'}</span>
+            </button>
+            <button 
+              onClick={() => {
+                if (authToken) { onToggleBatchEditMode(); setIsMobileToolsOpen(false); }
+                else { onOpenAuth(); }
+              }} 
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${isBatchEditMode ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : authToken ? 'bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300' : 'bg-slate-50 dark:bg-slate-700 text-slate-400 dark:text-slate-500'}`}
+            >
+              <CheckSquare size={16} />
+              <span>{isBatchEditMode ? '完成批量' : '批量编辑'}{!authToken && ' (需登录)'}</span>
+            </button>
+            {authToken ? (
+              <button onClick={() => { onLogout(); setIsMobileToolsOpen(false); }} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm">
                 <LogOut size={16} />
                 <span>退出</span>
               </button>
-            )}
-            {!authToken && (
-              <button onClick={onOpenAuth} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-medium">
+            ) : (
+              <button onClick={() => { onOpenAuth(); setIsMobileToolsOpen(false); }} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-medium">
                 <Lock size={16} />
                 <span>登录</span>
               </button>
             )}
           </div>
-
           {/* GitHub Link */}
           <a
             href="https://github.com/eallion/favorite"

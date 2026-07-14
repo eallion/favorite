@@ -7,7 +7,9 @@
     <meta name="description" content="蜗牛个人导航 - 一个现代化的云端导航页面，帮助您管理和快速访问常用网站链接" />
     <meta name="keywords" content="导航,书签,云导航,网站导航,书签管理,CloudNav" />
     <meta name="author" content="eallion" />
-    <meta name="theme-color" content="#3b82f6" />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
     <!-- Open Graph -->
     <meta property="og:title" content="蜗牛个人导航" />
@@ -62,8 +64,13 @@
       }
       /* Ensure header background extends to safe area */
       header, .header-bg {
-        background-color: inherit;
+         background-color: rgb(248, 250, 252);
       }
+      @media (prefers-color-scheme: dark) {
+  header {
+    background-color: rgb(30, 41, 59); /* 对应 dark:bg-slate-800 */
+  }
+}
     </style>
 <base target="_blank">
 </head>

@@ -212,6 +212,7 @@ export function LinkCard({
                 </div>
                 <h3 className="flex-1 min-w-0 text-slate-800 dark:text-slate-200 text-base font-medium overflow-hidden text-ellipsis whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
                   {link.title}
+                  {link.isPrivate && <span className="ml-1 text-purple-500 text-xs" title="私人书签">🔒</span>}
                 </h3>
               </div>
               {link.description && (
@@ -225,6 +226,7 @@ export function LinkCard({
               <div className="hidden md:flex flex-1 min-w-0 flex-col justify-start w-full">
                 <h3 className="text-slate-800 dark:text-slate-200 text-base font-medium w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
                   {link.title}
+                  {link.isPrivate && <span className="ml-1 text-purple-500 text-xs" title="私人书签">🔒</span>}
                 </h3>
                 {link.description && (
                   <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap" title={link.description}>
@@ -242,6 +244,7 @@ export function LinkCard({
               </div>
               <h3 className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate whitespace-nowrap overflow-hidden text-ellipsis group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
                 {link.title}
+                {link.isPrivate && <span className="ml-1 text-purple-500 text-xs" title="私人书签">🔒</span>}
               </h3>
             </div>
             {link.description && (

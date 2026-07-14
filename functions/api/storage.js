@@ -44,12 +44,10 @@ async function mergeAllConfigSections(kv) {
   return configStr ? JSON.parse(configStr) : {};
 }
 
-// 生成分类链接 key
 function categoryLinksKey(categoryId) {
   return `links:${categoryId}`;
 }
 
-// 读取所有分类链接（带密码过滤）
 async function readAllCategoryLinks(kv, categories, unlockedCategories = new Set(), isAdmin = false) {
   if (categories.length === 0) return [];
 
@@ -69,7 +67,6 @@ async function readAllCategoryLinks(kv, categories, unlockedCategories = new Set
   return linkArrays.flat();
 }
 
-// 保存链接到对应的分类 key
 async function saveCategoryLinks(kv, links) {
   const grouped = {};
   for (const link of links) {
@@ -97,7 +94,6 @@ export async function onRequest(context) {
   try {
     const kv = getKV(env);
 
-    // ==================== GET ====================
     if (request.method === 'GET') {
       const checkAuth = url.searchParams.get('checkAuth');
       const getConfig = url.searchParams.get('getConfig');
@@ -106,7 +102,6 @@ export async function onRequest(context) {
       const category = url.searchParams.get('category');
       const categoryPassword = url.searchParams.get('catPassword');
 
-      // 检查认证需求
       if (checkAuth === 'true') {
         return jsonResponse({
           hasPassword: !!env.PASSWORD,
@@ -116,7 +111,6 @@ export async function onRequest(context) {
         }, 200, corsHeaders);
       }
 
-      // 获取子配置
       if (CONFIG_SECTIONS.includes(getConfig)) {
         const sectionVal = await readConfigSection(kv, getConfig);
         const defaults = {
@@ -125,7 +119,6 @@ export async function onRequest(context) {
         return jsonResponse(sectionVal || defaults[getConfig] || {}, 200, corsHeaders);
       }
 
-      // 获取 Favicon 缓存
       if (getConfig === 'favicon') {
         const domain = url.searchParams.get('domain');
         if (!domain) {
@@ -135,7 +128,6 @@ export async function onRequest(context) {
         return jsonResponse({ icon: cachedIcon || null, cached: !!cachedIcon }, 200, corsHeaders);
       }
 
-      // 获取分类（密码脱敏，但保留 hasPassword 标记）
       if (getConfig === 'categories') {
         const data = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
         const categories = data ? JSON.parse(data) : [];
@@ -163,21 +155,27 @@ export async function onRequest(context) {
         kv,
       });
 
-      // 获取链接（带密码过滤）
       if (getConfig === 'links') {
         const categoriesData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
         const categories = categoriesData ? JSON.parse(categoriesData) : [];
 
         if (category) {
           const cat = categories.find(c => c.id === category);
-          const hasPassword = cat && cat.password && cat.password.trim() !== '';
 
-          // 验证分类密码
+          if (!cat) {
+            return jsonResponse({ error: '分类不存在' }, 404, corsHeaders);
+          }
+
+          const hasPassword = cat.password && cat.password.trim() !== '';
           let isUnlocked = unlockedCategories.has(category);
 
           // 如果提供了分类密码，验证它
           if (categoryPassword && hasPassword && !isUnlocked && !isAdmin) {
-            if (categoryPassword === cat.password) {
+            // 密码比对：trim 后比对，防止空格问题
+            const inputPwd = categoryPassword.trim();
+            const storedPwd = (cat.password || '').trim();
+
+            if (inputPwd === storedPwd) {
               isUnlocked = true;
             } else {
               return jsonResponse({ error: '密码错误' }, 403, corsHeaders);
@@ -194,7 +192,6 @@ export async function onRequest(context) {
           });
         }
 
-        // 读取所有分类链接（过滤掉受保护且未解锁的）
         const links = await readAllCategoryLinks(kv, categories, unlockedCategories, isAdmin);
         return jsonResponse(links, 200, corsHeaders);
       }
@@ -208,7 +205,6 @@ export async function onRequest(context) {
         return jsonResponse({ key, value }, 200, corsHeaders);
       }
 
-      // 获取全部数据（带密码过滤）
       if (getConfig === 'true') {
         const categoriesData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
         const allCategories = categoriesData ? JSON.parse(categoriesData) : [];
@@ -229,7 +225,6 @@ export async function onRequest(context) {
       return jsonResponse({ links: [], categories: [] }, 200, corsHeaders);
     }
 
-    // ==================== POST ====================
     if (request.method === 'POST') {
       const body = await request.json();
       const readOnlyOperations = ['favicon'];

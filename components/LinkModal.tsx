@@ -481,6 +481,19 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
               <Pin size={14} className={pinned ? "fill-current" : ""} />
               <span className="text-xs font-medium">置顶</span>
             </button>
+            <button
+              type="button"
+              onClick={() => setIsPrivate(!isPrivate)}
+              className={`flex items-center gap-1 px-2 py-1 rounded-md border transition-all ${
+                isPrivate
+                ? 'bg-purple-100 border-purple-200 text-purple-600 dark:bg-purple-900/40 dark:border-purple-800 dark:text-purple-300'
+                : 'bg-slate-50 border-slate-200 text-slate-500 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-400'
+              }`}
+              title={isPrivate ? "取消私人书签" : "设为私人书签"}
+            >
+              <span className="text-xs font-medium">{isPrivate ? '🔒 私人' : '🔓 私人'}</span>
+            </button>
+
             {!initialData && (
               <div className="flex items-center gap-1 px-2 py-1 rounded-md border bg-slate-50 border-slate-200 dark:bg-slate-700 dark:border-slate-600">
                 <input

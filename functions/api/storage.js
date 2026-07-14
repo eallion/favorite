@@ -44,34 +44,31 @@ async function mergeAllConfigSections(kv) {
   return configStr ? JSON.parse(configStr) : {};
 }
 
-// 生成分类链接 key
 function categoryLinksKey(categoryId) {
   return `links:${categoryId}`;
 }
 
-// 读取所有分类链接
-async function readAllCategoryLinks(kv) {
-  // 1. 获取所有分类
-  const categoriesStr = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
-  const categories = categoriesStr ? JSON.parse(categoriesStr) : [];
-
+// 读取所有分类链接（带密码过滤）
+async function readAllCategoryLinks(kv, categories, unlockedCategories = new Set(), isAdmin = false) {
   if (categories.length === 0) return [];
 
-  // 2. 并行读取每个分类的链接
   const linkPromises = categories.map(async (cat) => {
+    const hasPassword = cat.password && cat.password.trim() !== '';
+    const isUnlocked = unlockedCategories.has(cat.id);
+
+    if (hasPassword && !isUnlocked && !isAdmin) {
+      return [];
+    }
+
     const data = await kv.get(categoryLinksKey(cat.id));
     return data ? JSON.parse(data) : [];
   });
 
   const linkArrays = await Promise.all(linkPromises);
-
-  // 3. 合并所有链接
   return linkArrays.flat();
 }
 
-// 保存链接到对应的分类 key
 async function saveCategoryLinks(kv, links) {
-  // 按 categoryId 分组
   const grouped = {};
   for (const link of links) {
     const catId = link.categoryId || 'common';
@@ -79,7 +76,6 @@ async function saveCategoryLinks(kv, links) {
     grouped[catId].push(link);
   }
 
-  // 并行写入每个分类
   const writes = Object.entries(grouped).map(([catId, catLinks]) =>
     kv.put(categoryLinksKey(catId), JSON.stringify(catLinks))
   );
@@ -99,7 +95,6 @@ export async function onRequest(context) {
   try {
     const kv = getKV(env);
 
-    // ==================== GET ====================
     if (request.method === 'GET') {
       const checkAuth = url.searchParams.get('checkAuth');
       const getConfig = url.searchParams.get('getConfig');
@@ -107,7 +102,6 @@ export async function onRequest(context) {
       const readOnly = url.searchParams.get('readOnly');
       const category = url.searchParams.get('category');
 
-      // 检查认证需求
       if (checkAuth === 'true') {
         return jsonResponse({
           hasPassword: !!env.PASSWORD,
@@ -117,7 +111,6 @@ export async function onRequest(context) {
         }, 200, corsHeaders);
       }
 
-      // 获取子配置（优先读独立 key，fallback 到旧 config 的子字段）
       if (CONFIG_SECTIONS.includes(getConfig)) {
         const sectionVal = await readConfigSection(kv, getConfig);
         const defaults = {
@@ -126,7 +119,6 @@ export async function onRequest(context) {
         return jsonResponse(sectionVal || defaults[getConfig] || {}, 200, corsHeaders);
       }
 
-      // 获取 Favicon 缓存
       if (getConfig === 'favicon') {
         const domain = url.searchParams.get('domain');
         if (!domain) {
@@ -136,31 +128,58 @@ export async function onRequest(context) {
         return jsonResponse({ icon: cachedIcon || null, cached: !!cachedIcon }, 200, corsHeaders);
       }
 
-      // 获取分类（密码脱敏）
+      // 获取分类：保留 hasPassword 标记，不返回实际密码
       if (getConfig === 'categories') {
         const data = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
         const categories = data ? JSON.parse(data) : [];
-        const sanitized = categories.map(({ password, ...rest }) => rest);
+        const sanitized = categories.map(({ password, ...rest }) => ({
+          ...rest,
+          hasPassword: !!(password && password.trim() !== '')
+        }));
         return jsonResponse(sanitized, 200, corsHeaders);
       }
 
-      // 获取链接
+      // 解析已解锁分类
+      let unlockedCategories = new Set();
+      const unlockedParam = url.searchParams.get('unlocked');
+      if (unlockedParam) {
+        try {
+          unlockedCategories = new Set(JSON.parse(unlockedParam));
+        } catch (e) {}
+      }
+
+      // 检查管理员权限
+      const providedPassword = request.headers.get('x-auth-password');
+      const isAdmin = await verifyAuth({
+        providedPassword,
+        serverPassword: env.PASSWORD,
+        kv,
+      });
+
+      // 获取链接（带密码过滤）
       if (getConfig === 'links') {
-        // 按分类读取
+        const categoriesData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
+        const categories = categoriesData ? JSON.parse(categoriesData) : [];
+
         if (category) {
+          const cat = categories.find(c => c.id === category);
+          const hasPassword = cat && cat.password && cat.password.trim() !== '';
+          const isUnlocked = unlockedCategories.has(category);
+
+          if (hasPassword && !isUnlocked && !isAdmin) {
+            return jsonResponse({ error: '该分类需要密码访问' }, 403, corsHeaders);
+          }
+
           const data = await kv.get(categoryLinksKey(category));
           return new Response(data || '[]', {
             headers: { 'Content-Type': 'application/json', ...corsHeaders },
           });
         }
 
-        // 读取所有分类链接
-        const links = await readAllCategoryLinks(kv);
-
+        const links = await readAllCategoryLinks(kv, categories, unlockedCategories, isAdmin);
         return jsonResponse(links, 200, corsHeaders);
       }
 
-      // 按 Key 读取
       if (key) {
         if (key === STORAGE_KEYS.CONFIG_KEY) {
           const merged = await mergeAllConfigSections(kv);
@@ -170,18 +189,17 @@ export async function onRequest(context) {
         return jsonResponse({ key, value }, 200, corsHeaders);
       }
 
-      // 获取全部数据
+      // 获取全部数据（带密码过滤）
       if (getConfig === 'true') {
         const categoriesData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
-        const categories = categoriesData ? JSON.parse(categoriesData) : [];
+        const allCategories = categoriesData ? JSON.parse(categoriesData) : [];
 
-        // 只读模式下分类密码脱敏
-        const sanitizedCategories = readOnly
-          ? categories.map(({ password, ...rest }) => rest)
-          : categories;
+        const sanitizedCategories = allCategories.map(({ password, ...rest }) => ({
+          ...rest,
+          hasPassword: !!(password && password.trim() !== '')
+        }));
 
-        // 读取所有分类链接
-        const links = await readAllCategoryLinks(kv);
+        const links = await readAllCategoryLinks(kv, allCategories, unlockedCategories, isAdmin);
 
         return jsonResponse({
           links,
@@ -192,12 +210,10 @@ export async function onRequest(context) {
       return jsonResponse({ links: [], categories: [] }, 200, corsHeaders);
     }
 
-    // ==================== POST ====================
     if (request.method === 'POST') {
       const body = await request.json();
       const readOnlyOperations = ['favicon'];
 
-      // 无需认证的操作
       if (readOnlyOperations.includes(body.operation) || body.saveConfig === 'favicon') {
         if (body.saveConfig === 'favicon') {
           const { domain, icon } = body;
@@ -209,7 +225,6 @@ export async function onRequest(context) {
         }
       }
 
-      // 认证检查
       const providedPassword = request.headers.get('x-auth-password');
       const isAuthenticated = await verifyAuth({
         providedPassword,
@@ -221,49 +236,40 @@ export async function onRequest(context) {
         return jsonResponse({ error: '管理操作需要密码验证' }, 401, corsHeaders);
       }
 
-      // 仅验证密码
       if (body.authOnly) {
         await kv.put('last_auth_time', Date.now().toString());
         return jsonResponse({ success: true }, 200, corsHeaders);
       }
 
-      // 保存子配置（写入独立 KV key，避免读取全量 config）
       if (CONFIG_SECTIONS.includes(body.saveConfig)) {
         await kv.put(`config:${body.saveConfig}`, JSON.stringify(body.config));
         return jsonResponse({ success: true }, 200, corsHeaders);
       }
 
-      // 保存分类
       if (body.saveConfig === 'categories') {
         await kv.put(STORAGE_KEYS.CATEGORIES_CONFIG_KEY, JSON.stringify(body.categories));
         return jsonResponse({ success: true }, 200, corsHeaders);
       }
 
-      // 保存链接（按分类拆分存储）
       if (body.saveConfig === 'links') {
-        // 如果指定了分类，只保存该分类的链接
         if (body.categoryId) {
           await kv.put(categoryLinksKey(body.categoryId), JSON.stringify(body.links));
         } else {
-          // 保存所有链接（按 categoryId 拆分）
           await saveCategoryLinks(kv, body.links);
         }
         return jsonResponse({ success: true }, 200, corsHeaders);
       }
 
-      // 同步统一配置
       if (body.key === STORAGE_KEYS.CONFIG_KEY && body.value) {
         await kv.put('config', body.value);
         return jsonResponse({ success: true }, 200, corsHeaders);
       }
 
-      // 写入任意 key（用于设置等独立 KV 项）
       if (body.key && body.value && body.key !== STORAGE_KEYS.CONFIG_KEY) {
         await kv.put(body.key, body.value);
         return jsonResponse({ success: true }, 200, corsHeaders);
       }
 
-      // 同时保存链接和分类
       if (body.links && body.categories) {
         await saveCategoryLinks(kv, body.links);
         await kv.put(STORAGE_KEYS.CATEGORIES_CONFIG_KEY, JSON.stringify(body.categories));

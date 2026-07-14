@@ -24,6 +24,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState(categories[0]?.id || 'common');
   const [pinned, setPinned] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(false);
   const [icon, setIcon] = useState('');
   const [iconType, setIconType] = useState<IconSourceType>('google');
   const [isUploading, setIsUploading] = useState(false);
@@ -209,6 +210,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
         setDescription(initialData.description || '');
         setCategoryId(initialData.categoryId);
         setPinned(initialData.pinned || false);
+        setIsPrivate(initialData.isPrivate || false);
         setIcon(initialData.icon || '');
         setWeight(initialData.weight || 0);
         setPinnedOrder(initialData.pinnedOrder || 0);
@@ -269,6 +271,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
           setCategoryId(firstAvailableCategory?.id || 'common');
         }
         setPinned(false);
+        setIsPrivate(false);
         setIcon('');
         setIconType('google');
         setCustomIconUrl('');
@@ -355,7 +358,8 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
       iconConfig: iconType === 'customapi' ? { iconType, customApiUrl, customApiParam } : undefined,
       customIconUrl,
       edgeoneBlobUrl,
-      cloudflareR2Url
+      cloudflareR2Url,
+      isPrivate
     });
     
     // 如果有自定义图标URL，缓存到KV空间

@@ -1,4 +1,4 @@
-// 统一存储接口 v2.1 - 分类密码保护
+// 统一存储接口 v2.2 - 分类密码保护 + 私人书签
 // 支持 EdgeOne Pages / Cloudflare Workers
 
 import { getKV, getCorsHeaders, verifyAuth, jsonResponse } from './_kvAdapter.js';
@@ -47,6 +47,7 @@ function categoryLinksKey(categoryId) {
   return `links:${categoryId}`;
 }
 
+// 读取所有分类链接（带密码过滤 + 私人书签过滤）
 async function readAllCategoryLinks(kv, categories, unlockedCategories = new Set(), isAdmin = false) {
   if (categories.length === 0) return [];
 
@@ -59,13 +60,20 @@ async function readAllCategoryLinks(kv, categories, unlockedCategories = new Set
     }
 
     const data = await kv.get(categoryLinksKey(cat.id));
-    return data ? JSON.parse(data) : [];
+    const links = data ? JSON.parse(data) : [];
+
+    // 过滤私人书签：未登录时隐藏
+    if (!isAdmin) {
+      return links.filter(link => !link.isPrivate);
+    }
+    return links;
   });
 
   const linkArrays = await Promise.all(linkPromises);
   return linkArrays.flat();
 }
 
+// 保存链接到对应的分类 key
 async function saveCategoryLinks(kv, links) {
   const grouped = {};
   for (const link of links) {
@@ -127,26 +135,16 @@ export async function onRequest(context) {
         return jsonResponse({ icon: cachedIcon || null, cached: !!cachedIcon }, 200, corsHeaders);
       }
 
-      // 获取分类：密码脱敏，保留 hasPassword 标记
       if (getConfig === 'categories') {
         const data = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
         const categories = data ? JSON.parse(data) : [];
-
-        // 调试：记录原始分类数量
-        console.log(`[storage.js] Loaded ${categories.length} categories`);
-
         const sanitized = categories.map(({ password, ...rest }) => ({
           ...rest,
           hasPassword: !!(password && password.trim() !== '')
         }));
-
-        // 调试：记录处理后的分类
-        console.log(`[storage.js] Sanitized categories:`, JSON.stringify(sanitized.map(c => ({ id: c.id, name: c.name, hasPassword: c.hasPassword }))));
-
         return jsonResponse(sanitized, 200, corsHeaders);
       }
 
-      // 解析已解锁分类
       let unlockedCategories = new Set();
       const unlockedParam = url.searchParams.get('unlocked');
       if (unlockedParam) {
@@ -155,7 +153,6 @@ export async function onRequest(context) {
         } catch (e) {}
       }
 
-      // 检查管理员权限
       const providedPassword = request.headers.get('x-auth-password');
       const isAdmin = await verifyAuth({
         providedPassword,
@@ -163,7 +160,6 @@ export async function onRequest(context) {
         kv,
       });
 
-      // 获取链接（带密码过滤）
       if (getConfig === 'links') {
         const categoriesData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
         const categories = categoriesData ? JSON.parse(categoriesData) : [];
@@ -172,20 +168,15 @@ export async function onRequest(context) {
           const cat = categories.find(c => c.id === category);
 
           if (!cat) {
-            console.log(`[storage.js] Category not found: ${category}`);
-            console.log(`[storage.js] Available categories:`, categories.map(c => c.id));
             return jsonResponse({ error: '分类不存在' }, 404, corsHeaders);
           }
 
           const hasPassword = cat.password && cat.password.trim() !== '';
           let isUnlocked = unlockedCategories.has(category);
 
-          // 如果提供了分类密码，验证它
           if (categoryPassword && hasPassword && !isUnlocked && !isAdmin) {
             const inputPwd = categoryPassword.trim();
             const storedPwd = (cat.password || '').trim();
-
-            console.log(`[storage.js] Password check for ${category}: input="${inputPwd}" stored="${storedPwd}" match=${inputPwd === storedPwd}`);
 
             if (inputPwd === storedPwd) {
               isUnlocked = true;
@@ -199,9 +190,13 @@ export async function onRequest(context) {
           }
 
           const data = await kv.get(categoryLinksKey(category));
-          return new Response(data || '[]', {
-            headers: { 'Content-Type': 'application/json', ...corsHeaders },
-          });
+          const links = data ? JSON.parse(data) : [];
+
+          // 过滤私人书签
+          if (!isAdmin) {
+            return jsonResponse(links.filter(link => !link.isPrivate), 200, corsHeaders);
+          }
+          return jsonResponse(links, 200, corsHeaders);
         }
 
         const links = await readAllCategoryLinks(kv, categories, unlockedCategories, isAdmin);
@@ -217,7 +212,6 @@ export async function onRequest(context) {
         return jsonResponse({ key, value }, 200, corsHeaders);
       }
 
-      // 获取全部数据（带密码过滤）
       if (getConfig === 'true') {
         const categoriesData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
         const allCategories = categoriesData ? JSON.parse(categoriesData) : [];
@@ -275,12 +269,10 @@ export async function onRequest(context) {
       }
 
       if (body.saveConfig === 'categories') {
-        // 读取现有分类数据，保留已有的 password 字段
         const existingData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
         const existingCategories = existingData ? JSON.parse(existingData) : [];
         const existingPasswords = new Map(existingCategories.map(c => [c.id, c.password]));
 
-        // 合并：新分类数据 + 旧分类的 password
         const mergedCategories = body.categories.map(cat => ({
           ...cat,
           password: cat.password || existingPasswords.get(cat.id) || undefined,
@@ -311,7 +303,6 @@ export async function onRequest(context) {
 
       if (body.links && body.categories) {
         await saveCategoryLinks(kv, body.links);
-        // 读取现有分类数据，保留已有的 password 字段
         const existingData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
         const existingCategories = existingData ? JSON.parse(existingData) : [];
         const existingPasswords = new Map(existingCategories.map(c => [c.id, c.password]));
@@ -327,7 +318,6 @@ export async function onRequest(context) {
         await saveCategoryLinks(kv, body.links);
         return jsonResponse({ success: true }, 200, corsHeaders);
       } else if (body.categories) {
-        // 读取现有分类数据，保留已有的 password 字段
         const existingData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
         const existingCategories = existingData ? JSON.parse(existingData) : [];
         const existingPasswords = new Map(existingCategories.map(c => [c.id, c.password]));

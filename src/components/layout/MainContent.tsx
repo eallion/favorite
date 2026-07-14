@@ -30,7 +30,7 @@ export function MainContent({
   isDragSortMode, isEditMode, onWeightChange, isInternal,
 }: MainContentProps) {
   const { links = [], pinnedLinks = [], getLinksByCategory } = useLinksContext();
-  const { categoryTree = [], categories = [] } = useCategoriesContext();
+  const { categoryTree = [], categories = [], unlockedCategoryIds } = useCategoriesContext();
   const { showPinnedWebsites = true, viewMode = 'compact' } = useConfigContext();
   const { authToken } = useAuthContext();
   const { sensors, handleDragEnd, handlePinnedDragEnd } = useDragSort();
@@ -40,7 +40,6 @@ export function MainContent({
     return getLinksByCategory ? getLinksByCategory(categoryId) : [];
   }, [getLinksByCategory]);
 
-  // Intersection Observer for active category highlighting
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -64,7 +63,6 @@ export function MainContent({
     ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
     : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-10';
 
-  // Search mode: Only show results if internal search is checked
   if (searchQuery.trim() && isInternal) {
     return (
       <main className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-8">
@@ -104,7 +102,6 @@ export function MainContent({
 
   return (
     <main className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-8">
-      {/* Pinned section */}
       {showPinnedWebsites && pinnedLinks.length > 0 && (
         <section id="cat-pinned">
           <PinnedSection
@@ -126,8 +123,11 @@ export function MainContent({
         </section>
       )}
 
-      {/* All categories */}
+      {/* 过滤掉未解锁的密码保护分类 */}
       {categoryTree.map(cat => {
+        const isLocked = cat.hasPassword && !unlockedCategoryIds.has(cat.id);
+        if (isLocked) return null;
+
         const catLinks = safeGetLinksByCategory(cat.id);
         const subcategoryLinks = cat.children?.flatMap(child => safeGetLinksByCategory(child.id)) || [];
 

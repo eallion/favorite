@@ -11,6 +11,7 @@ import { MainContent } from './MainContent';
 import { ContentSkeleton } from './ContentSkeleton';
 import { LinkItem, Category } from '../../../types';
 import AuthModal from '../../../components/AuthModal';
+
 const LinkModal = lazy(() => import('../../../components/LinkModal'));
 const CategoryManagerModal = lazy(() => import('../../../components/CategoryManagerModal'));
 const BackupModal = lazy(() => import('../../../components/BackupModal'));
@@ -20,12 +21,14 @@ const SettingsModal = lazy(() => import('../../../components/SettingsModal'));
 const SearchConfigModal = lazy(() => import('../../../components/SearchConfigModal'));
 const ContextMenu = lazy(() => import('../../../components/ContextMenu'));
 const QRCodeModal = lazy(() => import('../../../components/QRCodeModal'));
+
 export function AppLayout() {
-  // Contexts
+  // Contexts - 只解构一次
   const { authToken, requiresAuth, isCheckingAuth, capabilities, login, logout } = useAuthContext();
   const { links = [], addLink, updateLink, deleteLink, deleteLinks, setLinksAndSync } = useLinksContext();
-  const { categories = [], categoryTree = [], setCategoriesAndSync, unlockedCategoryIds = new Set(), unlockCategory } = useCategoriesContext();
+  const { categories = [], categoryTree = [], setCategoriesAndSync, unlockedCategoryIds, unlockCategory } = useCategoriesContext();
   const { ai: aiConfig, icon: iconConfig, viewMode, showPinnedWebsites, ticker, weather, website, webdav, search, setAI, setIcon, setWebsite, setShowPinned, setMastodon, setWeather, setWebDav, setSearch, setViewMode } = useConfigContext();
+
   // Hooks
   const { 
     searchQuery, setSearchQuery, searchResults, isMobileSearchOpen, setIsMobileSearchOpen, 
@@ -33,13 +36,16 @@ export function AppLayout() {
     isInternal, setIsInternal, handleSearch, visitorEngineId, setVisitorEngineId 
   } = useSearch();
   const { initData } = useDataSync();
+
   // UI State
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
+
   // Toggle States
   const [isDragSortMode, setIsDragSortMode] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+
   // Modal States
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -49,41 +55,46 @@ export function AppLayout() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isSearchConfigModalOpen, setIsSearchConfigModalOpen] = useState(false);
   const [catAuthModalData, setCatAuthModalData] = useState<Category | null>(null);
+
   // Edit State
   const [editingLink, setEditingLink] = useState<LinkItem | undefined>(undefined);
   const [prefillLink, setPrefillLink] = useState<Partial<LinkItem> | undefined>(undefined);
+
   // Batch Edit State
   const [isBatchEditMode, setIsBatchEditMode] = useState(false);
   const [selectedLinks, setSelectedLinks] = useState<Set<string>>(new Set());
+
   // Context Menu State
   const [contextMenu, setContextMenu] = useState<{
     isOpen: boolean;
     position: { x: number; y: number };
     link: LinkItem | null;
   }>({ isOpen: false, position: { x: 0, y: 0 }, link: null });
+
   // QR Code Modal State
   const [qrCodeModal, setQrCodeModal] = useState<{
     isOpen: boolean; url: string; title: string;
   }>({ isOpen: false, url: '', title: '' });
+
   // Drag sort confirmation state
   const [pendingDragLinks, setPendingDragLinks] = useState<{ links: LinkItem[]; categories: Category[] } | null>(null);
+
   // Initialize data
   useEffect(() => {
     const init = async () => {
-      // ========== 修改2：initData 传入参数 ==========
       await initData(unlockedCategoryIds);
       setIsInitialLoading(false);
     };
+
     // Global keyboard listener for search focus
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      // Ignore if user is already typing in an input/textarea
       const activeElement = document.activeElement;
       const isInput = activeElement?.tagName === 'INPUT' || 
                      activeElement?.tagName === 'TEXTAREA' || 
                      (activeElement as HTMLElement)?.isContentEditable;
-      
+
       if (isInput) return;
-      // Global Escape handler to close and clear search
+
       if (e.key === 'Escape') {
         if (isSearchExpanded) {
           setIsSearchExpanded(false);
@@ -92,26 +103,25 @@ export function AppLayout() {
         }
         return;
       }
-      // Ignore modifier keys and special keys
+
       if (e.ctrlKey || e.metaKey || e.altKey) return;
-      if (e.key.length !== 1 && e.key !== 'Process') return; // 'Process' is for IME
-      // Don't trigger if any modal is open or in edit modes
+      if (e.key.length !== 1 && e.key !== 'Process') return;
+
       if (isModalOpen || isAuthOpen || isCatManagerOpen || isBackupModalOpen || 
           isImportModalOpen || isSettingsModalOpen || isSearchConfigModalOpen ||
           isEditMode || isBatchEditMode || isDragSortMode) {
         return;
       }
-      // Open search if collapsed
+
       if (!isSearchExpanded && !isMobileSearchOpen) {
         setIsSearchExpanded(true);
       }
-      // If it's a normal English character, the browser's keypress event is usually swallowed
-      // because the focus is moving from the body to the input. We must manually capture it.
+
       if (e.key !== 'Process') {
         setSearchQuery(prev => prev + e.key);
-        e.preventDefault(); // Prevent double insertion just in case
+        e.preventDefault();
       }
-      // Delay micro-seconds to focus, allowing the character to naturally fall into the input box to wake up the IME
+
       setTimeout(() => {
         const searchInput = document.getElementById('search-input');
         if (searchInput) {
@@ -119,16 +129,17 @@ export function AppLayout() {
         }
       }, 0);
     };
+
     window.addEventListener('keydown', handleGlobalKeyDown);
     init();
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  // ========== 修改3：依赖数组新增 unlockedCategoryIds ==========
   }, [initData, unlockedCategoryIds]);
+
   // Apply dynamic website title and favicon
   useEffect(() => {
     if (aiConfig) {
       document.title = aiConfig.websiteTitle || '蜗牛个人导航';
-      
+
       let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
       if (!link) {
         link = document.createElement('link');
@@ -138,12 +149,14 @@ export function AppLayout() {
       link.href = aiConfig.faviconUrl || '/favicon.ico';
     }
   }, [aiConfig?.websiteTitle, aiConfig?.faviconUrl]);
+
   // Close auth modal on login
   useEffect(() => {
     if (authToken) {
       setIsAuthOpen(false);
     }
   }, [authToken]);
+
   // Handle URL params for bookmarklet
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -156,22 +169,24 @@ export function AppLayout() {
       setIsModalOpen(true);
     }
   }, []);
+
   // --- Handlers ---
   const handleAddLink = useCallback(() => {
     setEditingLink(undefined);
     setPrefillLink(undefined);
     setIsModalOpen(true);
   }, []);
+
   const handleEditLink = useCallback((link: LinkItem) => {
     setEditingLink(link);
     setPrefillLink(undefined);
     setIsModalOpen(true);
   }, []);
+
   const handleDeleteLink = useCallback((id: string) => {
     if (confirm('确定删除此链接吗？')) {
       const linkToDelete = links.find(l => l.id === id);
       if (linkToDelete) {
-        // 1. 清理 EdgeOne Blob 历史图标
         if (linkToDelete.edgeoneBlobUrl && linkToDelete.edgeoneBlobUrl.startsWith('/api/favicon?key=')) {
           try {
             const url = new URL(linkToDelete.edgeoneBlobUrl, window.location.origin);
@@ -186,7 +201,6 @@ export function AppLayout() {
             console.error(e);
           }
         }
-        // 2. 清理 Cloudflare R2 历史图标
         if (linkToDelete.cloudflareR2Url && linkToDelete.cloudflareR2Url.startsWith('/api/favicon?key=')) {
           try {
             const url = new URL(linkToDelete.cloudflareR2Url, window.location.origin);
@@ -201,7 +215,6 @@ export function AppLayout() {
             console.error(e);
           }
         }
-        // 3. 兼容旧版本数据或当前选中的图标（如果没有被前面的历史记录覆盖）
         if (linkToDelete.icon && linkToDelete.icon.startsWith('/api/favicon?key=') &&
             linkToDelete.icon !== linkToDelete.edgeoneBlobUrl &&
             linkToDelete.icon !== linkToDelete.cloudflareR2Url) {
@@ -224,6 +237,7 @@ export function AppLayout() {
       setLinksAndSync(links.filter(l => l.id !== id), categories);
     }
   }, [deleteLink, links, categories, setLinksAndSync, authToken]);
+
   const handleSaveLink = useCallback((data: Omit<LinkItem, 'id' | 'createdAt'>) => {
     if (editingLink) {
       const updated = links.map(l => l.id === editingLink.id ? { ...l, ...data } : l);
@@ -240,16 +254,18 @@ export function AppLayout() {
     setEditingLink(undefined);
     setPrefillLink(undefined);
   }, [editingLink, links, categories, setLinksAndSync, authToken]);
-  // Context menu handlers
+
   const handleContextMenu = useCallback((e: React.MouseEvent, link: LinkItem) => {
     if (isBatchEditMode || !authToken) return;
     e.preventDefault();
     e.stopPropagation();
     setContextMenu({ isOpen: true, position: { x: e.clientX, y: e.clientY }, link });
   }, [isBatchEditMode, authToken]);
+
   const closeContextMenu = useCallback(() => {
     setContextMenu({ isOpen: false, position: { x: 0, y: 0 }, link: null });
   }, []);
+
   const deleteLinkFromContextMenu = useCallback(() => {
     if (!contextMenu.link) return;
     if (confirm(`确定要删除"${contextMenu.link.title}"吗？`)) {
@@ -257,11 +273,13 @@ export function AppLayout() {
     }
     closeContextMenu();
   }, [contextMenu.link, handleDeleteLink, closeContextMenu]);
+
   const editLinkFromContextMenu = useCallback(() => {
     if (!contextMenu.link) return;
     handleEditLink(contextMenu.link);
     closeContextMenu();
   }, [contextMenu.link, handleEditLink, closeContextMenu]);
+
   const togglePinFromContextMenu = useCallback(() => {
     if (!contextMenu.link) return;
     const updated = links.map(l => {
@@ -274,11 +292,12 @@ export function AppLayout() {
     setLinksAndSync(updated, categories);
     closeContextMenu();
   }, [contextMenu.link, links, categories, setLinksAndSync, closeContextMenu]);
-  // Batch edit handlers
+
   const toggleBatchEditMode = useCallback(() => {
     setIsBatchEditMode(prev => !prev);
     setSelectedLinks(new Set());
   }, []);
+
   const toggleLinkSelection = useCallback((linkId: string) => {
     setSelectedLinks(prev => {
       const next = new Set(prev);
@@ -287,13 +306,12 @@ export function AppLayout() {
       return next;
     });
   }, []);
+
   const handleBatchDelete = useCallback(() => {
     if (selectedLinks.size === 0) return;
     if (confirm(`确定要删除选中的 ${selectedLinks.size} 个链接吗？`)) {
-      // 批量删除关联的自定义及历史图标
       links.forEach(l => {
         if (selectedLinks.has(l.id)) {
-          // 1. 清理 EdgeOne Blob 历史图标
           if (l.edgeoneBlobUrl && l.edgeoneBlobUrl.startsWith('/api/favicon?key=')) {
             try {
               const url = new URL(l.edgeoneBlobUrl, window.location.origin);
@@ -308,7 +326,6 @@ export function AppLayout() {
               console.error(e);
             }
           }
-          // 2. 清理 Cloudflare R2 历史图标
           if (l.cloudflareR2Url && l.cloudflareR2Url.startsWith('/api/favicon?key=')) {
             try {
               const url = new URL(l.cloudflareR2Url, window.location.origin);
@@ -323,7 +340,6 @@ export function AppLayout() {
               console.error(e);
             }
           }
-          // 3. 兼容旧版本数据或当前图标
           if (l.icon && l.icon.startsWith('/api/favicon?key=') &&
               l.icon !== l.edgeoneBlobUrl &&
               l.icon !== l.cloudflareR2Url) {
@@ -349,27 +365,39 @@ export function AppLayout() {
       setIsBatchEditMode(false);
     }
   }, [selectedLinks, links, categories, setLinksAndSync, authToken]);
-  // Weight change handler
+
   const handleWeightChange = useCallback((linkId: string, weight: number) => {
     const updated = links.map(l => l.id === linkId ? { ...l, weight } : l);
     setLinksAndSync(updated, categories);
   }, [links, categories, setLinksAndSync]);
-  // Toggle handlers
+
   const toggleDragSortMode = useCallback(() => {
     setIsDragSortMode(prev => !prev);
   }, []);
+
   const toggleEditMode = useCallback(() => {
     setIsEditMode(prev => !prev);
   }, []);
-  // ========== 修改4：新增解锁分类回调函数 ==========
+
+  // 处理分类点击：如果分类有密码且未解锁，显示密码弹窗
   const handleUnlockCategory = useCallback((cat: Category) => {
     if (cat.hasPassword && !unlockedCategoryIds.has(cat.id)) {
       setCatAuthModalData(cat);
     } else {
-      // 解锁后刷新数据
-      initData(unlockedCategoryIds);
+      // 已解锁的分类，正常跳转
+      document.getElementById(`cat-${cat.id}`)?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [unlockedCategoryIds, initData]);
+  }, [unlockedCategoryIds]);
+
+  // 处理密码验证成功后的解锁
+  const handleCategoryUnlock = useCallback((id: string) => {
+    unlockCategory(id);
+    setCatAuthModalData(null);
+    // 解锁后重新加载数据，带上新的解锁分类
+    const newUnlocked = new Set([...unlockedCategoryIds, id]);
+    initData(newUnlocked);
+  }, [unlockCategory, unlockedCategoryIds, initData]);
+
   // Loading state
   if (isInitialLoading) {
     return (
@@ -403,9 +431,9 @@ export function AppLayout() {
       </div>
     );
   }
+
   return (
     <div className="flex h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden text-slate-900 dark:text-slate-50">
-      {/* Sidebar */}
       <Sidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
@@ -414,7 +442,6 @@ export function AppLayout() {
         onOpenBackup={() => setIsBackupModalOpen(true)}
         onUnlockCategory={handleUnlockCategory}
       />
-      {/* Main area */}
       <div className="flex-1 flex flex-col min-w-0">
         <Header
           searchQuery={searchQuery}
@@ -457,13 +484,11 @@ export function AppLayout() {
           isInternal={isInternal}
         />
       </div>
-      {/* Auth Modal */}
       <AuthModal
         isOpen={isAuthOpen}
         onLogin={login}
         onClose={() => setIsAuthOpen(false)}
       />
-      {/* Other Modals */}
       <Suspense fallback={null}>
         {isModalOpen && (
           <LinkModal
@@ -549,7 +574,7 @@ export function AppLayout() {
             isOpen={true}
             category={catAuthModalData}
             onClose={() => setCatAuthModalData(null)}
-            onUnlock={(id) => { unlockCategory(id); setCatAuthModalData(null); }}
+            onUnlock={handleCategoryUnlock}
           />
         )}
         {contextMenu.isOpen && (

@@ -40,7 +40,12 @@ export function MainContent({
     return getLinksByCategory ? getLinksByCategory(categoryId) : [];
   }, [getLinksByCategory]);
 
-  // Intersection Observer for active category highlighting
+  // 过滤搜索结果中的私人书签
+  const filteredSearchResults = useMemo(() => {
+    if (authToken) return searchResults;
+    return searchResults.filter(link => !link.isPrivate);
+  }, [searchResults, authToken]);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -64,7 +69,6 @@ export function MainContent({
     ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
     : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-10';
 
-  // Search mode: Only show results if internal search is checked
   if (searchQuery.trim() && isInternal) {
     return (
       <main className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-8">
@@ -72,11 +76,11 @@ export function MainContent({
           <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2 mb-4">
             搜索结果
             <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 rounded-full">
-              {searchResults.length}
+              {filteredSearchResults.length}
             </span>
           </h2>
           <div className={`grid gap-3 ${gridClass}`}>
-            {searchResults.map(link => (
+            {filteredSearchResults.map(link => (
               <LinkCard
                 key={link.id}
                 link={link}
@@ -94,7 +98,7 @@ export function MainContent({
               />
             ))}
           </div>
-          {searchResults.length === 0 && (
+          {filteredSearchResults.length === 0 && (
             <p className="text-slate-500 text-center py-12">未找到匹配的链接</p>
           )}
         </section>
@@ -104,7 +108,6 @@ export function MainContent({
 
   return (
     <main className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-8">
-      {/* Pinned section */}
       {showPinnedWebsites && pinnedLinks.length > 0 && (
         <section id="cat-pinned">
           <PinnedSection
@@ -126,7 +129,6 @@ export function MainContent({
         </section>
       )}
 
-      {/* All categories - 过滤掉未解锁的密码保护分类 */}
       {categoryTree.map(cat => {
         const isLocked = cat.hasPassword && !unlockedCategoryIds.has(cat.id);
         if (isLocked) return null;

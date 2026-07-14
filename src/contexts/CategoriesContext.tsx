@@ -3,6 +3,7 @@ import { Category, LinkItem, DEFAULT_CATEGORIES } from '../../types';
 import { STORAGE_KEYS, API_ENDPOINTS } from '../constants';
 import { useAuthContext } from './AuthContext';
 
+// --- Types ---
 interface CategoriesState {
   categories: Category[];
   unlockedCategoryIds: Set<string>;
@@ -34,6 +35,7 @@ export interface CategoryWithChildren extends Category {
   children: Category[];
 }
 
+// --- Reducer ---
 function categoriesReducer(state: CategoriesState, action: CategoriesAction): CategoriesState {
   switch (action.type) {
     case 'SET_CATEGORIES':
@@ -59,8 +61,10 @@ function categoriesReducer(state: CategoriesState, action: CategoriesAction): Ca
   }
 }
 
+// --- Context ---
 const CategoriesContext = createContext<CategoriesContextValue | null>(null);
 
+// --- Helper ---
 function buildCategoryTree(cats: Category[]): CategoryWithChildren[] {
   const topLevels = cats
     .filter(c => !c.parentId)
@@ -74,6 +78,7 @@ function buildCategoryTree(cats: Category[]): CategoryWithChildren[] {
   }));
 }
 
+// --- Provider ---
 export function CategoriesProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(categoriesReducer, {
     categories: [],
@@ -143,6 +148,7 @@ export function CategoriesProvider({ children }: { children: React.ReactNode }) 
   );
 }
 
+// --- Hook ---
 export function useCategoriesContext() {
   const ctx = useContext(CategoriesContext);
   if (!ctx) throw new Error('useCategoriesContext must be used within CategoriesProvider');

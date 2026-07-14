@@ -26,7 +26,6 @@ export function LinkCard({
   isDraggable = true, authToken, isEditMode = false, onWeightChange,
 }: LinkCardProps) {
   const [imgError, setImgError] = useState(false);
-  const touchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [color, setColor] = useState<ExtractedColor | null>(null);
   const [isEditingWeight, setIsEditingWeight] = useState(false);
   const [weightValue, setWeightValue] = useState(link.weight?.toString() || '0');
@@ -144,9 +143,6 @@ export function LinkCard({
       } ${isDragging ? 'shadow-2xl scale-105' : ''}`}
       onClick={handleClick}
       onContextMenu={(e) => onContextMenu(e, link)}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      onTouchMove={handleTouchMove}
       onMouseMove={handleMouseMove}
       {...(isDraggable && !isBatchEditMode ? attributes : {})}
       {...(isDraggable && !isBatchEditMode ? listeners : {})}
@@ -279,32 +275,3 @@ export function LinkCard({
     </div>
   );
 }
-  // 长按处理（移动端模拟右击）
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (!authToken || isBatchEditMode) return;
-    touchTimerRef.current = setTimeout(() => {
-      const touch = e.touches[0];
-      const mockEvent = {
-        preventDefault: () => {},
-        stopPropagation: () => {},
-        clientX: touch.clientX,
-        clientY: touch.clientY,
-      } as unknown as React.MouseEvent;
-      onContextMenu(mockEvent, link);
-    }, 500);
-  };
-
-  const handleTouchEnd = () => {
-    if (touchTimerRef.current) {
-      clearTimeout(touchTimerRef.current);
-      touchTimerRef.current = null;
-    }
-  };
-
-  const handleTouchMove = () => {
-    if (touchTimerRef.current) {
-      clearTimeout(touchTimerRef.current);
-      touchTimerRef.current = null;
-    }
-  };
-

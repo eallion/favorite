@@ -412,7 +412,6 @@ export function AppLayout() {
         activeCategoryId={activeCategoryId}
         onOpenCatManager={() => setIsCatManagerOpen(true)}
         onOpenBackup={() => setIsBackupModalOpen(true)}
-        {/* ========== 修改5：替换原解锁回调为新函数 ========== */}
         onUnlockCategory={handleUnlockCategory}
       />
       {/* Main area */}

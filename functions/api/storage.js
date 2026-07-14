@@ -1,6 +1,5 @@
-// 统一存储接口
+// 统一存储接口 v2.1 - 分类密码保护
 // 支持 EdgeOne Pages / Cloudflare Workers
-// 支持按分类拆分链接存储
 
 import { getKV, getCorsHeaders, verifyAuth, jsonResponse } from './_kvAdapter.js';
 
@@ -128,13 +127,22 @@ export async function onRequest(context) {
         return jsonResponse({ icon: cachedIcon || null, cached: !!cachedIcon }, 200, corsHeaders);
       }
 
+      // 获取分类：密码脱敏，保留 hasPassword 标记
       if (getConfig === 'categories') {
         const data = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
         const categories = data ? JSON.parse(data) : [];
+
+        // 调试：记录原始分类数量
+        console.log(`[storage.js] Loaded ${categories.length} categories`);
+
         const sanitized = categories.map(({ password, ...rest }) => ({
           ...rest,
           hasPassword: !!(password && password.trim() !== '')
         }));
+
+        // 调试：记录处理后的分类
+        console.log(`[storage.js] Sanitized categories:`, JSON.stringify(sanitized.map(c => ({ id: c.id, name: c.name, hasPassword: c.hasPassword }))));
+
         return jsonResponse(sanitized, 200, corsHeaders);
       }
 
@@ -155,6 +163,7 @@ export async function onRequest(context) {
         kv,
       });
 
+      // 获取链接（带密码过滤）
       if (getConfig === 'links') {
         const categoriesData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
         const categories = categoriesData ? JSON.parse(categoriesData) : [];
@@ -163,6 +172,8 @@ export async function onRequest(context) {
           const cat = categories.find(c => c.id === category);
 
           if (!cat) {
+            console.log(`[storage.js] Category not found: ${category}`);
+            console.log(`[storage.js] Available categories:`, categories.map(c => c.id));
             return jsonResponse({ error: '分类不存在' }, 404, corsHeaders);
           }
 
@@ -171,9 +182,10 @@ export async function onRequest(context) {
 
           // 如果提供了分类密码，验证它
           if (categoryPassword && hasPassword && !isUnlocked && !isAdmin) {
-            // 密码比对：trim 后比对，防止空格问题
             const inputPwd = categoryPassword.trim();
             const storedPwd = (cat.password || '').trim();
+
+            console.log(`[storage.js] Password check for ${category}: input="${inputPwd}" stored="${storedPwd}" match=${inputPwd === storedPwd}`);
 
             if (inputPwd === storedPwd) {
               isUnlocked = true;
@@ -205,6 +217,7 @@ export async function onRequest(context) {
         return jsonResponse({ key, value }, 200, corsHeaders);
       }
 
+      // 获取全部数据（带密码过滤）
       if (getConfig === 'true') {
         const categoriesData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
         const allCategories = categoriesData ? JSON.parse(categoriesData) : [];

@@ -15,6 +15,7 @@ export interface LinkItem {
   customIconUrl?: string;
   edgeoneBlobUrl?: string;
   cloudflareR2Url?: string;
+  isPrivate?: boolean; // 私人书签
 }
 
 export interface Category {
@@ -99,128 +100,71 @@ export interface WebsiteConfig {
 }
 
 // 搜索模式类型
-export type SearchMode = 'internal' | 'external';
+export type SearchMode = 'internal' | 'external' | 'hybrid';
 
-// 外部搜索源配置
-export interface ExternalSearchSource {
+// 搜索来源配置
+export interface SearchSourceConfig {
   id: string;
   name: string;
   url: string;
-  icon?: string;
   enabled: boolean;
-  createdAt: number;
 }
 
 // 搜索配置
 export interface SearchConfig {
   mode: SearchMode;
-  externalSources: ExternalSearchSource[];
-  selectedSource?: ExternalSearchSource | null; // 选中的搜索源
-  defaultEngine?: string; // 默认搜索引擎 ID
-  customEngineUrl?: string; // 自定义搜索引擎 URL
-  customEngineIcon?: string; // 自定义搜索引擎 Logo (URL 或 SVG 代码)
+  externalSources: SearchSourceConfig[];
+  defaultEngine?: string;
 }
-
-// 滚动 Ticker 来源类型
-export type TickerSource = 'mastodon' | 'memos' | 'custom';
-
-// 滚动 Ticker 配置
-export interface TickerConfig {
-  enabled: boolean;
-  source: TickerSource;
-  // Mastodon
-  mastodonInstance?: string;
-  mastodonUsername?: string;
-  mastodonLimit?: number;
-  mastodonExcludeReplies?: boolean;
-  mastodonExcludeReblogs?: boolean;
-  // Memos
-  memosHost?: string;
-  memosToken?: string;
-  memosLimit?: number;
-  memosCreator?: string;
-  memosVisibility?: 'PUBLIC' | 'PROTECTED' | 'PRIVATE';
-  // Custom
-  customItems?: string[];
-}
-
-// 天气 API 类型
-export type WeatherProvider = 'jinrishici' | 'qweather' | 'openweather' | 'visualcrossing' | 'accuweather';
 
 // 天气配置
 export interface WeatherConfig {
   enabled: boolean;
-  provider: WeatherProvider;
-  // QWeather
-  qweatherHost?: string;
-  qweatherApiKey?: string;
-  qweatherLocation?: string;
-  // OpenWeather
-  openweatherApiKey?: string;
-  openweatherCity?: string;
-  // Visual Crossing
-  visualcrossingApiKey?: string;
-  visualcrossingLocation?: string;
-  // AccuWeather
-  accuweatherApiKey?: string;
-  accuweatherLocationKey?: string;
-  // Common
-  unit?: 'celsius' | 'fahrenheit';
+  city: string;
+  apiKey?: string;
+  provider?: string;
 }
 
-// 完全统一的应用配置（包含所有配置）
-export interface AppConfig {
-  // AI 配置
-  ai?: AIConfig;
-
-  // 网站配置
-  website?: WebsiteConfig;
-
-  // WebDAV 配置
-  webdav?: WebDavConfig;
-
-  // 搜索配置
-  search?: SearchConfig;
-
-  // 滚动 Ticker 配置
-  ticker?: TickerConfig;
-
-  // 天气配置
-  weather?: WeatherConfig;
-
-  // 图标配置
-  icon?: IconConfig;
-
-  // 视图配置
-  view?: {
-    mode: 'compact' | 'detailed'; // 用户个人视图偏好
-    defaultMode?: 'compact' | 'detailed'; // 管理员设置的默认视图模式
-  };
-
-  // 界面配置
-  ui?: {
-    showPinnedWebsites: boolean; // 是否显示置顶网站
-    darkMode?: boolean; // 深色模式偏好（可选，主要使用系统级主题）
-  };
-
-  // 其他用户偏好设置
-  preferences?: {
-    [key: string]: any;
-  };
+// Mastodon/Ticker 配置
+export interface MastodonConfig {
+  enabled: boolean;
+  instance: string;
+  account: string;
+  maxItems: number;
 }
 
+// AI Provider 类型
+export type AIProvider = 'gemini' | 'openai' | 'claude' | 'custom';
+
+// 默认分类
 export const DEFAULT_CATEGORIES: Category[] = [
-  { id: "common", name: "常用推荐", icon: "Star" },
-  { id: "tools","name":"工具","icon":"Folder","isSubcategory":false},
-  { id: "life","name":"生活工具","icon":"Target","parentId":"tools","isSubcategory":true},
-  { id: "network","name":"网络工具","icon":"Wifi","parentId":"tools","isSubcategory":true},
+  { id: 'common', name: '常用推荐', icon: 'Star' },
 ];
 
+// 初始链接数据
 export const INITIAL_LINKS: LinkItem[] = [
-  { id: 'init1', title: '博客 Blog', url: 'https://www.eallion.com/', icon: '/favicons/eallion.png', description: '大大的小蜗牛的个人生活博客', categoryId: 'common', createdAt: Date.now(), pinned: true, pinnedOrder: 0 },
-  { id: 'init2', title: 'Mastodon e5n.cc', url: 'https://e5n.cc/@eallion', icon: '/favicons/mastodon.svg', description: 'Charles Chin\'s personal Mastodon.', categoryId: 'common', createdAt: Date.now(), pinned: true, pinnedOrder: 1 },
-  { id: 'init3', title: 'Twitter 𝕏', url: 'https://x.com/eallion', icon: '/favicons/x.svg', description: 'Blaze your glory!', categoryId: 'common', createdAt: Date.now() },
-  { id: 'init4', title: 'GitHub', url: 'https://github.com/eallion', icon: '/favicons/github.svg', description: 'Build and ship software on a single, collaborative platform', categoryId: 'common', createdAt: Date.now() },
-  { id: 'init5', title: 'Cloudflare', url: 'https://dash.cloudflare.com/', icon: '/favicons/cloudflare.svg', description: 'Connect, protect, and build everywhere', categoryId: 'common', createdAt: Date.now() },
-  { id: 'init6', title: 'Vercel', url: 'https://vercel.com', icon: '/favicons/vercel.svg', description: 'Build and deploy the best web experiences with the Frontend Cloud', categoryId: 'common', createdAt: Date.now() },
+  {
+    id: '1',
+    title: '百度',
+    url: 'https://www.baidu.com',
+    icon: 'https://www.baidu.com/favicon.ico',
+    categoryId: 'common',
+    createdAt: Date.now(),
+  },
+  {
+    id: '2',
+    title: 'GitHub',
+    url: 'https://github.com',
+    icon: 'https://github.com/favicon.ico',
+    categoryId: 'common',
+    createdAt: Date.now(),
+  },
+  {
+    id: '3',
+    title: 'Google',
+    url: 'https://www.google.com',
+    icon: 'https://www.google.com/favicon.ico',
+    categoryId: 'common',
+    createdAt: Date.now(),
+  },
 ];

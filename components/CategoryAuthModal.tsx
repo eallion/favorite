@@ -25,12 +25,10 @@ const CategoryAuthModal: React.FC<CategoryAuthModalProps> = ({ isOpen, onClose, 
     setError('');
 
     try {
-      const url = `${API_ENDPOINTS.STORAGE}?getConfig=links&category=${encodeURIComponent(category.id)}&catPassword=${encodeURIComponent(password.trim())}`;
-      console.log('[CategoryAuthModal] Request URL:', url);
-      console.log('[CategoryAuthModal] Category ID:', category.id, 'Name:', category.name);
-
-      const res = await fetch(url);
-      console.log('[CategoryAuthModal] Response status:', res.status);
+      // 调用后端验证分类密码
+      const res = await fetch(
+        `${API_ENDPOINTS.STORAGE}?getConfig=links&category=${encodeURIComponent(category.id)}&catPassword=${encodeURIComponent(password.trim())}`
+      );
 
       if (res.status === 403) {
         setError('密码错误');
@@ -39,15 +37,12 @@ const CategoryAuthModal: React.FC<CategoryAuthModalProps> = ({ isOpen, onClose, 
       }
 
       if (!res.ok) {
-        const text = await res.text();
-        console.log('[CategoryAuthModal] Error response:', text);
-        setError(`验证失败: ${res.status}`);
+        setError('验证失败，请重试');
         setIsLoading(false);
         return;
       }
 
       // 密码正确，解锁分类
-      console.log('[CategoryAuthModal] Unlock success for:', category.id);
       onUnlock(category.id);
       setPassword('');
       setError('');

@@ -61,45 +61,9 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
 
   const { authToken } = useAuthContext();
 
-  // 初始化（不触发同步）
   const initLinks = useCallback((links: LinkItem[]) => {
     dispatch({ type: 'SET_LINKS', payload: links });
   }, []);
-
-  // 同步到云端
-  const syncToCloud = useCallback(async (links: LinkItem[], categories: Category[], token: string) => {
-    dispatch({ type: 'SET_SYNC_STATUS', payload: 'saving' });
-    try {
-      const res = await fetch(API_ENDPOINTS.STORAGE, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-password': token,
-        },
-        body: JSON.stringify({ links, categories }),
-      });
-      if (res.status === 401) {
-        dispatch({ type: 'SET_SYNC_STATUS', payload: 'error' });
-        return false;
-      }
-      if (!res.ok) throw new Error('Sync failed');
-      dispatch({ type: 'SET_SYNC_STATUS', payload: 'saved' });
-      setTimeout(() => dispatch({ type: 'SET_SYNC_STATUS', payload: 'idle' }), 2000);
-      return true;
-    } catch (e) {
-      console.error('Sync failed:', e);
-      dispatch({ type: 'SET_SYNC_STATUS', payload: 'error' });
-      return false;
-    }
-  }, []);
-
-  // 持久化：本地 + 云端
-  const persist = useCallback((links: LinkItem[], categories: Category[]) => {
-    localStorage.setItem(STORAGE_KEYS.LOCAL_STORAGE_KEY, JSON.stringify({ links, categories }));
-    if (authToken) {
-      syncToCloud(links, categories, authToken);
-    }
-  }, [authToken, syncToCloud]);
 
   const addLink = useCallback((data: Omit<LinkItem, 'id' | 'createdAt'>) => {
     const newLink: LinkItem = {
@@ -126,39 +90,44 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'SET_LINKS', payload: links });
   }, []);
 
-  // 设置链接并同步（用于 updateData 场景）
   const setLinksAndSync = useCallback((links: LinkItem[], categories: Category[]) => {
     dispatch({ type: 'SET_LINKS', payload: links });
-    persist(links, categories);
-  }, [persist]);
+    localStorage.setItem(STORAGE_KEYS.LOCAL_STORAGE_KEY, JSON.stringify({ links, categories }));
+    if (authToken) {
+      fetch(API_ENDPOINTS.STORAGE, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-auth-password': authToken,
+        },
+        body: JSON.stringify({ links, categories }),
+      }).catch(e => console.error('Sync links failed:', e));
+    }
+  }, [authToken]);
 
-  // 置顶链接
-  const pinnedLinks = useMemo(() =>
-    state.links
-      .filter(l => l.pinned)
-      .sort((a, b) => (a.pinnedOrder ?? 0) - (b.pinnedOrder ?? 0)),
-    [state.links]
-  );
+  // 过滤私人书签：未登录时隐藏
+  const visibleLinks = useMemo(() => {
+    if (authToken) return state.links;
+    return state.links.filter(link => !link.isPrivate);
+  }, [state.links, authToken]);
 
-  // 按分类获取链接（按 weight 排序，weight 相同按 order 排序）
-  const getLinksByCategory = useCallback((categoryId: string) =>
-    state.links
-      .filter(l => l.categoryId === categoryId)
-      .sort((a, b) => {
-        const wa = a.weight ?? Infinity;
-        const wb = b.weight ?? Infinity;
-        if (wa !== wb) return wa - wb;
-        return (a.order ?? 0) - (b.order ?? 0);
-      }),
-    [state.links]
-  );
+  const pinnedLinks = useMemo(() => {
+    const pinned = visibleLinks.filter(l => l.pinned);
+    return [...pinned].sort((a, b) => (a.pinnedOrder ?? 0) - (b.pinnedOrder ?? 0));
+  }, [visibleLinks]);
+
+  const getLinksByCategory = useCallback((categoryId: string) => {
+    return visibleLinks.filter(l => l.categoryId === categoryId);
+  }, [visibleLinks]);
 
   return (
     <LinksContext.Provider value={{
       ...state,
       initLinks,
-      addLink, updateLink, deleteLink, deleteLinks,
-      updateLinks, setLinksAndSync, pinnedLinks, getLinksByCategory,
+      addLink, updateLink, deleteLink, deleteLinks, updateLinks,
+      setLinksAndSync,
+      pinnedLinks,
+      getLinksByCategory,
     }}>
       {children}
     </LinksContext.Provider>

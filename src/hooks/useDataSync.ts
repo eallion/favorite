@@ -5,12 +5,16 @@ import { useLinksContext } from '../contexts/LinksContext';
 import { useCategoriesContext } from '../contexts/CategoriesContext';
 import { useConfigContext } from '../contexts/ConfigContext';
 
+/**
+ * 数据同步 Hook：管理 localStorage ↔ KV 的加载和同步
+ */
 export function useDataSync() {
   const { links = [], initLinks, setLinksAndSync } = useLinksContext();
   const { categories = [], initCategories, unlockedCategoryIds } = useCategoriesContext();
   const { initConfig } = useConfigContext();
   const initialized = useRef(false);
 
+  // 从 localStorage 加载
   const loadFromLocal = useCallback((): { links: LinkItem[]; categories: Category[] } => {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_KEY);
@@ -18,6 +22,7 @@ export function useDataSync() {
         const parsed = JSON.parse(stored);
         let cats: Category[] = parsed.categories || DEFAULT_CATEGORIES;
 
+        // 确保 common 分类存在且排第一
         if (!cats.some((c: Category) => c.id === 'common')) {
           cats = [{ id: 'common', name: '常用推荐', icon: 'Star' }, ...cats];
         } else {
@@ -28,6 +33,7 @@ export function useDataSync() {
           }
         }
 
+        // 修复无效 categoryId
         const validIds = new Set(cats.map((c: Category) => c.id));
         let lnks: LinkItem[] = (parsed.links || INITIAL_LINKS).map((l: LinkItem) =>
           validIds.has(l.categoryId) ? l : { ...l, categoryId: 'common' }
@@ -41,6 +47,7 @@ export function useDataSync() {
     return { links: INITIAL_LINKS, categories: DEFAULT_CATEGORIES };
   }, []);
 
+  // 从 KV 加载链接和分类（带密码过滤）
   const loadFromCloud = useCallback(async (unlockedCats?: Set<string>): Promise<{ links: LinkItem[]; categories: Category[] } | null> => {
     try {
       const unlockedArray = unlockedCats ? Array.from(unlockedCats) : [];
@@ -57,6 +64,7 @@ export function useDataSync() {
     }
   }, []);
 
+  // 从 KV 加载各个配置
   const loadConfigsFromCloud = useCallback(async () => {
     const configKeys = ['search', 'website', 'ai', 'weather', 'mastodon', 'icon'];
     const configMap: Record<string, any> = {};
@@ -81,14 +89,17 @@ export function useDataSync() {
     }
   }, [initConfig]);
 
+  // 初始化数据
   const initData = useCallback(async (unlockedCats?: Set<string>) => {
     if (initialized.current) return;
     initialized.current = true;
 
+    // 1. 先从本地加载（快速展示）
     const local = loadFromLocal();
     initLinks(local.links);
     initCategories(local.categories);
 
+    // 2. 并行从云端获取最新数据（带密码过滤）
     const [cloud] = await Promise.all([
       loadFromCloud(unlockedCats),
       loadConfigsFromCloud(),
@@ -108,6 +119,7 @@ export function useDataSync() {
     }
   }, [loadFromLocal, loadFromCloud, loadConfigsFromCloud, initLinks, initCategories]);
 
+  // 同步到云端
   const syncToCloud = useCallback(async () => {
     if (!links.length && !categories.length) return;
     setLinksAndSync(links, categories);

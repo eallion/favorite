@@ -275,7 +275,18 @@ export async function onRequest(context) {
       }
 
       if (body.saveConfig === 'categories') {
-        await kv.put(STORAGE_KEYS.CATEGORIES_CONFIG_KEY, JSON.stringify(body.categories));
+        // 读取现有分类数据，保留已有的 password 字段
+        const existingData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
+        const existingCategories = existingData ? JSON.parse(existingData) : [];
+        const existingPasswords = new Map(existingCategories.map(c => [c.id, c.password]));
+
+        // 合并：新分类数据 + 旧分类的 password
+        const mergedCategories = body.categories.map(cat => ({
+          ...cat,
+          password: cat.password || existingPasswords.get(cat.id) || undefined,
+        }));
+
+        await kv.put(STORAGE_KEYS.CATEGORIES_CONFIG_KEY, JSON.stringify(mergedCategories));
         return jsonResponse({ success: true }, 200, corsHeaders);
       }
 
@@ -300,13 +311,33 @@ export async function onRequest(context) {
 
       if (body.links && body.categories) {
         await saveCategoryLinks(kv, body.links);
-        await kv.put(STORAGE_KEYS.CATEGORIES_CONFIG_KEY, JSON.stringify(body.categories));
+        // 读取现有分类数据，保留已有的 password 字段
+        const existingData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
+        const existingCategories = existingData ? JSON.parse(existingData) : [];
+        const existingPasswords = new Map(existingCategories.map(c => [c.id, c.password]));
+
+        const mergedCategories = body.categories.map(cat => ({
+          ...cat,
+          password: cat.password || existingPasswords.get(cat.id) || undefined,
+        }));
+
+        await kv.put(STORAGE_KEYS.CATEGORIES_CONFIG_KEY, JSON.stringify(mergedCategories));
         return jsonResponse({ success: true }, 200, corsHeaders);
       } else if (body.links) {
         await saveCategoryLinks(kv, body.links);
         return jsonResponse({ success: true }, 200, corsHeaders);
       } else if (body.categories) {
-        await kv.put(STORAGE_KEYS.CATEGORIES_CONFIG_KEY, JSON.stringify(body.categories));
+        // 读取现有分类数据，保留已有的 password 字段
+        const existingData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
+        const existingCategories = existingData ? JSON.parse(existingData) : [];
+        const existingPasswords = new Map(existingCategories.map(c => [c.id, c.password]));
+
+        const mergedCategories = body.categories.map(cat => ({
+          ...cat,
+          password: cat.password || existingPasswords.get(cat.id) || undefined,
+        }));
+
+        await kv.put(STORAGE_KEYS.CATEGORIES_CONFIG_KEY, JSON.stringify(mergedCategories));
         return jsonResponse({ success: true }, 200, corsHeaders);
       }
 

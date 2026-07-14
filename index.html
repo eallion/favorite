@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="description" content="蜗牛个人导航 - 一个现代化的云端导航页面，帮助您管理和快速访问常用网站链接" />
     <meta name="keywords" content="导航,书签,云导航,网站导航,书签管理,CloudNav" />
     <meta name="author" content="eallion" />
@@ -52,6 +52,20 @@
       }
     })();
   </script>
+    <style>
+      /* iOS Safe Area Support */
+      .safe-area-top {
+        padding-top: env(safe-area-inset-top);
+      }
+      .safe-area-bottom {
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      /* Ensure header background extends to safe area */
+      header, .header-bg {
+        background-color: inherit;
+      }
+    </style>
+<base target="_blank">
 </head>
   <body class="bg-gray-50 text-slate-900 transition-colors duration-300">
     <div id="root"></div>

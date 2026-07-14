@@ -11,7 +11,6 @@ import { MainContent } from './MainContent';
 import { ContentSkeleton } from './ContentSkeleton';
 import { LinkItem, Category } from '../../../types';
 import AuthModal from '../../../components/AuthModal';
-
 const LinkModal = lazy(() => import('../../../components/LinkModal'));
 const CategoryManagerModal = lazy(() => import('../../../components/CategoryManagerModal'));
 const BackupModal = lazy(() => import('../../../components/BackupModal'));
@@ -21,14 +20,12 @@ const SettingsModal = lazy(() => import('../../../components/SettingsModal'));
 const SearchConfigModal = lazy(() => import('../../../components/SearchConfigModal'));
 const ContextMenu = lazy(() => import('../../../components/ContextMenu'));
 const QRCodeModal = lazy(() => import('../../../components/QRCodeModal'));
-
 export function AppLayout() {
   // Contexts
   const { authToken, requiresAuth, isCheckingAuth, capabilities, login, logout } = useAuthContext();
   const { links = [], addLink, updateLink, deleteLink, deleteLinks, setLinksAndSync } = useLinksContext();
   const { categories = [], categoryTree = [], setCategoriesAndSync, unlockedCategoryIds = new Set(), unlockCategory } = useCategoriesContext();
   const { ai: aiConfig, icon: iconConfig, viewMode, showPinnedWebsites, ticker, weather, website, webdav, search, setAI, setIcon, setWebsite, setShowPinned, setMastodon, setWeather, setWebDav, setSearch, setViewMode } = useConfigContext();
-
   // Hooks
   const { 
     searchQuery, setSearchQuery, searchResults, isMobileSearchOpen, setIsMobileSearchOpen, 
@@ -36,16 +33,13 @@ export function AppLayout() {
     isInternal, setIsInternal, handleSearch, visitorEngineId, setVisitorEngineId 
   } = useSearch();
   const { initData } = useDataSync();
-
   // UI State
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
-
   // Toggle States
   const [isDragSortMode, setIsDragSortMode] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-
   // Modal States
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -55,37 +49,31 @@ export function AppLayout() {
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
   const [isSearchConfigModalOpen, setIsSearchConfigModalOpen] = useState(false);
   const [catAuthModalData, setCatAuthModalData] = useState<Category | null>(null);
-
   // Edit State
   const [editingLink, setEditingLink] = useState<LinkItem | undefined>(undefined);
   const [prefillLink, setPrefillLink] = useState<Partial<LinkItem> | undefined>(undefined);
-
   // Batch Edit State
   const [isBatchEditMode, setIsBatchEditMode] = useState(false);
   const [selectedLinks, setSelectedLinks] = useState<Set<string>>(new Set());
-
   // Context Menu State
   const [contextMenu, setContextMenu] = useState<{
     isOpen: boolean;
     position: { x: number; y: number };
     link: LinkItem | null;
   }>({ isOpen: false, position: { x: 0, y: 0 }, link: null });
-
   // QR Code Modal State
   const [qrCodeModal, setQrCodeModal] = useState<{
     isOpen: boolean; url: string; title: string;
   }>({ isOpen: false, url: '', title: '' });
-
   // Drag sort confirmation state
   const [pendingDragLinks, setPendingDragLinks] = useState<{ links: LinkItem[]; categories: Category[] } | null>(null);
-
   // Initialize data
   useEffect(() => {
     const init = async () => {
-      await initData();
+      // ========== 修改2：initData 传入参数 ==========
+      await initData(unlockedCategoryIds);
       setIsInitialLoading(false);
     };
-
     // Global keyboard listener for search focus
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       // Ignore if user is already typing in an input/textarea
@@ -95,7 +83,6 @@ export function AppLayout() {
                      (activeElement as HTMLElement)?.isContentEditable;
       
       if (isInput) return;
-
       // Global Escape handler to close and clear search
       if (e.key === 'Escape') {
         if (isSearchExpanded) {
@@ -105,30 +92,25 @@ export function AppLayout() {
         }
         return;
       }
-
       // Ignore modifier keys and special keys
       if (e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.key.length !== 1 && e.key !== 'Process') return; // 'Process' is for IME
-
       // Don't trigger if any modal is open or in edit modes
       if (isModalOpen || isAuthOpen || isCatManagerOpen || isBackupModalOpen || 
           isImportModalOpen || isSettingsModalOpen || isSearchConfigModalOpen ||
           isEditMode || isBatchEditMode || isDragSortMode) {
         return;
       }
-
       // Open search if collapsed
       if (!isSearchExpanded && !isMobileSearchOpen) {
         setIsSearchExpanded(true);
       }
-
       // If it's a normal English character, the browser's keypress event is usually swallowed
       // because the focus is moving from the body to the input. We must manually capture it.
       if (e.key !== 'Process') {
         setSearchQuery(prev => prev + e.key);
         e.preventDefault(); // Prevent double insertion just in case
       }
-
       // Delay micro-seconds to focus, allowing the character to naturally fall into the input box to wake up the IME
       setTimeout(() => {
         const searchInput = document.getElementById('search-input');
@@ -137,12 +119,11 @@ export function AppLayout() {
         }
       }, 0);
     };
-
     window.addEventListener('keydown', handleGlobalKeyDown);
     init();
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [initData]);
-
+  // ========== 修改3：依赖数组新增 unlockedCategoryIds ==========
+  }, [initData, unlockedCategoryIds]);
   // Apply dynamic website title and favicon
   useEffect(() => {
     if (aiConfig) {
@@ -157,14 +138,12 @@ export function AppLayout() {
       link.href = aiConfig.faviconUrl || '/favicon.ico';
     }
   }, [aiConfig?.websiteTitle, aiConfig?.faviconUrl]);
-
   // Close auth modal on login
   useEffect(() => {
     if (authToken) {
       setIsAuthOpen(false);
     }
   }, [authToken]);
-
   // Handle URL params for bookmarklet
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -177,20 +156,17 @@ export function AppLayout() {
       setIsModalOpen(true);
     }
   }, []);
-
   // --- Handlers ---
   const handleAddLink = useCallback(() => {
     setEditingLink(undefined);
     setPrefillLink(undefined);
     setIsModalOpen(true);
   }, []);
-
   const handleEditLink = useCallback((link: LinkItem) => {
     setEditingLink(link);
     setPrefillLink(undefined);
     setIsModalOpen(true);
   }, []);
-
   const handleDeleteLink = useCallback((id: string) => {
     if (confirm('确定删除此链接吗？')) {
       const linkToDelete = links.find(l => l.id === id);
@@ -248,7 +224,6 @@ export function AppLayout() {
       setLinksAndSync(links.filter(l => l.id !== id), categories);
     }
   }, [deleteLink, links, categories, setLinksAndSync, authToken]);
-
   const handleSaveLink = useCallback((data: Omit<LinkItem, 'id' | 'createdAt'>) => {
     if (editingLink) {
       const updated = links.map(l => l.id === editingLink.id ? { ...l, ...data } : l);
@@ -265,7 +240,6 @@ export function AppLayout() {
     setEditingLink(undefined);
     setPrefillLink(undefined);
   }, [editingLink, links, categories, setLinksAndSync, authToken]);
-
   // Context menu handlers
   const handleContextMenu = useCallback((e: React.MouseEvent, link: LinkItem) => {
     if (isBatchEditMode || !authToken) return;
@@ -273,11 +247,9 @@ export function AppLayout() {
     e.stopPropagation();
     setContextMenu({ isOpen: true, position: { x: e.clientX, y: e.clientY }, link });
   }, [isBatchEditMode, authToken]);
-
   const closeContextMenu = useCallback(() => {
     setContextMenu({ isOpen: false, position: { x: 0, y: 0 }, link: null });
   }, []);
-
   const deleteLinkFromContextMenu = useCallback(() => {
     if (!contextMenu.link) return;
     if (confirm(`确定要删除"${contextMenu.link.title}"吗？`)) {
@@ -285,13 +257,11 @@ export function AppLayout() {
     }
     closeContextMenu();
   }, [contextMenu.link, handleDeleteLink, closeContextMenu]);
-
   const editLinkFromContextMenu = useCallback(() => {
     if (!contextMenu.link) return;
     handleEditLink(contextMenu.link);
     closeContextMenu();
   }, [contextMenu.link, handleEditLink, closeContextMenu]);
-
   const togglePinFromContextMenu = useCallback(() => {
     if (!contextMenu.link) return;
     const updated = links.map(l => {
@@ -304,13 +274,11 @@ export function AppLayout() {
     setLinksAndSync(updated, categories);
     closeContextMenu();
   }, [contextMenu.link, links, categories, setLinksAndSync, closeContextMenu]);
-
   // Batch edit handlers
   const toggleBatchEditMode = useCallback(() => {
     setIsBatchEditMode(prev => !prev);
     setSelectedLinks(new Set());
   }, []);
-
   const toggleLinkSelection = useCallback((linkId: string) => {
     setSelectedLinks(prev => {
       const next = new Set(prev);
@@ -319,7 +287,6 @@ export function AppLayout() {
       return next;
     });
   }, []);
-
   const handleBatchDelete = useCallback(() => {
     if (selectedLinks.size === 0) return;
     if (confirm(`确定要删除选中的 ${selectedLinks.size} 个链接吗？`)) {
@@ -382,22 +349,27 @@ export function AppLayout() {
       setIsBatchEditMode(false);
     }
   }, [selectedLinks, links, categories, setLinksAndSync, authToken]);
-
   // Weight change handler
   const handleWeightChange = useCallback((linkId: string, weight: number) => {
     const updated = links.map(l => l.id === linkId ? { ...l, weight } : l);
     setLinksAndSync(updated, categories);
   }, [links, categories, setLinksAndSync]);
-
   // Toggle handlers
   const toggleDragSortMode = useCallback(() => {
     setIsDragSortMode(prev => !prev);
   }, []);
-
   const toggleEditMode = useCallback(() => {
     setIsEditMode(prev => !prev);
   }, []);
-
+  // ========== 修改4：新增解锁分类回调函数 ==========
+  const handleUnlockCategory = useCallback((cat: Category) => {
+    if (cat.hasPassword && !unlockedCategoryIds.has(cat.id)) {
+      setCatAuthModalData(cat);
+    } else {
+      // 解锁后刷新数据
+      initData(unlockedCategoryIds);
+    }
+  }, [unlockedCategoryIds, initData]);
   // Loading state
   if (isInitialLoading) {
     return (
@@ -431,7 +403,6 @@ export function AppLayout() {
       </div>
     );
   }
-
   return (
     <div className="flex h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden text-slate-900 dark:text-slate-50">
       {/* Sidebar */}
@@ -441,12 +412,9 @@ export function AppLayout() {
         activeCategoryId={activeCategoryId}
         onOpenCatManager={() => setIsCatManagerOpen(true)}
         onOpenBackup={() => setIsBackupModalOpen(true)}
-        onUnlockCategory={(cat) => {
-          setCatAuthModalData(cat);
-          setSidebarOpen(false);
-        }}
+        {/* ========== 修改5：替换原解锁回调为新函数 ========== */}
+        onUnlockCategory={handleUnlockCategory}
       />
-
       {/* Main area */}
       <div className="flex-1 flex flex-col min-w-0">
         <Header
@@ -475,7 +443,6 @@ export function AppLayout() {
           visitorEngineId={visitorEngineId}
           onVisitorEngineChange={setVisitorEngineId}
         />
-
         <MainContent
           searchQuery={searchQuery}
           searchResults={searchResults}
@@ -491,14 +458,12 @@ export function AppLayout() {
           isInternal={isInternal}
         />
       </div>
-
       {/* Auth Modal */}
       <AuthModal
         isOpen={isAuthOpen}
         onLogin={login}
         onClose={() => setIsAuthOpen(false)}
       />
-
       {/* Other Modals */}
       <Suspense fallback={null}>
         {isModalOpen && (
@@ -515,7 +480,6 @@ export function AppLayout() {
             supportsUpload={capabilities?.upload ?? true}
           />
         )}
-
         {isCatManagerOpen && (
           <CategoryManagerModal
             isOpen={isCatManagerOpen}
@@ -528,7 +492,6 @@ export function AppLayout() {
             }}
           />
         )}
-
         {isBackupModalOpen && (
           <BackupModal
             isOpen={isBackupModalOpen}
@@ -544,7 +507,6 @@ export function AppLayout() {
             onRestoreAIConfig={setAI}
           />
         )}
-
         {isImportModalOpen && (
           <ImportModal
             isOpen={isImportModalOpen}
@@ -554,7 +516,6 @@ export function AppLayout() {
             onImport={(newLinks, newCats) => setLinksAndSync(newLinks, newCats)}
           />
         )}
-
         {isSettingsModalOpen && (
           <SettingsModal
             isOpen={isSettingsModalOpen}
@@ -578,14 +539,12 @@ export function AppLayout() {
             supportsUpload={capabilities?.upload ?? true}
           />
         )}
-
         {isSearchConfigModalOpen && (
           <SearchConfigModal
             isOpen={isSearchConfigModalOpen}
             onClose={() => setIsSearchConfigModalOpen(false)}
           />
         )}
-
         {catAuthModalData && (
           <CategoryAuthModal
             isOpen={true}
@@ -594,7 +553,6 @@ export function AppLayout() {
             onUnlock={(id) => { unlockCategory(id); setCatAuthModalData(null); }}
           />
         )}
-
         {contextMenu.isOpen && (
           <ContextMenu
             isOpen={contextMenu.isOpen}
@@ -616,7 +574,6 @@ export function AppLayout() {
             }}
           />
         )}
-
         {qrCodeModal.isOpen && (
           <QRCodeModal
             isOpen={qrCodeModal.isOpen}

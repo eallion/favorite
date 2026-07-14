@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, X, Plus, Moon, Sun, Menu, Settings, Upload, CheckSquare, LogOut, Lock, GripVertical, Edit3, ChevronLeft, ChevronRight, Layers } from 'lucide-react';
+import { Search, X, Plus, Moon, Sun, Menu, Settings, Upload, CheckSquare, LogOut, Lock, GripVertical, Edit3, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Layers } from 'lucide-react';
 import { useConfigContext } from '../../contexts/ConfigContext';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { useLinksContext } from '../../contexts/LinksContext';
@@ -168,6 +168,7 @@ export function Header({
   const { syncStatus } = useLinksContext();
   const [showDropdown, setShowDropdown] = useState(false);
   const [isToolsExpanded, setIsToolsExpanded] = useState(true);
+  const [isMobileToolsOpen, setIsMobileToolsOpen] = useState(false);
   const dropdownTimer = useRef<NodeJS.Timeout | null>(null);
 
   const engine = visitorEngineId || search?.defaultEngine || 'internal';
@@ -336,16 +337,14 @@ export function Header({
             {darkMode ? <Sun size={18} /> : <Moon size={18} />}
           </button>
 
-          {/* GitHub link */}
-          <a
-            href="https://github.com/eallion/favorite"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${isMobileSearchOpen ? 'hidden' : 'flex'} items-center justify-center p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[36px] min-w-[36px] transition-colors`}
-            title="Favorite on GitHub"
+          {/* Mobile tools toggle */}
+          <button
+            onClick={() => setIsMobileToolsOpen(!isMobileToolsOpen)}
+            className={`${isMobileSearchOpen ? 'hidden' : 'flex'} items-center justify-center p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[36px] min-w-[36px] transition-colors cursor-pointer`}
+            title={isMobileToolsOpen ? "收起工具" : "展开工具"}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12c0 5.303 3.438 9.8 8.205 11.385c.6.113.82-.258.82-.577c0-.285-.01-1.04-.015-2.04c-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729c1.205.084 1.838 1.236 1.838 1.236c1.07 1.835 2.809 1.305 3.495.998c.108-.776.417-1.305.76-1.605c-2.665-.3-5.466-1.332-5.466-5.93c0-1.31.465-2.38 1.235-3.22c-.135-.303-.54-1.523.105-3.176c0 0 1.005-.322 3.3 1.23c.96-.267 1.98-.399 3-.405c1.02.006 2.04.138 3 .405c2.28-1.552 3.285-1.23 3.285-1.23c.645 1.653.24 2.873.12 3.176c.765.84 1.23 1.91 1.23 3.22c0 4.61-2.805 5.625-5.475 5.92c.42.36.81 1.096.81 2.22c0 1.606-.015 2.896-.015 3.286c0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-          </a>
+            {isMobileToolsOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+          </button>
 
           {/* Removed sync status indicator block */}
 
@@ -451,6 +450,93 @@ export function Header({
           )}
         </div>
       </div>
+
+      {/* Mobile Tools Dropdown Panel */}
+      {isMobileToolsOpen && (
+        <div className="md:hidden border-t border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 p-3 space-y-2">
+          {/* Search Input */}
+          <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-700 rounded-lg px-3 py-2">
+            <Search size={16} className="text-slate-400 shrink-0" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              placeholder="搜索书签..."
+              className="bg-transparent text-sm text-slate-800 dark:text-slate-200 outline-none w-full placeholder:text-slate-400"
+            />
+            {searchQuery && (
+              <button onClick={() => onSearchChange('')} className="p-1 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-full">
+                <X size={14} className="text-slate-400" />
+              </button>
+            )}
+          </div>
+
+          {/* Tools Grid */}
+          <div className="grid grid-cols-2 gap-2">
+            {authToken && (
+              <button onClick={onAddLink} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-medium">
+                <Plus size={16} />
+                <span>添加链接</span>
+              </button>
+            )}
+            <button onClick={onOpenSettings} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm">
+              <Settings size={16} />
+              <span>设置</span>
+            </button>
+            {authToken && (
+              <button onClick={onOpenCatManager} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm">
+                <FolderTree size={16} />
+                <span>分类管理</span>
+              </button>
+            )}
+            <button onClick={onOpenBackup} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm">
+              <Upload size={16} />
+              <span>备份</span>
+            </button>
+            {authToken && (
+              <button onClick={onToggleDragSortMode} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${isDragSortMode ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : 'bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300'}`}>
+                <GripVertical size={16} />
+                <span>{isDragSortMode ? '完成排序' : '拖动排序'}</span>
+              </button>
+            )}
+            {authToken && (
+              <button onClick={onToggleEditMode} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${isEditMode ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : 'bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300'}`}>
+                <Pencil size={16} />
+                <span>{isEditMode ? '完成编辑' : '编辑模式'}</span>
+              </button>
+            )}
+            {authToken && (
+              <button onClick={onToggleBatchEditMode} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm ${isBatchEditMode ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : 'bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300'}`}>
+                <CheckSquare size={16} />
+                <span>{isBatchEditMode ? '完成批量' : '批量编辑'}</span>
+              </button>
+            )}
+            {authToken && (
+              <button onClick={onLogout} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm">
+                <LogOut size={16} />
+                <span>退出</span>
+              </button>
+            )}
+            {!authToken && (
+              <button onClick={onOpenAuth} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-sm font-medium">
+                <Lock size={16} />
+                <span>登录</span>
+              </button>
+            )}
+          </div>
+
+          {/* GitHub Link */}
+          <a
+            href="https://github.com/eallion/favorite"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 24 24"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12c0 5.303 3.438 9.8 8.205 11.385c.6.113.82-.258.82-.577c0-.285-.01-1.04-.015-2.04c-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729c1.205.084 1.838 1.236 1.838 1.236c1.07 1.835 2.809 1.305 3.495.998c.108-.776.417-1.305.76-1.605c-2.665-.3-5.466-1.332-5.466-5.93c0-1.31.465-2.38 1.235-3.22c-.135-.303-.54-1.523.105-3.176c0 0 1.005-.322 3.3 1.23c.96-.267 1.98-.399 3-.405c1.02.006 2.04.138 3 .405c2.28-1.552 3.285-1.23 3.285-1.23c.645 1.653.24 2.873.12 3.176c.765.84 1.23 1.91 1.23 3.22c0 4.61-2.805 5.625-5.475 5.92c.42.36.81 1.096.81 2.22c0 1.606-.015 2.896-.015 3.286c0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+            <span>GitHub</span>
+          </a>
+        </div>
+      )}
     </header>
   );
 }

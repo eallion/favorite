@@ -24,6 +24,12 @@ export function Sidebar({ isOpen, onClose, activeCategoryId, onOpenCatManager, o
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleCategoryClick = useCallback((cat: CategoryWithChildren) => {
+    const isLocked = cat.hasPassword && !unlockedCategoryIds.has(cat.id);
+    if (isLocked) {
+      onUnlockCategory(cat as Category);
+      return;
+    }
+
     if (cat.children && cat.children.length > 0) {
       toggleExpand(cat.id);
       const targetId = cat.children[0]?.id || cat.id;
@@ -32,13 +38,13 @@ export function Sidebar({ isOpen, onClose, activeCategoryId, onOpenCatManager, o
       document.getElementById(`cat-${cat.id}`)?.scrollIntoView({ behavior: 'smooth' });
     }
     onClose();
-  }, [toggleExpand, onClose]);
+  }, [toggleExpand, onClose, unlockedCategoryIds, onUnlockCategory]);
 
   const renderCategoryNode = (cat: CategoryWithChildren, level: number = 0) => {
     const isExpanded = expandedCategories.has(cat.id);
     const isActive = activeCategoryId === cat.id;
     const hasChildren = cat.children && cat.children.length > 0;
-    const isLocked = cat.password && !unlockedCategoryIds.has(cat.id);
+    const isLocked = cat.hasPassword && !unlockedCategoryIds.has(cat.id);
 
     return (
       <div key={cat.id}>
@@ -59,7 +65,7 @@ export function Sidebar({ isOpen, onClose, activeCategoryId, onOpenCatManager, o
           </div>
           <div className={`flex flex-1 items-center overflow-hidden transition-all ease-in-out ${isCollapsed ? 'max-w-0 opacity-0 ml-0 duration-150' : 'max-w-[200px] opacity-100 ml-3 duration-300 delay-150'}`}>
             <span className="truncate flex-1 text-left">{cat.name}</span>
-            {hasChildren && (
+            {hasChildren && !isLocked && (
               <span className="text-slate-400 ml-2">
                 {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
               </span>
@@ -68,7 +74,7 @@ export function Sidebar({ isOpen, onClose, activeCategoryId, onOpenCatManager, o
           </div>
         </button>
 
-        {hasChildren && isExpanded && !isCollapsed && (
+        {hasChildren && isExpanded && !isCollapsed && !isLocked && (
           <div className="space-y-1 mt-1">
             {cat.children.map(child => renderCategoryNode(child, level + 1))}
           </div>
@@ -79,16 +85,13 @@ export function Sidebar({ isOpen, onClose, activeCategoryId, onOpenCatManager, o
 
   return (
     <>
-      {/* Overlay */}
       {isOpen && (
         <div className="fixed inset-0 z-20 bg-black/50 lg:hidden backdrop-blur-sm cursor-pointer" onClick={onClose} />
       )}
 
-      {/* Sidebar */}
       <aside className={`fixed lg:static inset-y-0 left-0 z-30 ${isCollapsed ? 'w-16' : 'w-64 lg:w-48 xl:w-64'} transform transition-all duration-300 ease-in-out bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col overflow-x-hidden ${
         isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
-        {/* Logo */}
         <div className="h-16 flex items-center justify-center relative border-b border-slate-100 dark:border-slate-700 shrink-0 transition-all duration-300">
           <span 
             className={`text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent flex items-center h-full whitespace-nowrap overflow-hidden transition-all ease-in-out ${
@@ -112,9 +115,7 @@ export function Sidebar({ isOpen, onClose, activeCategoryId, onOpenCatManager, o
           </button>
         </div>
 
-        {/* Categories List */}
         <div className="flex-1 overflow-y-auto p-4 space-y-1 scrollbar-hide">
-          {/* 置顶网站 */}
           {showPinnedWebsites && (
             <button
               onClick={() => {
@@ -133,7 +134,6 @@ export function Sidebar({ isOpen, onClose, activeCategoryId, onOpenCatManager, o
             </button>
           )}
 
-          {/* 分类目录标题 */}
           <div className={`flex items-center justify-between px-4 transition-all duration-300 overflow-hidden ${isCollapsed ? 'h-0 opacity-0 mt-0 mb-0' : 'h-10 mt-4 mb-2 opacity-100'}`}>
             <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider whitespace-nowrap">分类目录</span>
             {authToken && (
@@ -148,11 +148,9 @@ export function Sidebar({ isOpen, onClose, activeCategoryId, onOpenCatManager, o
           </div>
           <div className={`mx-2 border-b border-slate-100 dark:border-slate-700/50 transition-all duration-300 ${isCollapsed ? 'mb-4 mt-2' : 'mb-0 mt-0 h-0 border-transparent opacity-0'}`}></div>
 
-          {/* 分类树 */}
           {categoryTree.map(cat => renderCategoryNode(cat, 0))}
         </div>
 
-        {/* Footer - Spacer or simple copyright if needed */}
         <div className="flex-shrink-0" />
       </aside>
     </>

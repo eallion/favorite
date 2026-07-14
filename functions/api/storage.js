@@ -60,13 +60,7 @@ async function readAllCategoryLinks(kv, categories, unlockedCategories = new Set
     }
 
     const data = await kv.get(categoryLinksKey(cat.id));
-    const links = data ? JSON.parse(data) : [];
-
-    // 过滤私人书签：未登录时隐藏
-    if (!isAdmin) {
-      return links.filter(link => !link.isPrivate);
-    }
-    return links;
+    return data ? JSON.parse(data) : [];
   });
 
   const linkArrays = await Promise.all(linkPromises);
@@ -191,11 +185,6 @@ export async function onRequest(context) {
 
           const data = await kv.get(categoryLinksKey(category));
           const links = data ? JSON.parse(data) : [];
-
-          // 过滤私人书签
-          if (!isAdmin) {
-            return jsonResponse(links.filter(link => !link.isPrivate), 200, corsHeaders);
-          }
           return jsonResponse(links, 200, corsHeaders);
         }
 

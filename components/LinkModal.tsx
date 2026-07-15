@@ -447,7 +447,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
         case 'google':
           iconUrl = `/api/favicon?domain=${domain}`;
           break;
-       case 'xinac':
+        case 'xinac':
           iconUrl = `https://api.xinac.net/icon/?url=${encodeURIComponent(url)}`;
           break;
         default:
@@ -703,7 +703,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
                 </div>
               )}
 
-              {(iconType === 'faviconextractor' || iconType === 'google') && (
+              {(iconType === 'faviconextractor' || iconType === 'google' || iconType === 'xinac') && (
                 <div className="flex gap-2">
                   <input
                     type="url"

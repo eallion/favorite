@@ -315,7 +315,7 @@ export function Header({
           )}
 
           {/* Weather display */}
-          <div className="shrink-0">
+          <div className={`shrink-0 ${isToolsExpanded ? 'hidden' : ''}`}>
             <WeatherDisplay config={weather} />
           </div>
 
@@ -323,7 +323,7 @@ export function Header({
 
           {/* View mode toggle */}
           <div 
-            className={`${isMobileSearchOpen ? 'hidden' : 'flex'} items-center bg-slate-200 dark:bg-slate-700 rounded-full h-[28px] sm:h-[36px] shrink-0 p-0.5`}
+            className={`${isMobileSearchOpen || isToolsExpanded ? 'hidden' : 'flex'} items-center bg-slate-200 dark:bg-slate-700 rounded-full h-[28px] sm:h-[36px] shrink-0 p-0.5`}
           >
             <button
               onClick={() => setViewMode('compact')}
@@ -346,7 +346,7 @@ export function Header({
           </div>
 
           {/* Theme toggle */}
-          <button onClick={() => setDarkMode(!darkMode)} className={`${isMobileSearchOpen ? 'hidden' : 'flex'} items-center justify-center p-1.5 sm:p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer`}>
+          <button onClick={() => setDarkMode(!darkMode)} className={`${isMobileSearchOpen || isToolsExpanded ? 'hidden' : 'flex'} items-center justify-center p-1.5 sm:p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer`}>
             {darkMode ? <Sun size={18} /> : <Moon size={18} />}
           </button>
 

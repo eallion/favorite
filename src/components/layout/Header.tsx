@@ -368,6 +368,15 @@ export function Header({
                 }`}
               >
                 <div className="flex items-center gap-0.5 sm:gap-1 pr-0.5 sm:pr-1">
+
+                  {/* Toggle Button */}
+                  <button 
+                    onClick={() => setIsToolsExpanded(!isToolsExpanded)}
+                    className={`flex items-center justify-center p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all flex-shrink-0 ${isToolsExpanded ? 'rotate-180' : 'rotate-0'}`}
+                    title={isToolsExpanded ? "折叠工具栏" : "展开工具栏"}
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
                   {/* Settings */}
                   <button
                     onClick={onOpenSettings}
@@ -431,14 +440,6 @@ export function Header({
                     <LogOut size={16} className="sm:w-[18px] sm:h-[18px]" />
                   </button>
 
-                  {/* Toggle Button */}
-              <button 
-                onClick={() => setIsToolsExpanded(!isToolsExpanded)}
-                className={`flex items-center justify-center p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all flex-shrink-0 ${isToolsExpanded ? 'rotate-180' : 'rotate-0'}`}
-                title={isToolsExpanded ? "折叠工具栏" : "展开工具栏"}
-              >
-                <ChevronLeft size={18} className="sm:w-5 sm:h-5" />
-              </button>
                 </div>
               </div>
 

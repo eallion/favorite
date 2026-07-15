@@ -201,7 +201,7 @@ export function Header({
 
         {/* Mobile Search Bar - Expands to fill space */}
         {isMobileSearchOpen && (
-          <div className="flex-1 flex items-center gap-2 md:hidden ml-2">
+          <div className="flex-1 flex items-center gap-2 md:hidden">
             <div className="relative flex-1">
               <div 
                 className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center h-full"
@@ -237,8 +237,7 @@ export function Header({
                 onChange={(e) => onSearchChange(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && onSearch(searchQuery)}
                 placeholder={isInternal ? "搜索站内链接，点击图标（彩色时）搜索互联网" : "搜索互联网，点击图标（灰色时）站内搜索"}
-                className="w-full pl-9 pr-4 py-2 h-[36px] rounded-full bg-slate-200 dark:bg-slate-700 border-none text-xs focus:ring-2 focus:ring-blue-500 dark:text-white placeholder-slate-400 outline-none transition-all leading-none"
-                style={{ fontSize: '16px' }}
+                className="w-full pl-9 pr-4 py-2 h-[36px] rounded-full bg-slate-200 dark:bg-slate-700 border-none text-base focus:ring-2 focus:ring-blue-500 dark:text-white placeholder-slate-400 outline-none transition-all leading-none"
                 inputMode="search"
                 enterKeyHint="search"
               />
@@ -262,11 +261,11 @@ export function Header({
           </div>
         )}
 
-        {/* Middle: Spacer */}
-        <div className={`${isMobileSearchOpen ? 'hidden md:flex' : 'flex-1'}`} />
+        {/* Middle: Spacer - 手机端搜索展开时隐藏，其他情况占满 */}
+        <div className={`${isMobileSearchOpen ? 'hidden md:flex' : 'hidden md:flex'} flex-1`} />
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-1 sm:gap-2 flex-wrap sm:flex-nowrap justify-end">
+        <div className="flex items-center gap-1 sm:gap-2 flex-nowrap justify-end relative">
           {/* Ticker & Search Shared Container */}
           <div className="hidden md:flex items-center gap-2 w-[240px] lg:w-[360px] xl:w-[512px] shrink-0">
             {/* 1. Ticker (Now First) */}
@@ -339,19 +338,33 @@ export function Header({
           {/* Removed sync status indicator block */}
 
           {authToken ? (
-            <div className={`${isMobileSearchOpen ? 'hidden' : 'flex'} flex-wrap sm:flex-nowrap items-center gap-1 sm:gap-1 max-w-[calc(100vw-180px)] sm:max-w-none`}>
+            <div className={`${isMobileSearchOpen ? 'hidden' : 'flex'} items-center gap-1 sm:gap-1 relative`}>
               {/* Add link - Always visible as primary action */}
               <button onClick={onAddLink} className="flex items-center justify-center p-1.5 sm:p-2 rounded-full text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer flex-shrink-0" title="添加链接">
                 <Plus size={18} className="sm:w-5 sm:h-5" />
               </button>
 
-              <div className="h-4 w-[1px] bg-slate-300 dark:bg-slate-600 mx-0.5 sm:mx-1 flex-shrink-0" />
+              <div className="hidden sm:block h-4 w-[1px] bg-slate-300 dark:bg-slate-600 mx-0.5 sm:mx-1 flex-shrink-0" />
 
-              {/* Collapsible Tools Area */}
+              {/* ========== 手机端工具栏浮层 ========== */}
+              {/* PC端：正常内联展开；手机端：绝对定位到上方 */}
               <div 
-                className={`flex items-center gap-0.5 sm:gap-1 transition-all duration-500 ease-in-out overflow-hidden ${
-                  isToolsExpanded ? 'max-w-[500px] sm:max-w-[400px] opacity-100' : 'max-w-0 opacity-0'
-                }`}
+                className={`
+                  flex items-center gap-0.5 sm:gap-1 transition-all duration-300 ease-in-out
+                  /* PC端：正常内联，受 max-width 控制 */
+                  sm:relative sm:overflow-hidden
+                  ${isToolsExpanded ? 'sm:max-w-[500px] sm:opacity-100' : 'sm:max-w-0 sm:opacity-0'}
+                  /* 手机端：绝对定位浮层 */
+                  absolute right-0 -top-11
+                  bg-white dark:bg-slate-800 sm:bg-transparent dark:sm:bg-transparent
+                  rounded-lg sm:rounded-none
+                  shadow-lg sm:shadow-none
+                  border border-slate-200 dark:border-slate-700 sm:border-none
+                  p-1 sm:p-0
+                  z-50
+                  /* 手机端展开/折叠 */
+                  ${isToolsExpanded ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-1 pointer-events-none'}
+                `}
               >
                 <div className="flex items-center gap-0.5 sm:gap-1 pr-0.5 sm:pr-1">
                   {/* Settings */}
@@ -422,7 +435,7 @@ export function Header({
               {/* Toggle Button */}
               <button 
                 onClick={() => setIsToolsExpanded(!isToolsExpanded)}
-                className={`flex items-center justify-center p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all flex-shrink-0 ${isToolsExpanded ? 'rotate-180' : 'rotate-0'}`}
+                className={`flex items-center justify-center p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all flex-shrink-0 ${isToolsExpanded ? 'rotate-180 sm:rotate-180' : 'rotate-0'}`}
                 title={isToolsExpanded ? "折叠工具栏" : "展开工具栏"}
               >
                 <ChevronLeft size={18} className="sm:w-5 sm:h-5" />
@@ -569,7 +582,7 @@ function HeaderSearch({
             if (e.key === 'Escape') handleClose();
           }}
           placeholder={isInternal ? "搜索站内链接，点击图标（彩色时）搜索互联网" : "搜索互联网，点击图标（灰色时）站内搜索"}
-          className={`bg-transparent border-none text-xs focus:ring-0 dark:text-white placeholder-slate-400 outline-none h-full transition-all duration-300 ${
+          className={`bg-transparent border-none text-base focus:ring-0 dark:text-white placeholder-slate-400 outline-none h-full transition-all duration-300 ${
             isExpanded ? 'flex-1 min-w-0 opacity-100' : 'w-0 opacity-0 pointer-events-none'
           }`}
           tabIndex={isExpanded ? 0 : -1}

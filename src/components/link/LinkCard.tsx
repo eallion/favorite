@@ -270,7 +270,7 @@ export function LinkCard({
                     {iconSrc ? <img src={iconSrc} alt="" className="w-6 h-6" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
                   </div>
                   {link.isPrivate && (
-                    <span className="absolute -top-1 -left-1 text-xs" title="私人书签">🔒</span>
+                    <span className="absolute top-0.5 right-0.5 text-[10px] leading-none" title="私人书签">🔒</span>
                   )}
                 </div>
                 <h3 className="flex-1 min-w-0 text-slate-800 dark:text-slate-200 text-base font-medium overflow-hidden text-ellipsis whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
@@ -287,7 +287,7 @@ export function LinkCard({
                   {iconSrc ? <img src={iconSrc} alt="" className="w-10 h-10" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
                 </div>
                 {link.isPrivate && (
-                  <span className="absolute -top-1 -left-1 text-sm" title="私人书签">🔒</span>
+                  <span className="absolute top-1 right-1 text-xs leading-none" title="私人书签">🔒</span>
                 )}
               </div>
               <div className="hidden md:flex flex-1 min-w-0 flex-col justify-start w-full">
@@ -309,7 +309,7 @@ export function LinkCard({
                 {iconSrc ? <img src={iconSrc} alt="" className="w-6 h-6" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
               </div>
               {link.isPrivate && (
-                <span className="absolute -top-1 -left-1 text-xs" title="私人书签">🔒</span>
+                <span className="absolute top-0.5 right-0.5 text-[10px] leading-none" title="私人书签">🔒</span>
               )}
             </div>
             <div className="flex-1 min-w-0">

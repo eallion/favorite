@@ -429,7 +429,7 @@ export function Header({
                 </button>
               </div>
             </div>
-          ) : () : (
+          ) : (
             <button
               onClick={onOpenAuth}
               className={`${isMobileSearchOpen ? 'hidden' : 'flex'} lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer`}

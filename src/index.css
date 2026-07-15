@@ -444,22 +444,6 @@ input, textarea, select {
     display: none;
   }
 }
-/* iOS Safari 长按优化：阻止卡片上的文本选择和系统菜单 */
-.link-card {
-  -webkit-user-select: none;
-  user-select: none;
-  -webkit-touch-callout: none;
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-
-/* 但允许卡片内部的可交互元素（如输入框）正常选择文本 */
-.link-card input,
-.link-card textarea,
-.link-card [contenteditable] {
-  -webkit-user-select: auto;
-  user-select: auto;
-}
 
 /* iOS Safari 长按优化 - 仅触摸设备 */
 @media (hover: none) and (pointer: coarse) {

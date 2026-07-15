@@ -27,7 +27,12 @@ export function PinnedSection({
   onEditLink, onDeleteLink, onContextMenu, onDragEnd, sensors, authToken,
   isDraggable = false, isEditMode = false, onWeightChange,
 }: PinnedSectionProps) {
-  const sortedLinks = [...(links || [])].sort((a, b) => (a.pinnedOrder ?? 0) - (b.pinnedOrder ?? 0));
+  const sortedLinks = [...(links || [])].sort((a, b) => {
+    // 先按 weight 降序（数值大的靠前），再按 pinnedOrder 升序
+    const weightDiff = (b.weight ?? 0) - (a.weight ?? 0);
+    if (weightDiff !== 0) return weightDiff;
+    return (a.pinnedOrder ?? 0) - (b.pinnedOrder ?? 0);
+  });
 
   const gridClass = viewMode === 'detailed'
     ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'

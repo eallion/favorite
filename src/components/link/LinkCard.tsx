@@ -131,6 +131,10 @@ export function LinkCard({
   // ========== 修复：将触摸事件函数从文件底部移到此处 ==========
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     if (isBatchEditMode || isEditMode) return;
+
+    // 阻止 iOS Safari 默认的长按文本选择行为
+    e.preventDefault();
+
     const touch = e.touches[0];
     
     // 记录触摸起始位置
@@ -176,7 +180,12 @@ export function LinkCard({
   return (
     <div
       ref={mergedRef}
-      style={style}
+      style={{
+        ...style,
+        WebkitUserSelect: 'none',
+        userSelect: 'none',
+        WebkitTouchCallout: 'none',
+      }}
       data-color-ready={!!color || undefined}
       className={`link-card group relative transition-all duration-200 ${
         isSelected

@@ -77,7 +77,7 @@ function SearchEngineOptions({
     ...(search?.customEngineUrl ? [{ id: 'custom', name: '自定义' }] : []),
   ];
 
-  return (<>
+  return (
     <div 
       className="absolute top-full left-0 mt-1 py-2 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 w-32 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
       onMouseLeave={onClose}
@@ -168,7 +168,6 @@ export function Header({
   const { syncStatus } = useLinksContext();
   const [showDropdown, setShowDropdown] = useState(false);
   const [isToolsExpanded, setIsToolsExpanded] = useState(true);
-  
   const dropdownTimer = useRef<NodeJS.Timeout | null>(null);
 
   const engine = visitorEngineId || search?.defaultEngine || 'internal';
@@ -337,8 +336,7 @@ export function Header({
             {darkMode ? <Sun size={18} /> : <Moon size={18} />}
           </button>
 
-          {/* Mobile tools toggle */}
-{/* Removed sync status indicator block */}
+          {/* Removed sync status indicator block */}
 
           {authToken ? (
             <div className={`${isMobileSearchOpen ? 'hidden' : 'flex'} items-center gap-1`}>
@@ -442,25 +440,8 @@ export function Header({
           )}
         </div>
       </div>
-
-      {/* Mobile Tools Dropdown Panel */}
-</header>
-
-      {/* Mobile FAB - Toggle tools expansion */}
-      <button
-        onClick={() => setIsToolsExpanded(!isToolsExpanded)}
-        className={`md:hidden fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
-          isToolsExpanded
-            ? 'bg-blue-600 text-white rotate-180'
-            : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300'
-        }`}
-        style={{ boxShadow: isToolsExpanded ? '0 4px 20px rgba(37, 99, 235, 0.4)' : '0 4px 12px rgba(0,0,0,0.15)' }}
-        title={isToolsExpanded ? "折叠工具栏" : "展开工具栏"}
-      >
-        <ChevronLeft size={20} />
-      </button>
-
-  </>);
+    </header>
+  );
 }
 
 // Sub-component for the expandable desktop search

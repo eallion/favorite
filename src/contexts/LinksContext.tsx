@@ -113,11 +113,23 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
 
   const pinnedLinks = useMemo(() => {
     const pinned = visibleLinks.filter(l => l.pinned);
-    return [...pinned].sort((a, b) => (a.pinnedOrder ?? 0) - (b.pinnedOrder ?? 0));
+    return [...pinned].sort((a, b) => {
+      // 先按 weight 降序（数值大的靠前），再按 pinnedOrder 升序
+      const weightDiff = (b.weight ?? 0) - (a.weight ?? 0);
+      if (weightDiff !== 0) return weightDiff;
+      return (a.pinnedOrder ?? 0) - (b.pinnedOrder ?? 0);
+    });
   }, [visibleLinks]);
 
   const getLinksByCategory = useCallback((categoryId: string) => {
-    return visibleLinks.filter(l => l.categoryId === categoryId);
+    return visibleLinks
+      .filter(l => l.categoryId === categoryId)
+      .sort((a, b) => {
+        // 先按 weight 降序（数值大的靠前），weight 相同则按 order 升序
+        const weightDiff = (b.weight ?? 0) - (a.weight ?? 0);
+        if (weightDiff !== 0) return weightDiff;
+        return (a.order ?? 0) - (b.order ?? 0);
+      });
   }, [visibleLinks]);
 
   return (

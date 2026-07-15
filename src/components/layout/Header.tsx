@@ -279,11 +279,11 @@ export function Header({
           </div>
         )}
 
-        {/* Middle: Spacer */}
-        <div className={`${isMobileSearchOpen ? 'hidden md:flex' : 'flex-1'}`} />
+        {/* Middle: Spacer - PC端占用空间，移动端不占用 */}
+        <div className={`${isMobileSearchOpen ? 'hidden md:flex' : 'hidden md:flex flex-1'}`} />
 
         {/* Right: Actions */}
-        <div className={`flex items-center gap-1 sm:gap-2 flex-wrap sm:flex-nowrap justify-end ${isMobileSearchOpen ? 'hidden md:flex' : ''}`}>
+        <div className={`flex items-center gap-1 sm:gap-2 flex-wrap sm:flex-nowrap ${isMobileSearchOpen ? 'hidden md:flex' : 'justify-start md:justify-end'}`}>
           {/* Ticker & Search Shared Container */}
           <div className="hidden md:flex items-center gap-2 w-[240px] lg:w-[360px] xl:w-[512px] shrink-0">
             {/* 1. Ticker (Now First) */}

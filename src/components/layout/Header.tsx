@@ -201,7 +201,7 @@ export function Header({
 
         {/* Mobile Search Bar - Expands to fill space */}
         {isMobileSearchOpen && (
-          <div className="flex-1 flex items-center gap-2 md:hidden">
+          <div className="flex-1 flex items-center gap-2 md:hidden ml-2">
             <div className="relative flex-1">
               <div 
                 className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center h-full"
@@ -237,7 +237,8 @@ export function Header({
                 onChange={(e) => onSearchChange(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && onSearch(searchQuery)}
                 placeholder={isInternal ? "搜索站内链接，点击图标（彩色时）搜索互联网" : "搜索互联网，点击图标（灰色时）站内搜索"}
-                className="w-full pl-9 pr-4 py-2 h-[36px] rounded-full bg-slate-200 dark:bg-slate-700 border-none text-base focus:ring-2 focus:ring-blue-500 dark:text-white placeholder-slate-400 outline-none transition-all leading-none"
+                className="w-full pl-9 pr-4 py-2 h-[36px] rounded-full bg-slate-200 dark:bg-slate-700 border-none text-xs focus:ring-2 focus:ring-blue-500 dark:text-white placeholder-slate-400 outline-none transition-all leading-none"
+                style={{ fontSize: '16px' }}
                 inputMode="search"
                 enterKeyHint="search"
               />
@@ -261,11 +262,11 @@ export function Header({
           </div>
         )}
 
-        {/* Middle: Spacer - 手机端搜索展开时隐藏，其他情况占满 */}
-        <div className={`${isMobileSearchOpen ? 'hidden md:flex' : 'hidden md:flex'} flex-1`} />
+        {/* Middle: Spacer */}
+        <div className={`${isMobileSearchOpen ? 'hidden md:flex' : 'flex-1'}`} />
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-1 sm:gap-2 flex-nowrap justify-end relative">
+        <div className="flex items-center gap-1 sm:gap-2 flex-wrap sm:flex-nowrap">
           {/* Ticker & Search Shared Container */}
           <div className="hidden md:flex items-center gap-2 w-[240px] lg:w-[360px] xl:w-[512px] shrink-0">
             {/* 1. Ticker (Now First) */}
@@ -305,29 +306,29 @@ export function Header({
 
           {/* View mode toggle */}
           <div 
-            className={`${isMobileSearchOpen ? 'hidden' : 'flex'} items-center bg-slate-200 dark:bg-slate-700 rounded-full h-[32px] sm:h-[36px] shrink-0 border border-slate-300/50 p-0.5`}
+            className={`${isMobileSearchOpen ? 'hidden' : 'flex'} items-center bg-slate-200 dark:bg-slate-700 rounded-full h-[36px] shrink-0 border border-slate-300/50 p-0.5`}
             style={darkMode ? { border: 'none' } : {}}
           >
             <button
               onClick={() => setViewMode('compact')}
-              className={`px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-medium rounded-full transition-all flex items-center justify-center h-full min-w-[32px] sm:min-w-[40px] leading-none cursor-pointer ${
+              className={`px-3 py-2 text-xs font-medium rounded-full transition-all flex items-center justify-center h-full min-w-[40px] leading-none cursor-pointer ${
                 viewMode === 'compact'
                   ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-200/50'
                   : 'text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100'
               }`}
               style={darkMode && viewMode === 'compact' ? { border: 'none' } : {}}
               title="简约版视图"
-            ><span className="hidden sm:inline">简约</span><span className="sm:hidden text-[10px]">简</span></button>
+            >简约</button>
             <button
               onClick={() => setViewMode('detailed')}
-              className={`px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-medium rounded-full transition-all flex items-center justify-center h-full min-w-[32px] sm:min-w-[40px] leading-none cursor-pointer ${
+              className={`px-3 py-2 text-xs font-medium rounded-full transition-all flex items-center justify-center h-full min-w-[40px] leading-none cursor-pointer ${
                 viewMode === 'detailed'
                   ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-200/50'
                   : 'text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100'
               }`}
               style={darkMode && viewMode === 'detailed' ? { border: 'none' } : {}}
               title="详情版视图"
-            ><span className="hidden sm:inline">详情</span><span className="sm:hidden text-[10px]">详</span></button>
+            >详情</button>
           </div>
 
           {/* Theme toggle */}
@@ -338,110 +339,97 @@ export function Header({
           {/* Removed sync status indicator block */}
 
           {authToken ? (
-            <div className={`${isMobileSearchOpen ? 'hidden' : 'flex'} items-center gap-1 sm:gap-1 relative`}>
-              {/* Add link - Always visible as primary action */}
-              <button onClick={onAddLink} className="flex items-center justify-center p-1.5 sm:p-2 rounded-full text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer flex-shrink-0" title="添加链接">
-                <Plus size={18} className="sm:w-5 sm:h-5" />
-              </button>
+            <div className={`${isMobileSearchOpen ? 'hidden' : 'flex'} flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-1 w-full sm:w-auto`}>
+              {/* 第1层：始终显示的核心操作 */}
+              <div className="flex items-center gap-1">
+                {/* Add link */}
+                <button onClick={onAddLink} className="flex items-center justify-center p-1.5 sm:p-2 rounded-full text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer flex-shrink-0" title="添加链接">
+                  <Plus size={18} className="sm:w-5 sm:h-5" />
+                </button>
 
-              <div className="hidden sm:block h-4 w-[1px] bg-slate-300 dark:bg-slate-600 mx-0.5 sm:mx-1 flex-shrink-0" />
+                <div className="h-4 w-[1px] bg-slate-300 dark:bg-slate-600 mx-0.5 flex-shrink-0" />
 
-              {/* ========== 手机端工具栏浮层 ========== */}
-              {/* PC端：正常内联展开；手机端：绝对定位到上方 */}
-              <div 
-                className={`
-                  flex items-center gap-0.5 sm:gap-1 transition-all duration-300 ease-in-out
-                  /* PC端：正常内联，受 max-width 控制 */
-                  sm:relative sm:overflow-hidden
-                  ${isToolsExpanded ? 'sm:max-w-[500px] sm:opacity-100' : 'sm:max-w-0 sm:opacity-0'}
-                  /* 手机端：绝对定位浮层 */
-                  absolute right-0 -top-11
-                  bg-white dark:bg-slate-800 sm:bg-transparent dark:sm:bg-transparent
-                  rounded-lg sm:rounded-none
-                  shadow-lg sm:shadow-none
-                  border border-slate-200 dark:border-slate-700 sm:border-none
-                  p-1 sm:p-0
-                  z-50
-                  /* 手机端展开/折叠 */
-                  ${isToolsExpanded ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-1 pointer-events-none'}
-                `}
-              >
-                <div className="flex items-center gap-0.5 sm:gap-1 pr-0.5 sm:pr-1">
-                  {/* Settings */}
-                  <button
-                    onClick={onOpenSettings}
-                    className="flex items-center justify-center p-1.5 sm:p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer flex-shrink-0"
-                    title="系统设置"
-                  >
-                    <Settings size={16} className="sm:w-[18px] sm:h-[18px]" />
-                  </button>
-
-                  {/* Manage Categories */}
-                  <button
-                    onClick={onOpenCatManager}
-                    className="flex items-center justify-center p-1.5 sm:p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer flex-shrink-0"
-                    title="分类管理"
-                  >
-                    <Layers size={16} className="sm:w-[18px] sm:h-[18px]" />
-                  </button>
-
-                  {/* Backup/Restore */}
-                  <button
-                    onClick={onOpenBackup}
-                    className="flex items-center justify-center p-1.5 sm:p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer flex-shrink-0"
-                    title="备份恢复"
-                  >
-                    <Upload size={16} className="sm:w-[18px] sm:h-[18px]" />
-                  </button>
-
-                  {/* Drag sort toggle */}
-                  <button
-                    onClick={onToggleDragSortMode}
-                    className={`flex items-center justify-center p-1.5 sm:p-2 rounded-full h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer transition-colors flex-shrink-0 ${
-                      isDragSortMode
-                        ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400'
-                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
-                    }`}
-                    title={isDragSortMode ? '退出拖动排序' : '拖动排序'}
-                  >
-                    <GripVertical size={16} className="sm:w-[18px] sm:h-[18px]" />
-                  </button>
-
-                  {/* Edit mode toggle */}
-                  <button
-                    onClick={onToggleEditMode}
-                    className={`flex items-center justify-center p-1.5 sm:p-2 rounded-full h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer transition-colors flex-shrink-0 ${
-                      isEditMode
-                        ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
-                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
-                    }`}
-                    title={isEditMode ? '退出编辑卡片' : '编辑卡片'}
-                  >
-                    <Edit3 size={16} className="sm:w-[18px] sm:h-[18px]" />
-                  </button>
-
-                  {/* Batch edit */}
-                  <button onClick={onToggleBatchEditMode} className={`flex items-center justify-center p-1.5 sm:p-2 rounded-full h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer flex-shrink-0 ${isBatchEditMode ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`} title="批量编辑">
-                    <CheckSquare size={16} className="sm:w-[18px] sm:h-[18px]" />
-                  </button>
-
-                  {/* Logout */}
-                  <button onClick={logout} className="flex items-center justify-center p-1.5 sm:p-2 rounded-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer flex-shrink-0" title="退出登录">
-                    <LogOut size={16} className="sm:w-[18px] sm:h-[18px]" />
-                  </button>
-                </div>
+                {/* Toggle Button - 控制第2层 */}
+                <button 
+                  onClick={() => setIsToolsExpanded(!isToolsExpanded)}
+                  className={`flex items-center justify-center p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all flex-shrink-0 ${isToolsExpanded ? 'rotate-180' : 'rotate-0'}`}
+                  title={isToolsExpanded ? "折叠工具栏" : "展开工具栏"}
+                >
+                  <ChevronLeft size={18} className="sm:w-5 sm:h-5" />
+                </button>
               </div>
 
-              {/* Toggle Button */}
-              <button 
-                onClick={() => setIsToolsExpanded(!isToolsExpanded)}
-                className={`flex items-center justify-center p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all flex-shrink-0 ${isToolsExpanded ? 'rotate-180 sm:rotate-180' : 'rotate-0'}`}
-                title={isToolsExpanded ? "折叠工具栏" : "展开工具栏"}
+              {/* 第2层：展开后显示的工具按钮 */}
+              <div 
+                className={`flex items-center gap-0.5 sm:gap-1 transition-all duration-300 ease-in-out overflow-hidden ${
+                  isToolsExpanded ? 'max-h-[60px] opacity-100' : 'max-h-0 opacity-0 sm:max-h-[60px] sm:opacity-100'
+                }`}
               >
-                <ChevronLeft size={18} className="sm:w-5 sm:h-5" />
-              </button>
+                {/* Settings */}
+                <button
+                  onClick={onOpenSettings}
+                  className="flex items-center justify-center p-1.5 sm:p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer flex-shrink-0"
+                  title="系统设置"
+                >
+                  <Settings size={16} className="sm:w-[18px] sm:h-[18px]" />
+                </button>
+
+                {/* Manage Categories */}
+                <button
+                  onClick={onOpenCatManager}
+                  className="flex items-center justify-center p-1.5 sm:p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer flex-shrink-0"
+                  title="分类管理"
+                >
+                  <Layers size={16} className="sm:w-[18px] sm:h-[18px]" />
+                </button>
+
+                {/* Backup/Restore */}
+                <button
+                  onClick={onOpenBackup}
+                  className="flex items-center justify-center p-1.5 sm:p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer flex-shrink-0"
+                  title="备份恢复"
+                >
+                  <Upload size={16} className="sm:w-[18px] sm:h-[18px]" />
+                </button>
+
+                {/* Drag sort toggle */}
+                <button
+                  onClick={onToggleDragSortMode}
+                  className={`flex items-center justify-center p-1.5 sm:p-2 rounded-full h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer transition-colors flex-shrink-0 ${
+                    isDragSortMode
+                      ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                  }`}
+                  title={isDragSortMode ? '退出拖动排序' : '拖动排序'}
+                >
+                  <GripVertical size={16} className="sm:w-[18px] sm:h-[18px]" />
+                </button>
+
+                {/* Edit mode toggle */}
+                <button
+                  onClick={onToggleEditMode}
+                  className={`flex items-center justify-center p-1.5 sm:p-2 rounded-full h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer transition-colors flex-shrink-0 ${
+                    isEditMode
+                      ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                  }`}
+                  title={isEditMode ? '退出编辑卡片' : '编辑卡片'}
+                >
+                  <Edit3 size={16} className="sm:w-[18px] sm:h-[18px]" />
+                </button>
+
+                {/* Batch edit */}
+                <button onClick={onToggleBatchEditMode} className={`flex items-center justify-center p-1.5 sm:p-2 rounded-full h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer flex-shrink-0 ${isBatchEditMode ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'}`} title="批量编辑">
+                  <CheckSquare size={16} className="sm:w-[18px] sm:h-[18px]" />
+                </button>
+
+                {/* Logout */}
+                <button onClick={logout} className="flex items-center justify-center p-1.5 sm:p-2 rounded-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer flex-shrink-0" title="退出登录">
+                  <LogOut size={16} className="sm:w-[18px] sm:h-[18px]" />
+                </button>
+              </div>
             </div>
-          ) : (
+          ) : () : (
             <button
               onClick={onOpenAuth}
               className={`${isMobileSearchOpen ? 'hidden' : 'flex'} lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer`}
@@ -582,7 +570,7 @@ function HeaderSearch({
             if (e.key === 'Escape') handleClose();
           }}
           placeholder={isInternal ? "搜索站内链接，点击图标（彩色时）搜索互联网" : "搜索互联网，点击图标（灰色时）站内搜索"}
-          className={`bg-transparent border-none text-base focus:ring-0 dark:text-white placeholder-slate-400 outline-none h-full transition-all duration-300 ${
+          className={`bg-transparent border-none text-xs focus:ring-0 dark:text-white placeholder-slate-400 outline-none h-full transition-all duration-300 ${
             isExpanded ? 'flex-1 min-w-0 opacity-100' : 'w-0 opacity-0 pointer-events-none'
           }`}
           tabIndex={isExpanded ? 0 : -1}

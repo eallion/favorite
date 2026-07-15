@@ -298,7 +298,7 @@ export function Header({
           )}
 
           {/* Weather display */}
-          <div className="shrink-0 hidden sm:block">
+          <div className="shrink-0">
             <WeatherDisplay config={weather} />
           </div>
 
@@ -306,7 +306,7 @@ export function Header({
 
           {/* View mode toggle */}
           <div 
-            className={`${isMobileSearchOpen ? 'hidden' : 'hidden sm:flex'} items-center bg-slate-200 dark:bg-slate-700 rounded-full h-[32px] sm:h-[36px] shrink-0 border border-slate-300/50 p-0.5`}
+            className={`${isMobileSearchOpen ? 'hidden' : 'flex'} items-center bg-slate-200 dark:bg-slate-700 rounded-full h-[32px] sm:h-[36px] shrink-0 border border-slate-300/50 p-0.5`}
             style={darkMode ? { border: 'none' } : {}}
           >
             <button

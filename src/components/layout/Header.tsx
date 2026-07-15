@@ -77,7 +77,7 @@ function SearchEngineOptions({
     ...(search?.customEngineUrl ? [{ id: 'custom', name: '自定义' }] : []),
   ];
 
-  return (
+  return (<>
     <div 
       className="absolute top-full left-0 mt-1 py-2 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 w-32 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
       onMouseLeave={onClose}
@@ -200,7 +200,7 @@ export function Header({
           </h1>
         </div>
 
-        
+        {/* Mobile Search Bar - Expands to fill space */}
         {isMobileSearchOpen && (
           <div className="flex-1 flex items-center gap-2 md:hidden ml-2">
             <div className="relative flex-1">
@@ -460,7 +460,7 @@ export function Header({
         <ChevronLeft size={20} />
       </button>
 
-  );
+  </>);
 }
 
 // Sub-component for the expandable desktop search

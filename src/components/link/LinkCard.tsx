@@ -270,7 +270,7 @@ export function LinkCard({
                     {iconSrc ? <img src={iconSrc} alt="" className="w-6 h-6" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
                   </div>
                   {link.isPrivate && (
-                    <span className="absolute -top-1 -left-1 text-[10px] bg-purple-500 text-white rounded-full w-4 h-4 flex items-center justify-center shadow-sm" title="私人书签">🔒</span>
+                    <span className="absolute -top-0.5 -left-0.5 w-2 h-2 bg-blue-500 rounded-full shadow-sm" title="私人书签" />
                   )}
                 </div>
                 <h3 className="flex-1 min-w-0 text-slate-800 dark:text-slate-200 text-base font-medium overflow-hidden text-ellipsis whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
@@ -287,7 +287,7 @@ export function LinkCard({
                   {iconSrc ? <img src={iconSrc} alt="" className="w-10 h-10" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
                 </div>
                 {link.isPrivate && (
-                  <span className="absolute -top-1 -left-1 text-xs bg-purple-500 text-white rounded-full w-5 h-5 flex items-center justify-center shadow-sm" title="私人书签">🔒</span>
+                  <span className="absolute -top-0.5 -left-0.5 w-2.5 h-2.5 bg-blue-500 rounded-full shadow-sm" title="私人书签" />
                 )}
               </div>
               <div className="hidden md:flex flex-1 min-w-0 flex-col justify-start w-full">
@@ -309,7 +309,7 @@ export function LinkCard({
                 {iconSrc ? <img src={iconSrc} alt="" className="w-6 h-6" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
               </div>
               {link.isPrivate && (
-                <span className="absolute -top-1 -left-1 text-[10px] bg-purple-500 text-white rounded-full w-4 h-4 flex items-center justify-center shadow-sm" title="私人书签">🔒</span>
+                <span className="absolute -top-0.5 -left-0.5 w-2 h-2 bg-blue-500 rounded-full shadow-sm" title="私人书签" />
               )}
             </div>
             <div className="flex-1 min-w-0">

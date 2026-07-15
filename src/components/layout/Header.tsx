@@ -190,7 +190,7 @@ export function Header({
     <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-800/95 md:bg-white/80 md:dark:bg-slate-800/50 md:backdrop-blur-md border-b border-slate-200 dark:border-slate-700 safe-area-top">
       <div className="relative flex items-center justify-between px-4 lg:px-8 h-16">
         {/* Left: Menu + Logo */}
-        <div className={`flex items-center ${isMobileSearchOpen ? 'gap-0' : 'gap-3'}`}>
+        <div className={`flex items-center ${isMobileSearchOpen ? 'gap-0' : 'gap-1 sm:gap-3'}`}>
           <button onClick={onToggleSidebar} className="lg:hidden p-2 -ml-2 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg transition-colors">
             <Menu size={24} />
           </button>
@@ -361,6 +361,15 @@ export function Header({
 
               <div className="h-4 w-[1px] bg-slate-300 dark:bg-slate-600 mx-0.5 sm:mx-1 flex-shrink-0" />
 
+              {/* Toggle Button */}
+              <button 
+                onClick={() => setIsToolsExpanded(!isToolsExpanded)}
+                className={`flex items-center justify-center p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all flex-shrink-0 ${isToolsExpanded ? 'rotate-180' : 'rotate-0'}`}
+                title={isToolsExpanded ? "折叠工具栏" : "展开工具栏"}
+              >
+                <ChevronLeft size={18} />
+              </button>
+
               {/* Collapsible Tools Area */}
               <div 
                 className={`flex items-center gap-0.5 sm:gap-1 transition-all duration-500 ease-in-out ${
@@ -369,14 +378,6 @@ export function Header({
               >
                 <div className="flex items-center gap-0.5 sm:gap-1 pr-0.5 sm:pr-1">
 
-                  {/* Toggle Button */}
-                  <button 
-                    onClick={() => setIsToolsExpanded(!isToolsExpanded)}
-                    className={`flex items-center justify-center p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all flex-shrink-0 ${isToolsExpanded ? 'rotate-180' : 'rotate-0'}`}
-                    title={isToolsExpanded ? "折叠工具栏" : "展开工具栏"}
-                  >
-                    <ChevronLeft size={18} />
-                  </button>
                   {/* Settings */}
                   <button
                     onClick={onOpenSettings}

@@ -461,10 +461,10 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 dark:border-slate-700">
-        <div className="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-700">
-          <div className="flex items-center gap-2">
+    <div className="fixed inset-0 z-[60] flex items-start sm:items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md max-h-[92vh] sm:max-h-[85vh] overflow-hidden flex flex-col border border-slate-200 dark:border-slate-700 my-auto">
+        <div className="flex justify-between items-start sm:items-center p-4 border-b border-slate-200 dark:border-slate-700 gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <h3 className="text-lg font-semibold dark:text-white">
               {initialData ? '编辑链接' : '添加新链接'}
             </h3>
@@ -527,7 +527,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
           </button>
         </div>
 
-        <form onSubmit={handleSave} className="p-4 space-y-4">
+        <form onSubmit={handleSave} className="p-4 space-y-4 overflow-y-auto flex-1">
           <div>
             <label className="block text-sm font-medium mb-1 dark:text-slate-300">标题</label>
             <input
@@ -535,7 +535,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+              className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all text-base"
               placeholder="网站名称"
             />
           </div>
@@ -548,7 +548,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
                 required
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all text-base"
                 placeholder="example.com 或 https://..."
               />
             </div>
@@ -574,7 +574,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
                       setIcon('');
                     }
                   }}
-                  className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all text-base"
                 >
                   <option value="google">Google Favicon API (默认)</option>
                   <option value="faviconextractor">Favicon Extractor</option>
@@ -595,7 +595,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
                         setIcon(e.target.value);
                         setCustomIconUrl(e.target.value);
                       }}
-                      className="flex-1 p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                      className="flex-1 p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all text-base"
                       placeholder="https://example.com/icon.png"
                     />
                   </div>
@@ -629,13 +629,13 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
                       type="url"
                       value={customApiUrl}
                       onChange={(e) => setCustomApiUrl(e.target.value)}
-                      className="flex-1 p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                      className="flex-1 p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all text-base"
                       placeholder="https://api.example.com/icon"
                     />
                     <select
                       value={customApiParam}
                       onChange={(e) => setCustomApiParam(e.target.value as 'URL' | 'DOMAIN')}
-                      className="p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                      className="p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all text-base"
                     >
                       <option value="URL">URL参数</option>
                       <option value="DOMAIN">DOMAIN参数</option>
@@ -647,7 +647,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
                         type="url"
                         value={icon}
                         readOnly
-                        className="flex-1 p-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 dark:text-slate-400 text-sm"
+                        className="flex-1 p-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 dark:text-slate-400 text-base"
                         placeholder={`生成的图标地址: ${customApiUrl}?${customApiParam.toLowerCase()}=${customApiParam === 'URL' ? encodeURIComponent(url) : new URL(url).hostname}`}
                       />
                       <button
@@ -672,7 +672,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
                       type="url"
                       value={icon}
                       readOnly
-                      className="flex-1 p-2 rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-400 text-sm"
+                      className="flex-1 p-2 rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-400 text-base"
                       placeholder="上传图标后将自动生成路径"
                     />
                     <label className="cursor-pointer px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors flex items-center gap-1 font-medium shrink-0">
@@ -701,7 +701,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
                     type="url"
                     value={icon}
                     onChange={(e) => setIcon(e.target.value)}
-                    className="flex-1 p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                    className="flex-1 p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all text-base"
                     placeholder="留空自动获取图标"
                   />
                   <button
@@ -754,7 +754,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all h-20 resize-none"
+              className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all h-20 resize-none text-base"
               placeholder="简短描述..."
             />
           </div>
@@ -764,7 +764,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
             <select
             value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
-            className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+            className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all text-base"
             >
             {categories
                 .filter(cat => !cat.isSubcategory ? !hasSubCategories(cat.id) : true)
@@ -782,7 +782,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
               type="number"
               value={weight}
               onChange={(e) => setWeight(parseInt(e.target.value) || 0)}
-              className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+              className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all text-base"
               placeholder="数值越小越靠前"
             />
             <p className="text-[10px] text-slate-400 mt-1">控制在分类中的排序，数值越小越靠前。</p>
@@ -795,7 +795,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
                 type="number"
                 value={pinnedOrder}
                 onChange={(e) => setPinnedOrder(parseInt(e.target.value) || 0)}
-                className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                className="w-full p-2 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all text-base"
                 placeholder="数值越小越靠前"
               />
               <p className="text-[10px] text-slate-400 mt-1">控制在置顶区域的排序，数值越小越靠前。</p>

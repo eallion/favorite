@@ -15,6 +15,8 @@ export class IconService {
           return await this.getFaviconExtractorIcon(url);
         case 'google':
           return await this.getGoogleIcon(url);
+        case 'xinac':
+          return this.getXinacIcon(url);
         case 'customapi':
           return await this.getCustomApiIcon(url);
         case 'customurl':
@@ -39,6 +41,11 @@ export class IconService {
   private async getGoogleIcon(url: string): Promise<string> {
     const domain = new URL(url).hostname;
     return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+  }
+
+  // 2.5 Xinac 图标 API
+  private getXinacIcon(url: string): string {
+    return `https://api.xinac.net/icon/?url=${encodeURIComponent(url)}`;
   }
 
   // 3. 自定义API

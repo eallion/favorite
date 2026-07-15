@@ -430,10 +430,8 @@ export function Header({
                   <button onClick={logout} className="flex items-center justify-center p-1.5 sm:p-2 rounded-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer flex-shrink-0" title="退出登录">
                     <LogOut size={16} className="sm:w-[18px] sm:h-[18px]" />
                   </button>
-                </div>
-              </div>
 
-              {/* Toggle Button */}
+                  {/* Toggle Button */}
               <button 
                 onClick={() => setIsToolsExpanded(!isToolsExpanded)}
                 className={`flex items-center justify-center p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all flex-shrink-0 ${isToolsExpanded ? 'rotate-180' : 'rotate-0'}`}
@@ -441,6 +439,9 @@ export function Header({
               >
                 <ChevronLeft size={18} className="sm:w-5 sm:h-5" />
               </button>
+                </div>
+              </div>
+
             </div>
           ) : (
             <button

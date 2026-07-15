@@ -228,6 +228,8 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
             detectedType = 'faviconextractor';
           } else if (initialData.icon?.includes('google.com/s2/favicons') || initialData.icon?.includes('/api/favicon?domain=')) {
             detectedType = 'google';
+          } else if (initialData.icon?.includes('api.xinac.net/icon')) {
+            detectedType = 'xinac';
           } else if (initialData.icon?.includes('/api/favicon?key=')) {
             detectedType = 'upload-edgeone';
           } else if (initialData.icon) {
@@ -445,6 +447,9 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
         case 'google':
           iconUrl = `/api/favicon?domain=${domain}`;
           break;
+       case 'xinac':
+          iconUrl = `https://api.xinac.net/icon/?url=${encodeURIComponent(url)}`;
+          break;
         default:
           iconUrl = `/api/favicon?domain=${domain}`;
       }
@@ -570,6 +575,8 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
                       setIcon(edgeoneBlobUrl);
                     } else if (newType === 'upload-cloudflare') {
                       setIcon(cloudflareR2Url);
+                    } else if (newType === 'xinac') {
+                      setIcon('');
                     } else {
                       setIcon('');
                     }
@@ -578,6 +585,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
                 >
                   <option value="google">Google Favicon API (默认)</option>
                   <option value="faviconextractor">Favicon Extractor</option>
+                  <option value="xinac">Xinac 图标 API</option>
                   <option value="customurl">自定义图片URL</option>
                   <option value="customapi">自定义API</option>
                   {supportsUpload && <option value="upload-edgeone">上传到 Edgeone Pages Blob</option>}

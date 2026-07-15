@@ -128,6 +128,51 @@ export function LinkCard({
     setIsEditingWeight(false);
   };
 
+  // ========== 修复：将触摸事件函数从文件底部移到此处 ==========
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (isBatchEditMode || isEditMode) return;
+    const touch = e.touches[0];
+    
+    // 记录触摸起始位置
+    (e.currentTarget as any).dataset.touchX = String(touch.clientX);
+    (e.currentTarget as any).dataset.touchY = String(touch.clientY);
+    
+    // 长按 600ms 触发上下文菜单
+    touchTimerRef.current = setTimeout(() => {
+      const syntheticEvent = {
+        preventDefault: () => {},
+        stopPropagation: () => {},
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+        currentTarget: e.currentTarget,
+        target: e.target,
+      } as unknown as React.MouseEvent<HTMLDivElement>;
+      onContextMenu(syntheticEvent, link);
+    }, 600);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchTimerRef.current) {
+      clearTimeout(touchTimerRef.current);
+      touchTimerRef.current = null;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!touchTimerRef.current) return;
+    const touch = e.touches[0];
+    const startX = parseFloat((e.currentTarget as any).dataset.touchX || '0');
+    const startY = parseFloat((e.currentTarget as any).dataset.touchY || '0');
+    const dx = Math.abs(touch.clientX - startX);
+    const dy = Math.abs(touch.clientY - startY);
+    // 如果移动超过 10px，取消长按
+    if (dx > 10 || dy > 10) {
+      clearTimeout(touchTimerRef.current);
+      touchTimerRef.current = null;
+    }
+  };
+  // ========== 修复结束 ==========
+
   return (
     <div
       ref={mergedRef}
@@ -242,69 +287,35 @@ export function LinkCard({
           </>
         ) : (
           <>
-            <div className="flex items-center gap-3 w-full">
-              <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold uppercase shrink-0 w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-700">
-                {iconSrc ? <img src={iconSrc} alt="" className="w-5 h-5" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
-              </div>
-              <h3 className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate whitespace-nowrap overflow-hidden text-ellipsis group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
+            <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold uppercase shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 shadow-sm mr-3">
+              {iconSrc ? <img src={iconSrc} alt="" className="w-6 h-6" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-slate-800 dark:text-slate-200 text-sm font-medium overflow-hidden text-ellipsis whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
                 {link.title}
                 {link.isPrivate && <span className="ml-1 text-purple-500 text-xs" title="私人书签">🔒</span>}
               </h3>
+              {link.description && (
+                <p className="text-xs text-slate-500 dark:text-slate-400 overflow-hidden text-ellipsis whitespace-nowrap" title={link.description}>
+                  {link.description}
+                </p>
+              )}
             </div>
-            {link.description && (
-              <div className="tooltip-custom absolute left-0 -top-8 w-max max-w-[200px] bg-black text-white text-xs p-2 rounded opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all z-20 pointer-events-none truncate">
-                {link.description}
-              </div>
-            )}
           </>
         )}
       </div>
 
-      {/* Hover actions - 只在编辑模式下显示 */}
-      {!isBatchEditMode && authToken && isEditMode && (
-        <div className={`flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-md p-1 absolute z-10 ${
-          isDetailedView ? 'top-3 right-3' : 'top-1/2 -translate-y-1/2 right-2'
-        }`}>
-          <button
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEdit(link); }}
-            className="p-1 text-slate-400 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-md"
-            title="编辑"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5a3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97c0-.33-.03-.65-.07-.97l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.08-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.32-.07.64-.07.97c0 .33.03.65.07.97l-2.11 1.63c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.39 1.06.73 1.69.98l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.25 1.17-.59 1.69-.98l2.49 1c.22.08.49 0 .61-.22l2-3.46c.13-.22.07-.49-.12-.64l-2.11-1.63Z" fill="currentColor"/>
-            </svg>
-          </button>
-        </div>
+      {/* Drag handle */}
+      {isDraggable && !isBatchEditMode && (
+        <button
+          {...attributes}
+          {...listeners}
+          className="opacity-0 group-hover:opacity-100 transition-opacity p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 cursor-grab active:cursor-grabbing"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <GripVertical size={16} />
+        </button>
       )}
     </div>
   );
 }
-  // 长按处理（移动端模拟右击）
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (!authToken || isBatchEditMode) return;
-    touchTimerRef.current = setTimeout(() => {
-      const touch = e.touches[0];
-      const mockEvent = {
-        preventDefault: () => {},
-        stopPropagation: () => {},
-        clientX: touch.clientX,
-        clientY: touch.clientY,
-      } as unknown as React.MouseEvent;
-      onContextMenu(mockEvent, link);
-    }, 500);
-  };
-
-  const handleTouchEnd = () => {
-    if (touchTimerRef.current) {
-      clearTimeout(touchTimerRef.current);
-      touchTimerRef.current = null;
-    }
-  };
-
-  const handleTouchMove = () => {
-    if (touchTimerRef.current) {
-      clearTimeout(touchTimerRef.current);
-      touchTimerRef.current = null;
-    }
-  };
-

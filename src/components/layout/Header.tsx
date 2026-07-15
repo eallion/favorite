@@ -323,33 +323,30 @@ export function Header({
 
           {/* View mode toggle */}
           <div 
-            className={`${isMobileSearchOpen ? 'hidden' : 'flex'} items-center bg-slate-200 dark:bg-slate-700 rounded-full h-[32px] sm:h-[36px] shrink-0 border border-slate-300/50 p-0.5`}
-            style={darkMode ? { border: 'none' } : {}}
+            className={`${isMobileSearchOpen ? 'hidden' : 'flex'} items-center bg-slate-200 dark:bg-slate-700 rounded-full h-[28px] sm:h-[36px] shrink-0 p-0.5`}
           >
             <button
               onClick={() => setViewMode('compact')}
-              className={`px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-medium rounded-full transition-all flex items-center justify-center h-full min-w-[32px] sm:min-w-[40px] leading-none cursor-pointer ${
+              className={`px-1.5 sm:px-3 py-1 sm:py-2 text-[10px] sm:text-xs font-medium rounded-full transition-all flex items-center justify-center h-full min-w-[28px] sm:min-w-[40px] leading-none cursor-pointer ${
                 viewMode === 'compact'
-                  ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-200/50'
+                  ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm'
                   : 'text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100'
               }`}
-              style={darkMode && viewMode === 'compact' ? { border: 'none' } : {}}
               title="简约版视图"
-            ><span className="hidden sm:inline">简约</span><span className="sm:hidden text-[10px]">简</span></button>
+            ><span className="hidden sm:inline">简约</span><span className="sm:hidden">简</span></button>
             <button
               onClick={() => setViewMode('detailed')}
-              className={`px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-medium rounded-full transition-all flex items-center justify-center h-full min-w-[32px] sm:min-w-[40px] leading-none cursor-pointer ${
+              className={`px-1.5 sm:px-3 py-1 sm:py-2 text-[10px] sm:text-xs font-medium rounded-full transition-all flex items-center justify-center h-full min-w-[28px] sm:min-w-[40px] leading-none cursor-pointer ${
                 viewMode === 'detailed'
-                  ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-200/50'
+                  ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm'
                   : 'text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100'
               }`}
-              style={darkMode && viewMode === 'detailed' ? { border: 'none' } : {}}
               title="详情版视图"
-            ><span className="hidden sm:inline">详情</span><span className="sm:hidden text-[10px]">详</span></button>
+            ><span className="hidden sm:inline">详情</span><span className="sm:hidden">详</span></button>
           </div>
 
           {/* Theme toggle */}
-          <button onClick={() => setDarkMode(!darkMode)} className={`${isMobileSearchOpen ? 'hidden' : 'flex'} items-center justify-center p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[36px] min-w-[36px] cursor-pointer`}>
+          <button onClick={() => setDarkMode(!darkMode)} className={`${isMobileSearchOpen ? 'hidden' : 'flex'} items-center justify-center p-1.5 sm:p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[32px] sm:h-[36px] min-w-[32px] sm:min-w-[36px] cursor-pointer`}>
             {darkMode ? <Sun size={18} /> : <Moon size={18} />}
           </button>
 

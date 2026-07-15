@@ -131,10 +131,6 @@ export function LinkCard({
   // ========== 修复：将触摸事件函数从文件底部移到此处 ==========
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     if (isBatchEditMode || isEditMode) return;
-
-    // 阻止 iOS Safari 默认的长按文本选择行为
-    e.preventDefault();
-
     const touch = e.touches[0];
     
     // 记录触摸起始位置
@@ -180,12 +176,7 @@ export function LinkCard({
   return (
     <div
       ref={mergedRef}
-      style={{
-        ...style,
-        WebkitUserSelect: 'none',
-        userSelect: 'none',
-        WebkitTouchCallout: 'none',
-      }}
+      style={style}
       data-color-ready={!!color || undefined}
       className={`link-card group relative transition-all duration-200 ${
         isSelected
@@ -265,16 +256,12 @@ export function LinkCard({
           <>
             <div className="flex flex-col md:flex-row md:items-start gap-3 w-full min-w-0">
               <div className="flex items-center gap-3 w-full md:hidden">
-                <div className="relative shrink-0">
-                  <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold uppercase w-10 h-10 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 shadow-sm">
-                    {iconSrc ? <img src={iconSrc} alt="" className="w-6 h-6" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
-                  </div>
-                  {link.isPrivate && (
-                    <span className="absolute top-0.5 right-0.5 text-[10px] leading-none" title="私人书签">🔒</span>
-                  )}
+                <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold uppercase shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 shadow-sm">
+                  {iconSrc ? <img src={iconSrc} alt="" className="w-6 h-6" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
                 </div>
                 <h3 className="flex-1 min-w-0 text-slate-800 dark:text-slate-200 text-base font-medium overflow-hidden text-ellipsis whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
                   {link.title}
+                  {link.isPrivate && <span className="ml-1 text-purple-500 text-xs" title="私人书签">🔒</span>}
                 </h3>
               </div>
               {link.description && (
@@ -282,17 +269,13 @@ export function LinkCard({
                   {link.description}
                 </p>
               )}
-              <div className="relative hidden md:flex shrink-0">
-                <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold uppercase w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 shadow-sm">
-                  {iconSrc ? <img src={iconSrc} alt="" className="w-10 h-10" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
-                </div>
-                {link.isPrivate && (
-                  <span className="absolute top-1 right-1 text-xs leading-none" title="私人书签">🔒</span>
-                )}
+              <div className="hidden md:flex text-blue-600 dark:text-blue-400 items-center justify-center text-sm font-bold uppercase shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 shadow-sm">
+                {iconSrc ? <img src={iconSrc} alt="" className="w-10 h-10" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
               </div>
               <div className="hidden md:flex flex-1 min-w-0 flex-col justify-start w-full">
                 <h3 className="text-slate-800 dark:text-slate-200 text-base font-medium w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
                   {link.title}
+                  {link.isPrivate && <span className="ml-1 text-purple-500 text-xs" title="私人书签">🔒</span>}
                 </h3>
                 {link.description && (
                   <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap" title={link.description}>
@@ -304,17 +287,13 @@ export function LinkCard({
           </>
         ) : (
           <>
-            <div className="relative shrink-0 mr-3">
-              <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold uppercase w-10 h-10 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 shadow-sm">
-                {iconSrc ? <img src={iconSrc} alt="" className="w-6 h-6" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
-              </div>
-              {link.isPrivate && (
-                <span className="absolute top-0.5 right-0.5 text-[10px] leading-none" title="私人书签">🔒</span>
-              )}
+            <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold uppercase shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 shadow-sm mr-3">
+              {iconSrc ? <img src={iconSrc} alt="" className="w-6 h-6" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-slate-800 dark:text-slate-200 text-sm font-medium overflow-hidden text-ellipsis whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
                 {link.title}
+                {link.isPrivate && <span className="ml-1 text-purple-500 text-xs" title="私人书签">🔒</span>}
               </h3>
               {link.description && (
                 <p className="text-xs text-slate-500 dark:text-slate-400 overflow-hidden text-ellipsis whitespace-nowrap" title={link.description}>

@@ -363,8 +363,8 @@ export function Header({
 
               {/* Collapsible Tools Area */}
               <div 
-                className={`flex items-center gap-0.5 sm:gap-1 transition-all duration-500 ease-in-out overflow-hidden ${
-                  isToolsExpanded ? 'max-w-[500px] sm:max-w-[400px] opacity-100' : 'max-w-0 opacity-0'
+                className={`flex items-center gap-0.5 sm:gap-1 transition-all duration-500 ease-in-out ${
+                  isToolsExpanded ? 'opacity-100' : 'max-w-0 opacity-0 overflow-hidden'
                 }`}
               >
                 <div className="flex items-center gap-0.5 sm:gap-1 pr-0.5 sm:pr-1">

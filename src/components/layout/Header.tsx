@@ -200,7 +200,7 @@ export function Header({
           </h1>
         </div>
 
-        {/* Mobile Search Bar - Expands to fill space */}
+        
         {isMobileSearchOpen && (
           <div className="flex-1 flex items-center gap-2 md:hidden ml-2">
             <div className="relative flex-1">

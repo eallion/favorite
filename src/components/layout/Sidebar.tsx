@@ -14,9 +14,20 @@ interface SidebarProps {
   onOpenCatManager: () => void;
   onOpenBackup: () => void;
   onUnlockCategory: (cat: Category) => void;
+  dragOffset?: number;
+  isDragging?: boolean;
 }
 
-export function Sidebar({ isOpen, onClose, activeCategoryId, onOpenCatManager, onOpenBackup, onUnlockCategory }: SidebarProps) {
+export function Sidebar({
+  isOpen,
+  onClose,
+  activeCategoryId,
+  onOpenCatManager,
+  onOpenBackup,
+  onUnlockCategory,
+  dragOffset = 0,
+  isDragging = false,
+}: SidebarProps) {
   const { categoryTree, expandedCategories, toggleExpand, unlockedCategoryIds } = useCategoriesContext();
   const { showPinnedWebsites, ai } = useConfigContext();
   const { authToken } = useAuthContext();
@@ -83,17 +94,64 @@ export function Sidebar({ isOpen, onClose, activeCategoryId, onOpenCatManager, o
     );
   };
 
+  const MOBILE_SIDEBAR_WIDTH = 256;
+
+  const getMobileTransform = () => {
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+      return undefined;
+    }
+
+    if (isOpen) {
+      return `translateX(${Math.min(0, dragOffset)}px)`;
+    } else {
+      if (isDragging && dragOffset > 0) {
+        return `translateX(${-MOBILE_SIDEBAR_WIDTH + dragOffset}px)`;
+      }
+      return undefined;
+    }
+  };
+
+  const getOverlayOpacity = () => {
+    if (!isOpen && isDragging && dragOffset > 0) {
+      const progress = Math.min(dragOffset / MOBILE_SIDEBAR_WIDTH, 1);
+      return progress * 0.5;
+    }
+    if (isOpen && isDragging && dragOffset < 0) {
+      const progress = Math.min(Math.abs(dragOffset) / MOBILE_SIDEBAR_WIDTH, 1);
+      return 0.5 * (1 - progress);
+    }
+    return isOpen ? 0.5 : 0;
+  };
+
+  const showOverlay = isOpen || (isDragging && dragOffset !== 0);
+
   return (
     <>
-      {isOpen && (
-        <div className="fixed inset-0 z-20 bg-black/50 lg:hidden backdrop-blur-sm cursor-pointer" onClick={onClose} />
+      {showOverlay && (
+        <div
+          className="fixed inset-0 z-20 lg:hidden backdrop-blur-sm cursor-pointer"
+          style={{
+            backgroundColor: `rgba(0, 0, 0, ${getOverlayOpacity()})`,
+            transition: isDragging ? 'none' : 'background-color 0.3s ease',
+            pointerEvents: isOpen ? 'auto' : 'none',
+          }}
+          onClick={onClose}
+        />
       )}
 
-      <aside className={`fixed lg:static inset-y-0 left-0 z-30 ${isCollapsed ? 'w-16' : 'w-64 lg:w-48 xl:w-64'} transform transition-all duration-300 ease-in-out bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col overflow-x-hidden ${
-        isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-      }`}>
+      <aside
+        className={`fixed lg:static inset-y-0 left-0 z-30 ${isCollapsed ? 'w-16' : 'w-64 lg:w-48 xl:w-64'} bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col overflow-x-hidden lg:transform-none ${
+          isOpen ? 'lg:translate-x-0' : 'lg:-translate-x-full lg:translate-x-0'
+        }`}
+        style={{
+          transform: typeof window !== 'undefined' && window.innerWidth < 1024
+            ? getMobileTransform()
+            : undefined,
+          transition: isDragging ? 'none' : 'transform 0.3s ease-in-out',
+        }}
+      >
         <div className="h-16 flex items-center justify-center relative border-b border-slate-100 dark:border-slate-700 shrink-0 transition-all duration-300">
-          <span 
+          <span
             className={`text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent flex items-center h-full whitespace-nowrap overflow-hidden transition-all ease-in-out ${
               isCollapsed ? 'max-w-0 opacity-0 duration-150' : 'max-w-[200px] opacity-100 duration-300 delay-150'
             }`}

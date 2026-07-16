@@ -648,6 +648,14 @@ export function AppLayout() {
             position={contextMenu.position}
             link={contextMenu.link}
             onClose={() => setContextMenu(prev => ({ ...prev, isOpen: false }))}
+            onCopyLink={() => {
+              navigator.clipboard.writeText(contextMenu.link!.url);
+              setContextMenu(prev => ({ ...prev, isOpen: false }));
+            }}
+            onShowQRCode={(url, title) => {
+              setQrCodeModal({ isOpen: true, url, title });
+              setContextMenu(prev => ({ ...prev, isOpen: false }));
+            }}
             onEdit={() => {
               setEditingLink(contextMenu.link!);
               setIsModalOpen(true);
@@ -657,8 +665,11 @@ export function AppLayout() {
               handleDeleteLink(contextMenu.link!.id);
               setContextMenu(prev => ({ ...prev, isOpen: false }));
             }}
-            onQRCode={() => {
-              setQrCodeModal({ isOpen: true, url: contextMenu.link!.url, title: contextMenu.link!.title });
+            onTogglePin={() => {
+              const updated = links.map(l =>
+                l.id === contextMenu.link!.id ? { ...l, isPinned: !l.isPinned } : l
+              );
+              setLinksAndSync(updated, categories);
               setContextMenu(prev => ({ ...prev, isOpen: false }));
             }}
           />

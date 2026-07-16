@@ -33,9 +33,9 @@ export function Sidebar({ isOpen, onClose, activeCategoryId, onOpenCatManager, o
     if (cat.children && cat.children.length > 0) {
       toggleExpand(cat.id);
       const targetId = cat.children[0]?.id || cat.id;
-      document.getElementById(`cat-${targetId}`)?.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById(`cat-${targetId}`)?.scrollIntoView();
     } else {
-      document.getElementById(`cat-${cat.id}`)?.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById(`cat-${cat.id}`)?.scrollIntoView();
     }
     onClose();
   }, [toggleExpand, onClose, unlockedCategoryIds, onUnlockCategory]);

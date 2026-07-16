@@ -385,7 +385,7 @@ export function AppLayout() {
       setCatAuthModalData(cat);
     } else {
       // 已解锁的分类，正常跳转
-      document.getElementById(`cat-${cat.id}`)?.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById(`cat-${cat.id}`)?.scrollIntoView();
     }
   }, [unlockedCategoryIds]);
 

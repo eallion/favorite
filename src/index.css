@@ -4,6 +4,7 @@
 /* 强制设置浅色模式为默认 */
 html {
   color-scheme: light;
+  scroll-behavior: smooth;
 }
 
 html.dark {
@@ -453,4 +454,9 @@ input, textarea, select {
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
   }
+}
+
+/*  iOS Safari 侧边栏问题，但你的布局是内部滚动，所以需要针对 main 元素 */
+main.flex-1.overflow-y-auto {
+  scroll-behavior: smooth;
 }

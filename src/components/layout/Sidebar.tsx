@@ -97,9 +97,13 @@ export function Sidebar({
   const MOBILE_SIDEBAR_WIDTH = 256;
 
   // 计算移动端 transform
-  // isOpen=true: translateX(0) 为基础，dragOffset 叠加（向左拖动为负）
-  // isOpen=false: translateX(-256px) 为基础，dragOffset 叠加（向右拖动为正）
-  const getMobileTransform = () => {
+  // 桌面端 (lg:static) 不需要 transform，直接返回 undefined
+  const getTransform = () => {
+    // 桌面端：lg:static 定位，不需要 transform
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+      return undefined;
+    }
+    // 移动端
     if (isOpen) {
       return `translateX(${Math.min(0, dragOffset)}px)`;
     }
@@ -143,7 +147,7 @@ export function Sidebar({
         style={{
           // 移动端：内联 transform 控制显示/隐藏/拖动
           // 桌面端：由 lg:static 自动定位，transform 不生效
-          transform: getMobileTransform(),
+          transform: getTransform(),
           transition: isDragging ? 'none' : 'transform 0.3s ease-in-out',
           willChange: isDragging ? 'transform' : 'auto',
         }}

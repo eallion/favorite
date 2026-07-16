@@ -133,6 +133,25 @@ export interface MastodonConfig {
   maxItems: number;
 }
 
+export type TickerSource = 'mastodon' | 'memos' | 'custom' | 'jinrishici' | 'hitokoto';
+
+export interface TickerConfig {
+  enabled: boolean;
+  source: TickerSource;
+  mastodonInstance?: string;
+  mastodonUsername?: string;
+  mastodonLimit?: number;
+  mastodonExcludeReplies?: boolean;
+  mastodonExcludeReblogs?: boolean;
+  memosHost?: string;
+  memosToken?: string;
+  memosCreator?: string;
+  memosLimit?: number;
+  memosVisibility?: 'PUBLIC' | 'PROTECTED' | 'PRIVATE';
+  customItems?: string[];
+  jinrishiciUrl?: string;
+  hitokotoUrl?: string;
+}
 // AI Provider 类型
 export type AIProvider = 'gemini' | 'openai' | 'claude' | 'custom';
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, lazy, useCallback } from 'react';
+import React, { useState, useEffect, Suspense, lazy, useCallback, useRef } from 'react';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { useLinksContext } from '../../contexts/LinksContext';
 import { useCategoriesContext } from '../../contexts/CategoriesContext';
@@ -39,6 +39,19 @@ export function AppLayout() {
 
   // UI State
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // ===== 侧滑手势 =====
+  const [dragOffset, setDragOffset] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+  const touchCurrentX = useRef(0);
+  const touchStartTime = useRef(0);
+  const dragStartSidebarOpen = useRef(false);
+  const SIDEBAR_WIDTH = 256;
+  const EDGE_THRESHOLD = 30;
+  const OPEN_THRESHOLD = 80;
+  const CLOSE_THRESHOLD = 80;
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
 
@@ -78,6 +91,74 @@ export function AppLayout() {
 
   // Drag sort confirmation state
   const [pendingDragLinks, setPendingDragLinks] = useState<{ links: LinkItem[]; categories: Category[] } | null>(null);
+
+  // ===== Touch 手势处理 =====
+  const handleTouchStart = useCallback((e: TouchEvent) => {
+    if (e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    const isEdge = touch.clientX < EDGE_THRESHOLD;
+    const isInSidebar = sidebarOpen && touch.clientX < SIDEBAR_WIDTH;
+    if (!isEdge && !isInSidebar) return;
+    touchStartX.current = touch.clientX;
+    touchStartY.current = touch.clientY;
+    touchCurrentX.current = touch.clientX;
+    touchStartTime.current = Date.now();
+    dragStartSidebarOpen.current = sidebarOpen;
+    setIsDragging(true);
+    setDragOffset(0);
+  }, [sidebarOpen]);
+
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    if (!isDragging || e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - touchStartX.current;
+    const deltaY = touch.clientY - touchStartY.current;
+    if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 10) {
+      setIsDragging(false);
+      setDragOffset(0);
+      return;
+    }
+    if (Math.abs(deltaX) < 5) return;
+    touchCurrentX.current = touch.clientX;
+    if (dragStartSidebarOpen.current) {
+      setDragOffset(Math.max(-SIDEBAR_WIDTH, Math.min(0, deltaX)));
+    } else {
+      setDragOffset(Math.max(0, Math.min(SIDEBAR_WIDTH, deltaX)));
+    }
+  }, [isDragging]);
+
+  const handleTouchEnd = useCallback(() => {
+    if (!isDragging) return;
+    const deltaX = touchCurrentX.current - touchStartX.current;
+    const elapsed = Date.now() - touchStartTime.current;
+    const velocity = Math.abs(deltaX) / (elapsed || 1);
+    setIsDragging(false);
+    if (dragStartSidebarOpen.current) {
+      if (deltaX < -CLOSE_THRESHOLD || (deltaX < -20 && velocity > 0.5)) {
+        setSidebarOpen(false);
+      }
+    } else {
+      if (deltaX > OPEN_THRESHOLD || (deltaX > 20 && velocity > 0.5)) {
+        setSidebarOpen(true);
+      }
+    }
+    setDragOffset(0);
+  }, [isDragging]);
+
+  useEffect(() => {
+    const root = document.getElementById('root');
+    if (!root) return;
+    root.addEventListener('touchstart', handleTouchStart, { passive: true });
+    root.addEventListener('touchmove', handleTouchMove, { passive: true });
+    root.addEventListener('touchend', handleTouchEnd, { passive: true });
+    root.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+    return () => {
+      root.removeEventListener('touchstart', handleTouchStart);
+      root.removeEventListener('touchmove', handleTouchMove);
+      root.removeEventListener('touchend', handleTouchEnd);
+      root.removeEventListener('touchcancel', handleTouchEnd);
+    };
+  }, [handleTouchStart, handleTouchMove, handleTouchEnd]);
 
   // Initialize data
   useEffect(() => {
@@ -401,7 +482,7 @@ export function AppLayout() {
   // Loading state
   if (isInitialLoading) {
     return (
-      <div className="flex h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden text-slate-900 dark:text-slate-50">
+      <div className="flex h-[100dvh] bg-slate-50 dark:bg-slate-900 overflow-hidden text-slate-900 dark:text-slate-50">
         <aside className="hidden lg:flex w-48 xl:w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex-col">
           <div className="h-16 flex items-center px-6 border-b border-slate-100 dark:border-slate-700">
             <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-24 animate-pulse" />
@@ -433,7 +514,7 @@ export function AppLayout() {
   }
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden text-slate-900 dark:text-slate-50">
+    <div className="flex h-[100dvh] bg-slate-50 dark:bg-slate-900 overflow-hidden text-slate-900 dark:text-slate-50">
       <Sidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
@@ -441,6 +522,8 @@ export function AppLayout() {
         onOpenCatManager={() => setIsCatManagerOpen(true)}
         onOpenBackup={() => setIsBackupModalOpen(true)}
         onUnlockCategory={handleUnlockCategory}
+        dragOffset={dragOffset}
+        isDragging={isDragging}
       />
       <div className="flex-1 flex flex-col min-w-0">
         <Header

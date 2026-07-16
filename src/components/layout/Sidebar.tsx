@@ -119,7 +119,7 @@ export function Sidebar({ isOpen, onClose, activeCategoryId, onOpenCatManager, o
           {showPinnedWebsites && (
             <button
               onClick={() => {
-                document.getElementById('cat-pinned')?.scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('cat-pinned')?.scrollIntoView();
                 onClose();
               }}
               className={`w-full flex items-center py-3 rounded-xl transition-all cursor-pointer ${

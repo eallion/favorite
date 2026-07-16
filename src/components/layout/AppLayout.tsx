@@ -645,6 +645,7 @@ export function AppLayout() {
         )}
         {contextMenu.isOpen && contextMenu.link && (
           <ContextMenu
+            isOpen={contextMenu.isOpen}
             position={contextMenu.position}
             link={contextMenu.link}
             onClose={() => setContextMenu(prev => ({ ...prev, isOpen: false }))}

@@ -51,20 +51,24 @@ const MastodonTicker: React.FC<TickerProps> = ({ config, isCollapsed }) => {
         let fetchedItems: TickerItem[] = [];
 
         if (config.source === 'mastodon' && config.mastodonInstance && config.mastodonUsername) {
-          fetchedItems = await fetchMastodon(config);
-        } else if (config.source === 'memos' && config.memosHost) {
-          fetchedItems = await fetchMemos(config);
-        } else if (config.source === 'custom' && config.customItems) {
-          fetchedItems = config.customItems
-            .filter(item => item.trim())
-            .map((item, i) => ({ 
-              id: `custom-${i}`, 
-              content: processTickerContent(item), 
-              url: '' 
-            }));
-        } else {
-          fetchedItems = defaultItems;
-        }
+  fetchedItems = await fetchMastodon(config);
+} else if (config.source === 'memos' && config.memosHost) {
+  fetchedItems = await fetchMemos(config);
+} else if (config.source === 'jinrishici') {
+  fetchedItems = await fetchJinrishici(config);
+} else if (config.source === 'hitokoto') {
+  fetchedItems = await fetchHitokoto(config);
+} else if (config.source === 'custom' && config.customItems) {
+  fetchedItems = config.customItems
+    .filter(item => item.trim())
+    .map((item, i) => ({ 
+      id: `custom-${i}`, 
+      content: processTickerContent(item), 
+      url: '' 
+    }));
+} else {
+  fetchedItems = defaultItems;
+}
 
         setItems(fetchedItems);
         setLoading(false);
@@ -275,5 +279,30 @@ async function fetchMemos(config: any): Promise<TickerItem[]> {
     };
   }).filter((m: TickerItem) => m.content.length > 0);
 }
+// 今日诗词数据获取
+async function fetchJinrishici(config: any): Promise<TickerItem[]> {
+  const url = config.jinrishiciUrl || 'https://v1.jinrishici.com/all.json';
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Jinrishici fetch failed');
+  const data = await res.json();
+  const content = data.content || data.data?.content || '';
+  const author = data.author || data.data?.origin?.author || '';
+  const title = data.title || data.data?.origin?.title || '';
+  const fullText = title ? `${content} —— ${author}《${title}》` : `${content} —— ${author}`;
+  return [{ id: 'jinrishici-1', content: fullText, url: '' }];
+}
 
+// 一言数据获取
+async function fetchHitokoto(config: any): Promise<TickerItem[]> {
+  const url = config.hitokotoUrl || 'https://v1.hitokoto.cn/?encode=json';
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Hitokoto fetch failed');
+  const data = await res.json();
+  const text = data.hitokoto || '';
+  const from = data.from || '';
+  const fromWho = data.from_who || '';
+  const author = fromWho || from;
+  const fullText = author ? `${text} —— ${author}` : text;
+  return [{ id: 'hitokoto-1', content: fullText, url: '' }];
+}
 export default MastodonTicker;

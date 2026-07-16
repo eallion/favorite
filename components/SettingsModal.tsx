@@ -427,6 +427,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                         <select value={settings.ticker.source} onChange={(e) => update('ticker', { ...settings.ticker, source: e.target.value as TickerSource })} className="w-full h-11 px-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
                           <option value="mastodon">Mastodon</option>
                           <option value="memos">Memos</option>
+                          <option value="jinrishici">今日诗词</option>
+                          <option value="hitokoto">一言 (Hitokoto)</option>
                           <option value="custom">自定义</option>
                         </select>
                       </div>
@@ -485,6 +487,28 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                           </div>
                         </div>
                       )}
+
+{/* 今日诗词配置 */}
+{settings.ticker.source === 'jinrishici' && (
+  <div className="space-y-3">
+    <div>
+      <label className="block text-xs font-medium text-slate-500 mb-1">API 地址（可选，留空使用默认）</label>
+      <input type="text" value={settings.ticker.jinrishiciUrl || ''} onChange={(e) => update('ticker', { ...settings.ticker, jinrishiciUrl: e.target.value })} placeholder="https://v1.jinrishici.com/all.json" className="w-full h-11 px-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" />
+      <p className="text-[10px] text-slate-400 mt-1">留空使用默认接口：https://v1.jinrishici.com/all.json</p>
+    </div>
+  </div>
+)}
+
+{/* 一言配置 */}
+{settings.ticker.source === 'hitokoto' && (
+  <div className="space-y-3">
+    <div>
+      <label className="block text-xs font-medium text-slate-500 mb-1">API 地址（可选，留空使用默认）</label>
+      <input type="text" value={settings.ticker.hitokotoUrl || ''} onChange={(e) => update('ticker', { ...settings.ticker, hitokotoUrl: e.target.value })} placeholder="https://v1.hitokoto.cn/?encode=json" className="w-full h-11 px-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none" />
+      <p className="text-[10px] text-slate-400 mt-1">留空使用默认接口：https://v1.hitokoto.cn/?encode=json</p>
+    </div>
+  </div>
+)}
 
                       {/* 自定义配置 */}
                       {settings.ticker.source === 'custom' && (

@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { LayoutGrid, Settings, Upload, X, Loader2, CheckCircle2, AlertCircle, Lock, ChevronDown, ChevronRight, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { LayoutGrid, Settings, X, Lock, ChevronDown, ChevronRight, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { useCategoriesContext, CategoryWithChildren } from '../../contexts/CategoriesContext';
 import { useConfigContext } from '../../contexts/ConfigContext';
 import { useAuthContext } from '../../contexts/AuthContext';
@@ -96,60 +96,59 @@ export function Sidebar({
 
   const MOBILE_SIDEBAR_WIDTH = 256;
 
+  // 计算移动端 transform
+  // isOpen=true: translateX(0) 为基础，dragOffset 叠加（向左拖动为负）
+  // isOpen=false: translateX(-256px) 为基础，dragOffset 叠加（向右拖动为正）
   const getMobileTransform = () => {
-    if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
-      return undefined;
-    }
-
     if (isOpen) {
       return `translateX(${Math.min(0, dragOffset)}px)`;
-    } else {
-      if (isDragging && dragOffset > 0) {
-        return `translateX(${-MOBILE_SIDEBAR_WIDTH + dragOffset}px)`;
-      }
-      return undefined;
     }
+    if (isDragging && dragOffset > 0) {
+      return `translateX(${-MOBILE_SIDEBAR_WIDTH + dragOffset}px)`;
+    }
+    return `translateX(-${MOBILE_SIDEBAR_WIDTH}px)`;
   };
 
+  // 遮罩层透明度
   const getOverlayOpacity = () => {
     if (!isOpen && isDragging && dragOffset > 0) {
-      const progress = Math.min(dragOffset / MOBILE_SIDEBAR_WIDTH, 1);
-      return progress * 0.5;
+      return Math.min(dragOffset / MOBILE_SIDEBAR_WIDTH, 1) * 0.5;
     }
     if (isOpen && isDragging && dragOffset < 0) {
-      const progress = Math.min(Math.abs(dragOffset) / MOBILE_SIDEBAR_WIDTH, 1);
-      return 0.5 * (1 - progress);
+      return 0.5 * (1 - Math.min(Math.abs(dragOffset) / MOBILE_SIDEBAR_WIDTH, 1));
     }
     return isOpen ? 0.5 : 0;
   };
 
-  const showOverlay = isOpen || (isDragging && dragOffset !== 0);
+  const overlayOpacity = getOverlayOpacity();
+  const showOverlay = overlayOpacity > 0;
 
   return (
     <>
+      {/* 遮罩层 - 仅移动端，点击关闭 */}
       {showOverlay && (
         <div
-          className="fixed inset-0 z-20 lg:hidden backdrop-blur-sm cursor-pointer"
+          className="fixed inset-0 z-20 lg:hidden cursor-pointer"
           style={{
-            backgroundColor: `rgba(0, 0, 0, ${getOverlayOpacity()})`,
+            backgroundColor: `rgba(0, 0, 0, ${overlayOpacity})`,
             transition: isDragging ? 'none' : 'background-color 0.3s ease',
-            pointerEvents: isOpen ? 'auto' : 'none',
           }}
           onClick={onClose}
         />
       )}
 
+      {/* 侧边栏 */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-30 ${isCollapsed ? 'w-16' : 'w-64 lg:w-48 xl:w-64'} bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col overflow-x-hidden lg:transform-none ${
-          isOpen ? 'lg:translate-x-0' : 'lg:-translate-x-full lg:translate-x-0'
-        }`}
+        className={`fixed lg:static inset-y-0 left-0 z-30 ${isCollapsed ? 'w-16' : 'w-64 lg:w-48 xl:w-64'} bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col overflow-x-hidden`}
         style={{
-          transform: typeof window !== 'undefined' && window.innerWidth < 1024
-            ? getMobileTransform()
-            : undefined,
+          // 移动端：内联 transform 控制显示/隐藏/拖动
+          // 桌面端：由 lg:static 自动定位，transform 不生效
+          transform: getMobileTransform(),
           transition: isDragging ? 'none' : 'transform 0.3s ease-in-out',
+          willChange: isDragging ? 'transform' : 'auto',
         }}
       >
+        {/* 头部 */}
         <div className="h-16 flex items-center justify-center relative border-b border-slate-100 dark:border-slate-700 shrink-0 transition-all duration-300">
           <span
             className={`text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent flex items-center h-full whitespace-nowrap overflow-hidden transition-all ease-in-out ${
@@ -173,6 +172,7 @@ export function Sidebar({
           </button>
         </div>
 
+        {/* 内容 */}
         <div className="flex-1 overflow-y-auto p-4 space-y-1 scrollbar-hide">
           {showPinnedWebsites && (
             <button

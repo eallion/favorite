@@ -1,5 +1,4 @@
-
-  const toast = useToast();import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, ArrowUp, ArrowDown, Trash2, Edit2, Plus, Check, Lock, Unlock, Palette, Save } from 'lucide-react';
 import { Category } from '../types';
 import Icon from './Icon';
@@ -12,7 +11,6 @@ interface CategoryManagerModalProps {
   categories: Category[];
   onUpdateCategories: (newCategories: Category[]) => void;
   onDeleteCategory: (id: string) => void;
-  toast.success('分类已删除');
   onVerifyPassword?: (password: string) => Promise<boolean>;
 }
 
@@ -26,6 +24,7 @@ const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
 }) => {
   // 本地编辑状态 - 不直接修改原始数据
   const [localCategories, setLocalCategories] = useState<Category[]>([]);
+  const toast = useToast();
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -141,7 +140,7 @@ const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
       sorted.push(...orphans);
 
       onUpdateCategories(sorted);
-    toast.success(isEditing ? '分类已更新' : '分类已创建');
+      toast.success(isEditing ? '分类已更新' : '分类已创建');
       setHasChanges(false);
       onClose();
     } catch (e) {

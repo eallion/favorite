@@ -1,5 +1,3 @@
-
-  const toast = useToast();
 import React, { useState, useEffect, useRef } from 'react';
 import { useToast } from '../src/components/layout/useToast';
 import { X, Cloud, Download, Upload, CheckCircle2, AlertCircle, RefreshCw, Save, FolderUp } from 'lucide-react';
@@ -29,6 +27,7 @@ const BackupModal: React.FC<BackupModalProps> = ({
   const [testResult, setTestResult] = useState<'success' | 'fail' | null>(null);
   const [syncStatus, setSyncStatus] = useState<'idle' | 'uploading' | 'downloading' | 'success' | 'error'>('idle');
   const [statusMsg, setStatusMsg] = useState('');
+  const toast = useToast();
   const [importStatus, setImportStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [importMsg, setImportMsg] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);

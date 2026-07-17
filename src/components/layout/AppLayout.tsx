@@ -1,5 +1,8 @@
 import React, { useState, useEffect, Suspense, lazy, useCallback, useRef } from 'react';
 import { useAuthContext } from '../../contexts/AuthContext';
+import { ToastProvider } from './ToastContext';
+import { ToastContainer } from './ToastContainer';
+import { useToast } from './useToast';
 import { useLinksContext } from '../../contexts/LinksContext';
 import { useCategoriesContext } from '../../contexts/CategoriesContext';
 import { useConfigContext } from '../../contexts/ConfigContext';
@@ -39,6 +42,7 @@ export function AppLayout() {
 
   // UI State
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const toast = useToast();
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
 
@@ -347,8 +351,9 @@ export function AppLayout() {
       }
       const newLinks = links.filter(l => l.id !== id);
       setLinksAndSync(newLinks, categories);
+      toast.success('书签已删除');
     }
-  }, [links, categories, setLinksAndSync, authToken]);
+  }, [links, categories, setLinksAndSync, authToken, toast]);
 
   const toggleLinkSelection = useCallback((id: string) => {
     setSelectedLinks(prev => {
@@ -368,13 +373,15 @@ export function AppLayout() {
     if (editingLink) {
       const updated = links.map(l => l.id === link.id ? link : l);
       setLinksAndSync(updated, categories);
+      toast.success('书签已更新');
     } else {
       setLinksAndSync([...links, link], categories);
+      toast.success('书签已创建');
     }
     setIsModalOpen(false);
     setEditingLink(undefined);
     setPrefillLink(undefined);
-  }, [editingLink, links, categories, setLinksAndSync]);
+  }, [editingLink, links, categories, setLinksAndSync, toast]);
 
   const handleContextMenu = useCallback((e: React.MouseEvent, link: LinkItem) => {
     e.preventDefault();
@@ -441,8 +448,9 @@ export function AppLayout() {
       setLinksAndSync(newLinks, categories);
       setSelectedLinks(new Set());
       setIsBatchEditMode(false);
+      toast.success(`已删除 ${selectedLinks.size} 个书签`);
     }
-  }, [selectedLinks, links, categories, setLinksAndSync, authToken]);
+  }, [selectedLinks, links, categories, setLinksAndSync, authToken, toast]);
 
   const handleWeightChange = useCallback((linkId: string, weight: number) => {
     const updated = links.map(l => l.id === linkId ? { ...l, weight } : l);
@@ -511,6 +519,7 @@ export function AppLayout() {
   }
 
   return (
+    <ToastProvider>
     <div className="flex h-[100dvh] bg-slate-50 dark:bg-slate-900 overflow-hidden text-slate-900 dark:text-slate-50">
       <Sidebar
         isOpen={sidebarOpen}
@@ -692,6 +701,8 @@ export function AppLayout() {
           onUnlock={handleCategoryUnlock}
         />
       )}
+      <ToastContainer />
     </div>
+    </ToastProvider>
   );
 }

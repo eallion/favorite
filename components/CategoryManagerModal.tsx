@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from '../components/Toast';
 import { X, ArrowUp, ArrowDown, Trash2, Edit2, Plus, Check, Lock, Unlock, Palette, Save } from 'lucide-react';
 import { Category } from '../types';
 import Icon from './Icon';
@@ -24,7 +25,6 @@ const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
 }) => {
   // 本地编辑状态 - 不直接修改原始数据
   const [localCategories, setLocalCategories] = useState<Category[]>([]);
-  const toast = useToast();
   const [hasChanges, setHasChanges] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -175,6 +175,7 @@ const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
       if (confirm(`确定删除"${cat.name}"分类吗？该分类下的书签将移动到"常用推荐"。`)) {
         const newCats = localCategories.filter(c => c.id !== cat.id);
         markChanged(newCats);
+        toast.success('分类已删除');
       }
       return;
     }
@@ -193,6 +194,7 @@ const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
       const cat = localCategories.find(c => c.id === pendingAction.categoryId);
       if (cat && confirm(`确定删除"${cat.name}"分类吗？`)) {
         markChanged(localCategories.filter(c => c.id !== cat.id));
+        toast.success('分类已删除');
       }
     }
     setPendingAction(null);

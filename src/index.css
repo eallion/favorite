@@ -4,6 +4,7 @@
 /* 强制设置浅色模式为默认 */
 html {
   color-scheme: light;
+  scroll-behavior: smooth;
 }
 
 html.dark {
@@ -455,19 +456,7 @@ input, textarea, select {
   }
 }
 
-
-/* Toast 动画 */
-@keyframes toast-in {
-  from {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.animate-toast-in {
-  animation: toast-in 0.3s ease-out forwards;
+/*  iOS Safari 侧边栏问题，但你的布局是内部滚动，所以需要针对 main 元素 */
+main.flex-1.overflow-y-auto {
+  scroll-behavior: smooth;
 }

@@ -608,7 +608,6 @@ const ImportModal: React.FC<ImportModalProps> = ({
       }
 
       onImport(finalLinks, finalCategories);
-      toast.success('数据已导入');
       
       // Import search config if available
       if (parsedSearchConfig && onImportSearchConfig) {

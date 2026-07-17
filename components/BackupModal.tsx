@@ -1,4 +1,7 @@
+
+  const toast = useToast();
 import React, { useState, useEffect, useRef } from 'react';
+import { useToast } from '../src/components/layout/useToast';
 import { X, Cloud, Download, Upload, CheckCircle2, AlertCircle, RefreshCw, Save, FolderUp } from 'lucide-react';
 import { Category, LinkItem, WebDavConfig, SearchConfig, AIConfig } from '../types';
 import { checkWebDavConnection, uploadBackup, downloadBackup } from '../services/webDavService';
@@ -204,6 +207,7 @@ const BackupModal: React.FC<BackupModalProps> = ({
             });
         }
         onRestore(finalLinks, data.categories);
+        toast.success('数据已导入');
         // 恢复搜索配置（如果存在）
         if (data.searchConfig) {
             onRestoreSearchConfig(data.searchConfig);
@@ -255,6 +259,7 @@ const BackupModal: React.FC<BackupModalProps> = ({
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    toast.success('数据已导出');
     
     setImportStatus('success');
     setImportMsg('本地备份导出成功，已包含所有自定义图标文件！');

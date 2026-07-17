@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+
+  const toast = useToast();import React, { useState, useRef, useEffect } from 'react';
 import { X, Upload, FileText, ArrowRight, Check, AlertCircle, FolderInput, ListTree, Database } from 'lucide-react';
 import { Category, LinkItem, SearchConfig, AIConfig } from '../types';
 import { parseBookmarks } from '../services/bookmarkParser';
@@ -608,6 +609,7 @@ const ImportModal: React.FC<ImportModalProps> = ({
       }
 
       onImport(finalLinks, finalCategories);
+      toast.success('数据已导入');
       
       // Import search config if available
       if (parsedSearchConfig && onImportSearchConfig) {

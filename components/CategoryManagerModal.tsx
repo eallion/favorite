@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { toast } from '../components/Toast';
+import { toast } from '../../components/Toast';
 import { X, ArrowUp, ArrowDown, Trash2, Edit2, Plus, Check, Lock, Unlock, Palette, Save } from 'lucide-react';
 import { Category } from '../types';
 import Icon from './Icon';

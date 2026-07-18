@@ -377,13 +377,15 @@ export function AppLayout() {
   }, [editingLink, links, categories, setLinksAndSync]);
 
   const handleContextMenu = useCallback((e: React.MouseEvent, link: LinkItem) => {
+    if (isBatchEditMode || !authToken) return;
     e.preventDefault();
+    e.stopPropagation();
     setContextMenu({
       isOpen: true,
       position: { x: e.clientX, y: e.clientY },
       link,
     });
-  }, []);
+  }, [isBatchEditMode, authToken]);
 
   const handleBatchDelete = useCallback(() => {
     if (confirm(`确定删除选中的 ${selectedLinks.size} 个链接吗？`)) {
@@ -668,7 +670,7 @@ export function AppLayout() {
             }}
             onTogglePin={() => {
               const updated = links.map(l =>
-                l.id === contextMenu.link!.id ? { ...l, isPinned: !l.isPinned } : l
+                l.id === contextMenu.link!.id ? { ...l, pinned: !l.pinned } : l
               );
               setLinksAndSync(updated, categories);
               setContextMenu(prev => ({ ...prev, isOpen: false }));

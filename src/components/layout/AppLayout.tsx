@@ -364,17 +364,28 @@ export function AppLayout() {
     setSelectedLinks(new Set());
   }, []);
 
+  // 生成唯一 ID
+  const generateId = useCallback(() => {
+    return `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
+  }, []);
+
   const handleSaveLink = useCallback((link: LinkItem) => {
     if (editingLink) {
       const updated = links.map(l => l.id === link.id ? link : l);
       setLinksAndSync(updated, categories);
     } else {
-      setLinksAndSync([...links, link], categories);
+      // 新建链接时确保有唯一 ID
+      const newLink = {
+        ...link,
+        id: link.id || generateId(),
+        createdAt: link.createdAt || Date.now(),
+      };
+      setLinksAndSync([...links, newLink], categories);
     }
     setIsModalOpen(false);
     setEditingLink(undefined);
     setPrefillLink(undefined);
-  }, [editingLink, links, categories, setLinksAndSync]);
+  }, [editingLink, links, categories, setLinksAndSync, generateId]);
 
   const handleContextMenu = useCallback((e: React.MouseEvent, link: LinkItem) => {
     if (isBatchEditMode || !authToken) return;

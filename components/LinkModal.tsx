@@ -226,7 +226,10 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
         } else {
           if (initialData.icon?.includes('faviconextractor.com')) {
             detectedType = 'faviconextractor';
-          } else if (initialData.icon?.includes('google.com/s2/favicons') || initialData.icon?.includes('/api/favicon?domain=')) {
+          } else if (initialData.icon?.includes('google.com/s2/favicons')) {
+            detectedType = 'google';
+          } else if (initialData.icon?.includes('/api/favicon?domain=')) {
+            // 兼容旧数据
             detectedType = 'google';
           } else if (initialData.icon?.includes('api.xinac.net/icon')) {
             detectedType = 'xinac';
@@ -299,6 +302,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
   const handleDelete = () => {
     if (!initialData) return;
     onDelete && onDelete(initialData.id);
+    toast.success(`「${initialData.title}」已删除`);
     onClose();
   };
 
@@ -450,14 +454,16 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
       // 根据选择的图标类型生成图标URL
       switch (iconType) {
         case 'faviconextractor':
+          iconUrl = `https://faviconextractor.com/favicon/${domain}`;
+          break;
         case 'google':
-          iconUrl = `/api/favicon?domain=${domain}`;
+          iconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
           break;
         case 'xinac':
           iconUrl = `https://api.xinac.net/icon/?url=${encodeURIComponent(url)}`;
           break;
         default:
-          iconUrl = `/api/favicon?domain=${domain}`;
+          iconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
       }
 
       setIcon(iconUrl);
@@ -538,7 +544,7 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
           </button>
         </div>
 
-        <form onSubmit={handleSave} className="p-4 space-y-4 overflow-y-auto flex-1">
+        <form onSubmit={handleSave} noValidate className="p-4 space-y-4 overflow-y-auto flex-1">
           <div>
             <label className="block text-sm font-medium mb-1 dark:text-slate-300">标题</label>
             <input

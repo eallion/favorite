@@ -1,4 +1,4 @@
-// 统一存储接口 v2.2 - 分类密码保护 + 私人书签
+// 统一存储接口 v2.3 - 性能优化版
 // 支持 EdgeOne Pages / Cloudflare Workers
 
 import { getKV, getCorsHeaders, verifyAuth, jsonResponse } from './_kvAdapter.js';
@@ -112,6 +112,50 @@ export async function onRequest(context) {
         }, 200, corsHeaders);
       }
 
+      // 优化：支持批量获取多个配置 ?getConfig=search,website,ai
+      if (getConfig && getConfig.includes(',')) {
+        const requestedSections = getConfig.split(',').filter(s => CONFIG_SECTIONS.includes(s) || s === 'true');
+        const configMap = {};
+
+        if (requestedSections.includes('true') || requestedSections.length === 0) {
+          // 获取全部配置 + 链接 + 分类
+          const categoriesData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
+          const allCategories = categoriesData ? JSON.parse(categoriesData) : [];
+
+          let unlockedCategories = new Set();
+          const unlockedParam = url.searchParams.get('unlocked');
+          if (unlockedParam) {
+            try { unlockedCategories = new Set(JSON.parse(unlockedParam)); } catch (e) {}
+          }
+
+          const providedPassword = request.headers.get('x-auth-password');
+          const isAdmin = await verifyAuth({ providedPassword, serverPassword: env.PASSWORD, kv });
+
+          const links = await readAllCategoryLinks(kv, allCategories, unlockedCategories, isAdmin);
+          const sanitizedCategories = allCategories.map(({ password, ...rest }) => ({
+            ...rest,
+            hasPassword: !!(password && password.trim() !== '')
+          }));
+
+          // 同时获取所有配置
+          const allConfig = await mergeAllConfigSections(kv);
+
+          return jsonResponse({
+            links,
+            categories: sanitizedCategories,
+            configs: allConfig,
+          }, 200, corsHeaders);
+        }
+
+        await Promise.all(requestedSections.map(async (section) => {
+          const val = await readConfigSection(kv, section);
+          const configKey = section === 'mastodon' ? 'ticker' : section;
+          configMap[configKey] = val || {};
+        }));
+
+        return jsonResponse(configMap, 200, corsHeaders);
+      }
+
       if (CONFIG_SECTIONS.includes(getConfig)) {
         const sectionVal = await readConfigSection(kv, getConfig);
         const defaults = {
@@ -160,7 +204,6 @@ export async function onRequest(context) {
 
         if (category) {
           const cat = categories.find(c => c.id === category);
-
           if (!cat) {
             return jsonResponse({ error: '分类不存在' }, 404, corsHeaders);
           }
@@ -171,7 +214,6 @@ export async function onRequest(context) {
           if (categoryPassword && hasPassword && !isUnlocked && !isAdmin) {
             const inputPwd = categoryPassword.trim();
             const storedPwd = (cat.password || '').trim();
-
             if (inputPwd === storedPwd) {
               isUnlocked = true;
             } else {

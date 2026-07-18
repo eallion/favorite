@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
 import { LinkItem } from '../../../types';
-import { extractColorFromImage, generateColorFromText, ExtractedColor } from '../../../src/utils/colorExtractor';
 
 interface LinkCardProps {
   link: LinkItem;
@@ -20,6 +19,16 @@ interface LinkCardProps {
   onWeightChange?: (linkId: string, weight: number) => void;
 }
 
+// 从文本生成颜色（纯计算，无异步）
+function generateColorFromText(text: string): string {
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) {
+    hash = text.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hue = Math.abs(hash % 360);
+  return `hsl(${hue}, 70%, 45%)`;
+}
+
 export function LinkCard({
   link, viewMode, isBatchEditMode, isSelected,
   onToggleSelection, onEdit, onDelete, onContextMenu,
@@ -27,12 +36,9 @@ export function LinkCard({
 }: LinkCardProps) {
   const [imgError, setImgError] = useState(false);
   const touchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [color, setColor] = useState<ExtractedColor | null>(null);
   const [isEditingWeight, setIsEditingWeight] = useState(false);
   const [weightValue, setWeightValue] = useState(link.weight?.toString() || '0');
-  const [isVisible, setIsVisible] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
 
   const {
     attributes, listeners, setNodeRef, transform, transition, isDragging,
@@ -45,67 +51,13 @@ export function LinkCard({
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
-    ...(color ? {
-      '--icon-color': color.hex,
-      '--icon-color-rgb': color.rgb,
-    } as React.CSSProperties : {}),
   };
 
   const isDetailedView = viewMode === 'detailed';
   const iconSrc = link.icon && !imgError ? link.icon : null;
 
-  // 观察可见性，离屏卡片延迟执行颜色提取
-  useEffect(() => {
-    const el = cardRef.current;
-    if (!el) return;
-    if (typeof IntersectionObserver === 'undefined') {
-      setIsVisible(true);
-      return;
-    }
-    observerRef.current = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observerRef.current?.disconnect();
-        }
-      },
-      { rootMargin: '200px' }
-    );
-    observerRef.current.observe(el);
-    return () => observerRef.current?.disconnect();
-  }, []);
-
-  // 提取图标颜色 - 仅在卡片可见时执行
-  useEffect(() => {
-    if (!isVisible) return;
-    if (!iconSrc) {
-      setColor(generateColorFromText(link.title));
-      return;
-    }
-
-    extractColorFromImage(iconSrc).then(result => {
-      if (result) {
-        setColor(result);
-      }
-    });
-  }, [iconSrc, link.title, isVisible]);
-
-  // 鼠标位置追踪
-  const rafRef = useRef<number | null>(null);
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (rafRef.current) return;
-    rafRef.current = requestAnimationFrame(() => {
-      const card = cardRef.current;
-      if (card) {
-        const rect = card.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width;
-        const y = (e.clientY - rect.top) / rect.height;
-        card.style.setProperty('--pointer-x', `${x}`);
-        card.style.setProperty('--pointer-y', `${y}`);
-      }
-      rafRef.current = null;
-    });
-  }, []);
+  // 同步生成颜色，无需 useEffect + Canvas
+  const fallbackColor = generateColorFromText(link.title);
 
   const mergedRef = useCallback((node: HTMLDivElement | null) => {
     setNodeRef(node);
@@ -128,20 +80,13 @@ export function LinkCard({
     setIsEditingWeight(false);
   };
 
-  // ========== 修复：将触摸事件函数从文件底部移到此处 ==========
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     if (isBatchEditMode || isEditMode) return;
-
-    // 阻止 iOS Safari 默认的长按文本选择行为
     e.preventDefault();
-
     const touch = e.touches[0];
-    
-    // 记录触摸起始位置
     (e.currentTarget as any).dataset.touchX = String(touch.clientX);
     (e.currentTarget as any).dataset.touchY = String(touch.clientY);
-    
-    // 长按 600ms 触发上下文菜单
+
     touchTimerRef.current = setTimeout(() => {
       const syntheticEvent = {
         preventDefault: () => {},
@@ -167,15 +112,11 @@ export function LinkCard({
     const touch = e.touches[0];
     const startX = parseFloat((e.currentTarget as any).dataset.touchX || '0');
     const startY = parseFloat((e.currentTarget as any).dataset.touchY || '0');
-    const dx = Math.abs(touch.clientX - startX);
-    const dy = Math.abs(touch.clientY - startY);
-    // 如果移动超过 10px，取消长按
-    if (dx > 10 || dy > 10) {
+    if (Math.abs(touch.clientX - startX) > 10 || Math.abs(touch.clientY - startY) > 10) {
       clearTimeout(touchTimerRef.current);
       touchTimerRef.current = null;
     }
   };
-  // ========== 修复结束 ==========
 
   return (
     <div
@@ -186,7 +127,6 @@ export function LinkCard({
         userSelect: 'none',
         WebkitTouchCallout: 'none',
       }}
-      data-color-ready={!!color || undefined}
       className={`link-card group relative transition-all duration-200 ${
         isSelected
           ? 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800'
@@ -201,16 +141,17 @@ export function LinkCard({
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onTouchMove={handleTouchMove}
-      onMouseMove={handleMouseMove}
       {...(isDraggable && !isBatchEditMode ? attributes : {})}
       {...(isDraggable && !isBatchEditMode ? listeners : {})}
     >
-      {/* 背景模糊图标 */}
+      {/* 背景模糊图标 - 使用 CSS 颜色而非提取 */}
       <div className="icon-bg">
         {iconSrc ? (
           <img src={iconSrc} alt="" loading="lazy" onError={() => setImgError(true)} />
         ) : (
-          <span style={{ fontSize: '48px', fontWeight: 'bold' }}>{link.title.charAt(0).toUpperCase()}</span>
+          <span style={{ fontSize: '48px', fontWeight: 'bold', color: fallbackColor }}>
+            {link.title.charAt(0).toUpperCase()}
+          </span>
         )}
       </div>
 
@@ -266,7 +207,8 @@ export function LinkCard({
             <div className="flex flex-col md:flex-row md:items-start gap-3 w-full min-w-0">
               <div className="flex items-center gap-3 w-full md:hidden">
                 <div className="relative shrink-0">
-                  <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold uppercase w-10 h-10 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 shadow-sm">
+                  <div className="flex items-center justify-center text-sm font-bold uppercase w-10 h-10 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 shadow-sm"
+                    style={{ color: fallbackColor }}>
                     {iconSrc ? <img src={iconSrc} alt="" className="w-6 h-6" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
                   </div>
                   {link.isPrivate && (
@@ -283,7 +225,8 @@ export function LinkCard({
                 </p>
               )}
               <div className="relative hidden md:flex shrink-0">
-                <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold uppercase w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 shadow-sm">
+                <div className="flex items-center justify-center text-sm font-bold uppercase w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 shadow-sm"
+                  style={{ color: fallbackColor }}>
                   {iconSrc ? <img src={iconSrc} alt="" className="w-10 h-10" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
                 </div>
                 {link.isPrivate && (
@@ -305,7 +248,8 @@ export function LinkCard({
         ) : (
           <>
             <div className="relative shrink-0 mr-3">
-              <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold uppercase w-10 h-10 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 shadow-sm">
+              <div className="flex items-center justify-center text-sm font-bold uppercase w-10 h-10 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 shadow-sm"
+                style={{ color: fallbackColor }}>
                 {iconSrc ? <img src={iconSrc} alt="" className="w-6 h-6" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
               </div>
               {link.isPrivate && (

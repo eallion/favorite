@@ -1,5 +1,4 @@
 import React from 'react';
-import { DndContext, closestCenter, DragEndEvent, SensorDescriptor } from '@dnd-kit/core';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import { Pin } from 'lucide-react';
 import { LinkItem } from '../../../types';
@@ -14,8 +13,6 @@ interface PinnedSectionProps {
   onEditLink: (link: LinkItem) => void;
   onDeleteLink: (id: string) => void;
   onContextMenu: (e: React.MouseEvent, link: LinkItem) => void;
-  onDragEnd: (event: DragEndEvent) => void;
-  sensors: SensorDescriptor<any>[];
   authToken?: string | null;
   isDraggable?: boolean;
   isEditMode?: boolean;
@@ -24,11 +21,10 @@ interface PinnedSectionProps {
 
 export function PinnedSection({
   links, viewMode = 'compact', isBatchEditMode, selectedLinks, onToggleSelection,
-  onEditLink, onDeleteLink, onContextMenu, onDragEnd, sensors, authToken,
+  onEditLink, onDeleteLink, onContextMenu, authToken,
   isDraggable = false, isEditMode = false, onWeightChange,
 }: PinnedSectionProps) {
   const sortedLinks = [...(links || [])].sort((a, b) => {
-    // 先按 weight 降序（数值大的靠前），再按 pinnedOrder 升序
     const weightDiff = (b.weight ?? 0) - (a.weight ?? 0);
     if (weightDiff !== 0) return weightDiff;
     return (a.pinnedOrder ?? 0) - (b.pinnedOrder ?? 0);
@@ -49,29 +45,27 @@ export function PinnedSection({
           {links.length}
         </span>
       </div>
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-        <SortableContext items={sortedLinks.map(l => l.id)} strategy={rectSortingStrategy}>
-          <div className={`grid gap-3 ${gridClass}`}>
-            {sortedLinks.map(link => (
-              <LinkCard
-                key={link.id}
-                link={link}
-                viewMode={viewMode}
-                isBatchEditMode={isBatchEditMode}
-                isSelected={selectedLinks.has(link.id)}
-                onToggleSelection={onToggleSelection}
-                onEdit={onEditLink}
-                onDelete={onDeleteLink}
-                onContextMenu={onContextMenu}
-                authToken={authToken}
-                isDraggable={isDraggable}
-                isEditMode={isEditMode}
-                onWeightChange={onWeightChange}
-              />
-            ))}
-          </div>
-        </SortableContext>
-      </DndContext>
+      <SortableContext items={sortedLinks.map(l => l.id)} strategy={rectSortingStrategy}>
+        <div className={`grid gap-3 ${gridClass}`}>
+          {sortedLinks.map(link => (
+            <LinkCard
+              key={link.id}
+              link={link}
+              viewMode={viewMode}
+              isBatchEditMode={isBatchEditMode}
+              isSelected={selectedLinks.has(link.id)}
+              onToggleSelection={onToggleSelection}
+              onEdit={onEditLink}
+              onDelete={onDeleteLink}
+              onContextMenu={onContextMenu}
+              authToken={authToken}
+              isDraggable={isDraggable}
+              isEditMode={isEditMode}
+              onWeightChange={onWeightChange}
+            />
+          ))}
+        </div>
+      </SortableContext>
     </div>
   );
 }

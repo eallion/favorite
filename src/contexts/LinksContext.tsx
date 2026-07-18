@@ -2,6 +2,7 @@ import React, { createContext, useContext, useReducer, useCallback, useMemo, use
 import { LinkItem, Category } from '../../types';
 import { STORAGE_KEYS, API_ENDPOINTS } from '../constants';
 import { useAuthContext } from './AuthContext';
+import { toast } from '../../components/Toast';
 
 // --- Types ---
 interface LinksState {
@@ -76,18 +77,22 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
       createdAt: Date.now(),
     };
     dispatch({ type: 'ADD_LINK', payload: newLink });
+    toast.success(`已添加书签「${data.title}」`);
   }, []);
 
   const updateLink = useCallback((link: LinkItem) => {
     dispatch({ type: 'UPDATE_LINK', payload: link });
+    toast.success(`已更新书签「${link.title}」`);
   }, []);
 
   const deleteLink = useCallback((id: string) => {
     dispatch({ type: 'DELETE_LINK', payload: id });
+    toast.success('书签已删除');
   }, []);
 
   const deleteLinks = useCallback((ids: Set<string>) => {
     dispatch({ type: 'DELETE_LINKS', payload: ids });
+    toast.success(`已删除 ${ids.size} 个书签`);
   }, []);
 
   const updateLinks = useCallback((links: LinkItem[]) => {
@@ -129,6 +134,7 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
       })
       .then(() => {
         dispatch({ type: 'SET_SYNC_STATUS', payload: 'saved' });
+        toast.success('数据已同步到云端');
         setTimeout(() => {
           dispatch({ type: 'SET_SYNC_STATUS', payload: 'idle' });
         }, 2000);
@@ -136,6 +142,7 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
       .catch(e => {
         console.error('Sync links failed:', e);
         dispatch({ type: 'SET_SYNC_STATUS', payload: 'error' });
+        toast.error('同步失败，请检查网络');
       });
 
       pendingSyncRef.current = null;

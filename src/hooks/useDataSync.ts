@@ -22,7 +22,6 @@ export function useDataSync() {
         const parsed = JSON.parse(stored);
         let cats: Category[] = parsed.categories || DEFAULT_CATEGORIES;
 
-        // 确保 common 分类存在且排第一
         if (!cats.some((c: Category) => c.id === 'common')) {
           cats = [{ id: 'common', name: '常用推荐', icon: 'Star' }, ...cats];
         } else {
@@ -33,7 +32,6 @@ export function useDataSync() {
           }
         }
 
-        // 修复无效 categoryId
         const validIds = new Set(cats.map((c: Category) => c.id));
         let lnks: LinkItem[] = (parsed.links || INITIAL_LINKS).map((l: LinkItem) =>
           validIds.has(l.categoryId) ? l : { ...l, categoryId: 'common' }
@@ -64,28 +62,28 @@ export function useDataSync() {
     }
   }, []);
 
-  // 从 KV 加载各个配置
+  // 优化：从单个请求加载所有配置
   const loadConfigsFromCloud = useCallback(async () => {
-    const configKeys = ['search', 'website', 'ai', 'weather', 'mastodon', 'icon'];
-    const configMap: Record<string, any> = {};
+    try {
+      // 使用批量接口一次性获取所有配置
+      const res = await fetch(`${API_ENDPOINTS.STORAGE}?getConfig=ai,website,mastodon,weather,search,icon`);
+      if (!res.ok) return;
 
-    await Promise.all(configKeys.map(async (key) => {
-      try {
-        const res = await fetch(`${API_ENDPOINTS.STORAGE}?getConfig=${key}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data && Object.keys(data).length > 0) {
-            const configKey = key === 'mastodon' ? 'ticker' : key;
-            configMap[configKey] = data;
-          }
+      const data = await res.json();
+      const configMap: Record<string, any> = {};
+
+      for (const [key, val] of Object.entries(data)) {
+        if (val && typeof val === 'object' && Object.keys(val).length > 0) {
+          const configKey = key === 'mastodon' ? 'ticker' : key;
+          configMap[configKey] = val;
         }
-      } catch (e) {
-        console.error(`Load config ${key} failed:`, e);
       }
-    }));
 
-    if (Object.keys(configMap).length > 0) {
-      initConfig(configMap);
+      if (Object.keys(configMap).length > 0) {
+        initConfig(configMap);
+      }
+    } catch (e) {
+      console.error('Load configs failed:', e);
     }
   }, [initConfig]);
 
@@ -99,7 +97,7 @@ export function useDataSync() {
     initLinks(local.links);
     initCategories(local.categories);
 
-    // 2. 并行从云端获取最新数据（带密码过滤）
+    // 2. 并行从云端获取最新数据
     const [cloud] = await Promise.all([
       loadFromCloud(unlockedCats),
       loadConfigsFromCloud(),

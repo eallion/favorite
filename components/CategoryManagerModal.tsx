@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, ArrowUp, ArrowDown, Trash2, Edit2, Plus, Check, Lock, Unlock, Palette, Save } from 'lucide-react';
+import { toast } from './Toast';
 import { Category } from '../types';
 import Icon from './Icon';
 import IconSelector from './IconSelector';
@@ -140,6 +141,7 @@ const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
 
       onUpdateCategories(sorted);
       setHasChanges(false);
+      toast.success('分类更改已保存');
       onClose();
     } catch (e) {
       console.error('Save failed:', e);
@@ -173,6 +175,7 @@ const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
       if (confirm(`确定删除"${cat.name}"分类吗？该分类下的书签将移动到"常用推荐"。`)) {
         const newCats = localCategories.filter(c => c.id !== cat.id);
         markChanged(newCats);
+        toast.success(`分类「${cat.name}」已标记删除，点击保存生效`);
       }
       return;
     }
@@ -191,6 +194,7 @@ const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
       const cat = localCategories.find(c => c.id === pendingAction.categoryId);
       if (cat && confirm(`确定删除"${cat.name}"分类吗？`)) {
         markChanged(localCategories.filter(c => c.id !== cat.id));
+        toast.success(`分类「${cat.name}」已标记删除，点击保存生效`);
       }
     }
     setPendingAction(null);
@@ -227,6 +231,7 @@ const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
       return c;
     });
     markChanged(newCats);
+    toast.success(`已更新分类「${editName.trim()}」`);
     setEditingId(null);
     setEditParentId('');
   };
@@ -244,6 +249,7 @@ const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
       weight: maxWeight + 1,
     };
     markChanged([...localCategories, newCat]);
+    toast.success(`已添加分类「${newCat.name}」`);
     setNewCatName('');
     setNewCatPassword('');
     setNewCatIcon('Folder');

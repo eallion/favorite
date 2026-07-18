@@ -26,7 +26,7 @@ export function useDragSort() {
     const newIndex = categoryLinks.findIndex(l => l.id === over.id);
     if (oldIndex === -1 || newIndex === -1) return;
 
-    const reordered = arrayMove(categoryLinks, oldIndex, newIndex);
+    const reordered: LinkItem[] = arrayMove(categoryLinks, oldIndex, newIndex);
     // 只更新当前分类的链接顺序，不影响其他分类
     const reorderedMap = new Map(reordered.map((l, i) => [l.id, i]));
     const updatedLinks = links.map(link => {
@@ -51,7 +51,7 @@ export function useDragSort() {
     const newIndex = pinnedLinks.findIndex(l => l.id === over.id);
     if (oldIndex === -1 || newIndex === -1) return;
 
-    const reordered = arrayMove(pinnedLinks, oldIndex, newIndex);
+    const reordered: LinkItem[] = arrayMove(pinnedLinks, oldIndex, newIndex);
     const updatedLinks = links.map(link => {
       const idx = reordered.findIndex(l => l.id === link.id);
       if (idx !== -1) return { ...link, pinnedOrder: idx };

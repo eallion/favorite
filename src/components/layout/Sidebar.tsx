@@ -70,7 +70,7 @@ export function Sidebar({ isOpen, onClose, activeCategoryId, onOpenCatManager, o
 
         {hasChildren && isExpanded && !isCollapsed && (
           <div className="space-y-1 mt-1">
-            {cat.children.map(child => renderCategoryNode(child, level + 1))}
+            {cat.children.map(child => renderCategoryNode(child as CategoryWithChildren, level + 1))}
           </div>
         )}
       </div>
@@ -98,16 +98,16 @@ export function Sidebar({ isOpen, onClose, activeCategoryId, onOpenCatManager, o
             {ai?.sidebarNavigationName || ai?.navigationName || '蜗牛导航'}
           </span>
           {isCollapsed && (
-            <button onClick={() => setIsCollapsed(false)} className="hidden lg:flex absolute p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors" title="展开侧边栏">
+            <button onClick={() => setIsCollapsed(false)} className="hidden lg:flex absolute p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors cursor-pointer" title="展开侧边栏">
               <PanelLeftOpen size={20} />
             </button>
           )}
           {!isCollapsed && (
-            <button onClick={() => setIsCollapsed(true)} className="hidden lg:flex absolute right-4 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors" title="折叠侧边栏">
+            <button onClick={() => setIsCollapsed(true)} className="hidden lg:flex absolute right-4 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors cursor-pointer" title="折叠侧边栏">
               <PanelLeftClose size={18} />
             </button>
           )}
-          <button onClick={onClose} className="lg:hidden absolute right-4 p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800">
+          <button onClick={onClose} className="lg:hidden absolute right-4 p-1 rounded hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
             <X size={18} />
           </button>
         </div>
@@ -139,7 +139,7 @@ export function Sidebar({ isOpen, onClose, activeCategoryId, onOpenCatManager, o
             {authToken && (
               <button
                 onClick={onOpenCatManager}
-                className="p-1 text-slate-400 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors"
+                className="p-1 text-slate-400 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors cursor-pointer"
                 title="管理分类"
               >
                 <Settings size={14} />

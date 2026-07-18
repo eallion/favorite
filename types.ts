@@ -40,6 +40,8 @@ export interface WebDavConfig {
   enabled: boolean;
 }
 
+export type AIProvider = 'google' | 'claude' | 'openai' | 'custom';
+
 export interface AIProviderConfig {
   apiKey: string;
   baseUrl: string;

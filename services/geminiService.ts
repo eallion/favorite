@@ -51,6 +51,48 @@ const callOpenAICompatible = async (config: AIConfig, systemPrompt: string, user
 };
 
 /**
+ * Helper to call Claude API
+ */
+const callClaudeAPI = async (config: AIConfig, systemPrompt: string, userPrompt: string): Promise<string> => {
+    try {
+        let baseUrl = config.baseUrl ? config.baseUrl.replace(/\/$/, '') : 'https://api.anthropic.com';
+        if (!baseUrl.includes('/v1/messages')) {
+            baseUrl += '/v1/messages';
+        }
+
+        const response = await fetch(baseUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': config.apiKey,
+                'anthropic-version': '2023-06-01',
+                'anthropic-dangerous-out-of-browser-steps': 'true'
+            },
+            body: JSON.stringify({
+                model: config.model || 'claude-3-5-sonnet-latest',
+                max_tokens: 150,
+                system: systemPrompt,
+                messages: [
+                    { role: "user", content: userPrompt }
+                ]
+            })
+        });
+
+        if (!response.ok) {
+            const err = await response.text();
+            console.error("Claude API Error:", err);
+            return "";
+        }
+
+        const data = await response.json();
+        return data.content?.[0]?.text?.trim() || "";
+    } catch (e) {
+        console.error("Claude Call Failed", e);
+        return "";
+    }
+};
+
+/**
  * Uses configured AI to generate a description
  */
 export const generateLinkDescription = async (title: string, url: string, config: AIConfig): Promise<string> => {
@@ -118,6 +160,13 @@ export const suggestCategory = async (title: string, url: string, categories: {i
                 contents: `Task: Categorize this website.\n${prompt}`,
             });
             return response.text ? response.text.trim() : null;
+        } else if (config.provider === 'claude') {
+            const result = await callClaudeAPI(
+                config,
+                "You are an intelligent classification assistant. You only output the category ID.",
+                prompt
+            );
+            return result || null;
         } else {
              // OpenAI Compatible
             const result = await callOpenAICompatible(

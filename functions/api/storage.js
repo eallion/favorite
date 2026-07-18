@@ -71,7 +71,23 @@ async function readAllCategoryLinks(kv) {
 
 // 保存链接到对应的分类 key
 async function saveCategoryLinks(kv, links) {
-  // 按 categoryId 分组
+  // 1. 获取所有存在的分类，用于找出被删空的分类
+  let allCatIds = new Set(['common']);
+  try {
+    const categoriesStr = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
+    if (categoriesStr) {
+      const categories = JSON.parse(categoriesStr);
+      if (Array.isArray(categories)) {
+        categories.forEach(c => {
+          if (c && c.id) allCatIds.add(c.id);
+        });
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to read categories during saveCategoryLinks:', e);
+  }
+
+  // 2. 按 categoryId 分组
   const grouped = {};
   for (const link of links) {
     const catId = link.categoryId || 'common';
@@ -79,10 +95,19 @@ async function saveCategoryLinks(kv, links) {
     grouped[catId].push(link);
   }
 
-  // 并行写入每个分类
-  const writes = Object.entries(grouped).map(([catId, catLinks]) =>
-    kv.put(categoryLinksKey(catId), JSON.stringify(catLinks))
-  );
+  // 将所有在新 links 中有链接的分类加入集合中（防止有临时分类）
+  Object.keys(grouped).forEach(id => allCatIds.add(id));
+
+  // 3. 并行覆写或删除
+  const writes = Array.from(allCatIds).map(catId => {
+    const catLinks = grouped[catId] || [];
+    if (catLinks.length === 0) {
+      // 没有任何链接属于该分类，为了防止其他设备拉取到旧残留数据，直接在 KV 中删除此分类对应的 Key
+      return kv.delete(categoryLinksKey(catId)).catch(() => {});
+    } else {
+      return kv.put(categoryLinksKey(catId), JSON.stringify(catLinks));
+    }
+  });
 
   await Promise.all(writes);
 }

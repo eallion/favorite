@@ -89,7 +89,7 @@ function SearchEngineOptions({
             onSelect(eng.id);
             onClose();
           }}
-          className={`w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors ${
+          className={`w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer transition-colors ${
             currentEngine === eng.id ? 'text-blue-600 dark:text-blue-400 font-medium' : 'text-slate-600 dark:text-slate-300'
           }`}
         >
@@ -191,7 +191,7 @@ export function Header({
       <div className="relative flex items-center justify-between px-4 lg:px-8 h-16">
         {/* Left: Menu + Logo */}
         <div className="flex items-center gap-3">
-          <button onClick={onToggleSidebar} className="lg:hidden p-2 -ml-2 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg transition-colors">
+          <button onClick={onToggleSidebar} className="lg:hidden p-2 -ml-2 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg cursor-pointer transition-colors">
             <Menu size={24} />
           </button>
           <h1 className={`${isMobileSearchOpen ? 'hidden' : 'hidden sm:block'} text-lg font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent shrink-0`}>
@@ -256,7 +256,7 @@ export function Header({
               </div>
               <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400">站内</span>
             </label>
-            <button onClick={onToggleMobileSearch} className="p-1 text-slate-500 text-xs whitespace-nowrap">
+            <button onClick={onToggleMobileSearch} className="p-1 text-slate-500 text-xs whitespace-nowrap cursor-pointer">
               取消
             </button>
           </div>
@@ -292,7 +292,7 @@ export function Header({
 
           {/* Mobile search toggle */}
           {!isMobileSearchOpen && (
-            <button onClick={onToggleMobileSearch} className="md:hidden p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700">
+            <button onClick={onToggleMobileSearch} className="md:hidden p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer">
               <Search size={18} />
             </button>
           )}
@@ -341,7 +341,7 @@ export function Header({
             href="https://github.com/eallion/favorite"
             target="_blank"
             rel="noopener noreferrer"
-            className={`${isMobileSearchOpen ? 'hidden' : 'flex'} items-center justify-center p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[36px] min-w-[36px] transition-colors`}
+            className={`${isMobileSearchOpen ? 'hidden' : 'flex'} items-center justify-center p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 h-[36px] min-w-[36px] cursor-pointer transition-colors`}
             title="Favorite on GitHub"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12c0 5.303 3.438 9.8 8.205 11.385c.6.113.82-.258.82-.577c0-.285-.01-1.04-.015-2.04c-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729c1.205.084 1.838 1.236 1.838 1.236c1.07 1.835 2.809 1.305 3.495.998c.108-.776.417-1.305.76-1.605c-2.665-.3-5.466-1.332-5.466-5.93c0-1.31.465-2.38 1.235-3.22c-.135-.303-.54-1.523.105-3.176c0 0 1.005-.322 3.3 1.23c.96-.267 1.98-.399 3-.405c1.02.006 2.04.138 3 .405c2.28-1.552 3.285-1.23 3.285-1.23c.645 1.653.24 2.873.12 3.176c.765.84 1.23 1.91 1.23 3.22c0 4.61-2.805 5.625-5.475 5.92c.42.36.81 1.096.81 2.22c0 1.606-.015 2.896-.015 3.286c0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
@@ -433,7 +433,7 @@ export function Header({
               {/* Toggle Button */}
               <button 
                 onClick={() => setIsToolsExpanded(!isToolsExpanded)}
-                className={`flex items-center justify-center p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all ${isToolsExpanded ? 'rotate-180' : 'rotate-0'}`}
+                className={`flex items-center justify-center p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer transition-all ${isToolsExpanded ? 'rotate-180' : 'rotate-0'}`}
                 title={isToolsExpanded ? "折叠工具栏" : "展开工具栏"}
               >
                 <ChevronLeft size={20} />
@@ -592,7 +592,7 @@ function HeaderSearch({
               e.stopPropagation();
               handleClose();
             }}
-            className="p-1 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-full transition-colors text-slate-500 shrink-0"
+            className="p-1 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-full cursor-pointer transition-colors text-slate-500 shrink-0"
           >
             <X size={14} />
           </button>

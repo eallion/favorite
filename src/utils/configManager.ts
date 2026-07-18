@@ -1,4 +1,4 @@
-import { AppConfig, WebDavConfig, SearchConfig, IconConfig, AIConfig, WebsiteConfig, TickerConfig, WeatherConfig } from '../types';
+import { AppConfig, WebDavConfig, SearchConfig, IconConfig, AIConfig, WebsiteConfig, TickerConfig, WeatherConfig } from '../../types';
 import { STORAGE_KEYS } from '../constants';
 
 // 默认配置

@@ -49,6 +49,11 @@ export async function verifyAuth({ providedPassword, serverPassword, kv }) {
     return true;
   }
 
+  // 防御性校验：如果不是合法的 Token 格式 (32字节随机 hex 字符，长度为 64)，直接拦截
+  if (providedPassword.length !== 64 || !/^[0-9a-f]{64}$/i.test(providedPassword)) {
+    return false;
+  }
+
   // 查 KV 中的 Token
   try {
     const tokenVal = await kv.get(`auth_token:${providedPassword}`);

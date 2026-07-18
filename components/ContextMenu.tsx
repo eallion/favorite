@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Copy, QrCode, Edit2, Trash2, Pin } from 'lucide-react';
+import { LinkItem } from '../types';
 
 interface ContextMenuProps {
   isOpen: boolean;

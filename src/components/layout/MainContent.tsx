@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import { DndContext, closestCenter, DragEndEvent, SensorDescriptor } from '@dnd-kit/core';
 import { useLinksContext } from '../../contexts/LinksContext';
 import { useCategoriesContext } from '../../contexts/CategoriesContext';
 import { useConfigContext } from '../../contexts/ConfigContext';
@@ -35,6 +36,7 @@ export function MainContent({
   const { authToken } = useAuthContext();
   const { sensors, handleDragEnd, handlePinnedDragEnd } = useDragSort();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
 
   const safeGetLinksByCategory = useCallback((categoryId: string) => {
     return getLinksByCategory ? getLinksByCategory(categoryId) : [];
@@ -46,7 +48,16 @@ export function MainContent({
     return searchResults.filter(link => !link.isPrivate);
   }, [searchResults, authToken]);
 
+  // 优化：使用 ref 缓存 sections，避免每次 re-render 都 querySelectorAll
+  const sectionsRef = useRef<NodeListOf<Element> | null>(null);
+
   useEffect(() => {
+    // 先断开旧的 observer
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -58,12 +69,20 @@ export function MainContent({
       },
       { rootMargin: '-20% 0px -60% 0px' }
     );
+    observerRef.current = observer;
 
-    const sections = document.querySelectorAll('[id^="cat-"]');
-    sections.forEach(section => observer.observe(section));
+    // 使用 setTimeout 将 DOM 查询推迟到渲染完成后
+    const timeoutId = setTimeout(() => {
+      sectionsRef.current = document.querySelectorAll('[id^="cat-"]');
+      sectionsRef.current.forEach(section => observer.observe(section));
+    }, 0);
 
-    return () => observer.disconnect();
-  }, [links, categories]);
+    return () => {
+      clearTimeout(timeoutId);
+      observer.disconnect();
+      observerRef.current = null;
+    };
+  }, []); // 只在挂载时执行，不依赖 links/categories 变化
 
   const gridClass = viewMode === 'detailed'
     ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
@@ -107,57 +126,57 @@ export function MainContent({
   }
 
   return (
-    <main className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-8">
-      {showPinnedWebsites && pinnedLinks.length > 0 && (
-        <section id="cat-pinned">
-          <PinnedSection
-            links={pinnedLinks}
-            viewMode={viewMode}
-            isBatchEditMode={isBatchEditMode}
-            selectedLinks={selectedLinks}
-            onToggleSelection={onToggleSelection}
-            onEditLink={onEditLink}
-            onDeleteLink={onDeleteLink}
-            onContextMenu={onContextMenu}
-            onDragEnd={handlePinnedDragEnd}
-            sensors={sensors}
-            authToken={authToken}
-            isDraggable={isDragSortMode}
-            isEditMode={isEditMode}
-            onWeightChange={onWeightChange}
-          />
-        </section>
-      )}
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+      <main className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-8">
+        {showPinnedWebsites && pinnedLinks.length > 0 && (
+          <section id="cat-pinned">
+            <PinnedSection
+              links={pinnedLinks}
+              viewMode={viewMode}
+              isBatchEditMode={isBatchEditMode}
+              selectedLinks={selectedLinks}
+              onToggleSelection={onToggleSelection}
+              onEditLink={onEditLink}
+              onDeleteLink={onDeleteLink}
+              onContextMenu={onContextMenu}
+              onDragEnd={handlePinnedDragEnd}
+              sensors={sensors}
+              authToken={authToken}
+              isDraggable={isDragSortMode}
+              isEditMode={isEditMode}
+              onWeightChange={onWeightChange}
+            />
+          </section>
+        )}
 
-      {categoryTree.map(cat => {
-        const isLocked = cat.hasPassword && !unlockedCategoryIds.has(cat.id);
-        if (isLocked) return null;
+        {categoryTree.map(cat => {
+          const isLocked = cat.hasPassword && !unlockedCategoryIds.has(cat.id);
+          if (isLocked) return null;
 
-        const catLinks = safeGetLinksByCategory(cat.id);
-        const subcategoryLinks = cat.children?.flatMap(child => safeGetLinksByCategory(child.id)) || [];
+          const catLinks = safeGetLinksByCategory(cat.id);
+          const subcategoryLinks = cat.children?.flatMap(child => safeGetLinksByCategory(child.id)) || [];
 
-        return (
-          <CategorySection
-            key={cat.id}
-            category={cat}
-            links={catLinks}
-            subcategoryLinks={subcategoryLinks}
-            viewMode={viewMode}
-            isBatchEditMode={isBatchEditMode}
-            selectedLinks={selectedLinks}
-            onToggleSelection={onToggleSelection}
-            onEditLink={onEditLink}
-            onDeleteLink={onDeleteLink}
-            onContextMenu={onContextMenu}
-            onDragEnd={handleDragEnd}
-            sensors={sensors}
-            authToken={authToken}
-            isDraggable={isDragSortMode}
-            isEditMode={isEditMode}
-            onWeightChange={onWeightChange}
-          />
-        );
-      })}
-    </main>
+          return (
+            <CategorySection
+              key={cat.id}
+              category={cat}
+              links={catLinks}
+              subcategoryLinks={subcategoryLinks}
+              viewMode={viewMode}
+              isBatchEditMode={isBatchEditMode}
+              selectedLinks={selectedLinks}
+              onToggleSelection={onToggleSelection}
+              onEditLink={onEditLink}
+              onDeleteLink={onDeleteLink}
+              onContextMenu={onContextMenu}
+              authToken={authToken}
+              isDraggable={isDragSortMode}
+              isEditMode={isEditMode}
+              onWeightChange={onWeightChange}
+            />
+          );
+        })}
+      </main>
+    </DndContext>
   );
 }

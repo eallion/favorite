@@ -363,6 +363,12 @@ const LinkModal: React.FC<LinkModalProps> = ({ isOpen, onClose, onSave, onDelete
       cloudflareR2Url,
       isPrivate
     });
+
+    if (!batchMode) {
+      toast.success(initialData ? `「${title}」已更新` : `「${title}」已添加`);
+    } else {
+      toast.success(`「${title}」已添加，可继续添加下一个`);
+    }
     
     // 如果有自定义图标URL，缓存到KV空间
     if (icon && !icon.startsWith('/api/favicon') && !icon.includes('faviconextractor.com')) {

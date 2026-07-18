@@ -214,8 +214,10 @@ export function AppLayout() {
         } catch(e){}
       }
     }
+    const deletedTitle = linkToDelete?.title || '书签';
     const newLinks = links.filter(l => l.id !== id);
     setLinksAndSync(newLinks, categories);
+    toast.success(`「${deletedTitle}」已删除`);
   }, [links, categories, setLinksAndSync, authToken]);
 
   const toggleLinkSelection = useCallback((id: string) => {
@@ -240,9 +242,11 @@ export function AppLayout() {
         links.map(l => l.id === validLink.id ? validLink : l),
         categories
       );
+      toast.success(`已更新「${validLink.title}」`);
     } else {
       // 新建链接
       setLinksAndSync([...links, validLink], categories);
+      toast.success(`已添加「${validLink.title}」`);
     }
     setIsModalOpen(false); setEditingLink(undefined); setPrefillLink(undefined);
   }, [editingLink, links, categories, setLinksAndSync]);
@@ -258,6 +262,7 @@ export function AppLayout() {
     const newLinks = links.filter(l => !selectedLinks.has(l.id));
     setLinksAndSync(newLinks, categories);
     setSelectedLinks(new Set()); setIsBatchEditMode(false);
+    toast.success(`已批量删除 ${selectedLinks.size} 个书签`);
   }, [selectedLinks, links, categories, setLinksAndSync]);
 
   const handleWeightChange = useCallback((linkId: string, weight: number) => {
@@ -317,20 +322,21 @@ export function AppLayout() {
       <AuthModal isOpen={isAuthOpen} onLogin={login} onClose={() => setIsAuthOpen(false)} />
       <Suspense fallback={null}>
         {isModalOpen && <LinkModal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setEditingLink(undefined); setPrefillLink(undefined); }} onSave={handleSaveLink} onDelete={editingLink ? () => handleDeleteLink(editingLink.id) : undefined} categories={categories} initialData={editingLink || prefillLink as LinkItem} aiConfig={aiConfig} defaultCategoryId={undefined} iconConfig={iconConfig} supportsUpload={capabilities?.upload ?? true} />}
-        {isCatManagerOpen && <CategoryManagerModal isOpen={isCatManagerOpen} onClose={() => setIsCatManagerOpen(false)} categories={categories} onUpdateCategories={(newCats) => setCategoriesAndSync(newCats, links)} onDeleteCategory={(id) => { const newCats = categories.filter(c => c.id !== id); setCategoriesAndSync(newCats, links); }} />}
+        {isCatManagerOpen && <CategoryManagerModal isOpen={isCatManagerOpen} onClose={() => setIsCatManagerOpen(false)} categories={categories} links={links} onUpdateCategories={(newCats) => setCategoriesAndSync(newCats, links)} onDeleteCategory={(id) => { const newCats = categories.filter(c => c.id !== id); setCategoriesAndSync(newCats, links); }} onUpdateLinks={(newLinks) => setLinksAndSync(newLinks, categories)} />}
         {isBackupModalOpen && <BackupModal isOpen={isBackupModalOpen} onClose={() => setIsBackupModalOpen(false)} links={links} categories={categories} onRestore={(newLinks, newCats) => setLinksAndSync(newLinks, newCats)} webDavConfig={webdav || { url: '', username: '', password: '', enabled: false }} onSaveWebDavConfig={setWebDav} searchConfig={search || { mode: 'internal', externalSources: [] }} onRestoreSearchConfig={setSearch} aiConfig={aiConfig} onRestoreAIConfig={setAI} />}
         {isImportModalOpen && <ImportModal isOpen={isImportModalOpen} onClose={() => setIsImportModalOpen(false)} existingLinks={links} categories={categories} onImport={(newLinks, newCats) => setLinksAndSync(newLinks, newCats)} />}
         {isSettingsModalOpen && <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} authToken={authToken} onSettingsLoaded={(settings) => { setAI(settings.ai); setWebsite({ ...website, passwordExpiry: settings.passwordExpiry }); setMastodon(settings.ticker); setWeather(settings.weather); setShowPinned(settings.showPinnedWebsites); if (settings.defaultViewMode) setViewMode(settings.defaultViewMode); }} />}
         {isSearchConfigModalOpen && <SearchConfigModal isOpen={isSearchConfigModalOpen} onClose={() => setIsSearchConfigModalOpen(false)} />}
         {contextMenu.isOpen && contextMenu.link && (
           <ContextMenu isOpen={contextMenu.isOpen} position={contextMenu.position} link={contextMenu.link} onClose={() => setContextMenu(prev => ({ ...prev, isOpen: false }))} onCopyLink={() => { navigator.clipboard.writeText(contextMenu.link!.url); setContextMenu(prev => ({ ...prev, isOpen: false })); }} onShowQRCode={(url, title) => { setQrCodeModal({ isOpen: true, url, title }); setContextMenu(prev => ({ ...prev, isOpen: false })); }} onEdit={() => { setEditingLink(contextMenu.link!); setIsModalOpen(true); setContextMenu(prev => ({ ...prev, isOpen: false })); }} onDelete={() => { handleDeleteLink(contextMenu.link!.id); setContextMenu(prev => ({ ...prev, isOpen: false })); }} onTogglePin={() => {
-            // ===== 修复：使用函数式更新确保使用最新状态 =====
-            const targetId = contextMenu.link!.id;
+            const targetLink = contextMenu.link!;
+            const newPinned = !targetLink.pinned;
             setLinksAndSync(
-              links.map(l => l.id === targetId ? { ...l, pinned: !l.pinned } : l),
+              links.map(l => l.id === targetLink.id ? { ...l, pinned: newPinned } : l),
               categories
             );
             setContextMenu(prev => ({ ...prev, isOpen: false }));
+            toast.success(newPinned ? `「${targetLink.title}」已置顶` : `「${targetLink.title}」已取消置顶`);
           }} />
         )}
         {qrCodeModal.isOpen && <QRCodeModal isOpen={qrCodeModal.isOpen} url={qrCodeModal.url} title={qrCodeModal.title} onClose={() => setQrCodeModal({ isOpen: false, url: '', title: '' })} />}

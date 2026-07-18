@@ -2,6 +2,7 @@ import React, { createContext, useContext, useReducer, useCallback, useMemo } fr
 import { Category, LinkItem, DEFAULT_CATEGORIES } from '../../types';
 import { STORAGE_KEYS, API_ENDPOINTS } from '../constants';
 import { useAuthContext } from './AuthContext';
+import { toast } from '../../components/Toast';
 
 // --- Types ---
 interface CategoriesState {
@@ -94,14 +95,17 @@ export function CategoriesProvider({ children }: { children: React.ReactNode }) 
 
   const addCategory = useCallback((cat: Category) => {
     dispatch({ type: 'ADD_CATEGORY', payload: cat });
+    toast.success(`已添加分类「${cat.name}」`);
   }, []);
 
   const updateCategory = useCallback((cat: Category) => {
     dispatch({ type: 'UPDATE_CATEGORY', payload: cat });
+    toast.success(`已更新分类「${cat.name}」`);
   }, []);
 
   const deleteCategory = useCallback((id: string) => {
     dispatch({ type: 'DELETE_CATEGORY', payload: id });
+    toast.success('分类已删除');
   }, []);
 
   const unlockCategory = useCallback((id: string) => {

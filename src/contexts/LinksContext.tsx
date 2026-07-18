@@ -96,13 +96,16 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
 
   // 防抖同步到云端：500ms 内多次修改只发一次请求
   const setLinksAndSync = useCallback((links: LinkItem[], categories: Category[]) => {
-    dispatch({ type: 'SET_LINKS', payload: links });
-    localStorage.setItem(STORAGE_KEYS.LOCAL_STORAGE_KEY, JSON.stringify({ links, categories }));
+    // 过滤掉无效链接（没有 id 的）
+    const validLinks = links.filter(l => l.id && l.id.trim() !== '');
+
+    dispatch({ type: 'SET_LINKS', payload: validLinks });
+    localStorage.setItem(STORAGE_KEYS.LOCAL_STORAGE_KEY, JSON.stringify({ links: validLinks, categories }));
 
     if (!authToken) return;
 
     // 保存待同步数据
-    pendingSyncRef.current = { links, categories };
+    pendingSyncRef.current = { links: validLinks, categories };
 
     // 清除旧的定时器
     if (syncTimeoutRef.current) {
@@ -126,7 +129,6 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
       })
       .then(() => {
         dispatch({ type: 'SET_SYNC_STATUS', payload: 'saved' });
-        // 2秒后恢复 idle 状态
         setTimeout(() => {
           dispatch({ type: 'SET_SYNC_STATUS', payload: 'idle' });
         }, 2000);

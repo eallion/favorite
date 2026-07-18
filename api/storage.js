@@ -1,4 +1,4 @@
-// 统一存储接口 v2.3 - 性能优化版
+// 统一存储接口 v2.4 - 修复分类移动/置顶后数据不一致问题
 // 支持 EdgeOne Pages / Cloudflare Workers
 
 import { getKV, getCorsHeaders, verifyAuth, jsonResponse } from './_kvAdapter.js';
@@ -67,8 +67,31 @@ async function readAllCategoryLinks(kv, categories, unlockedCategories = new Set
   return linkArrays.flat();
 }
 
-// 保存链接到对应的分类 key
-async function saveCategoryLinks(kv, links) {
+// ===== 修复：保存链接时，先清理所有旧的分类链接数据，再重新写入 =====
+async function saveCategoryLinks(kv, links, categories) {
+  // 1. 先获取当前所有存在的分类 ID（包括传入的 categories 中的分类）
+  const validCategoryIds = new Set(categories.map(c => c.id));
+
+  // 2. 从 links 中提取所有被引用的分类 ID
+  const referencedCategoryIds = new Set(links.map(l => l.categoryId || 'common'));
+
+  // 3. 清理：删除所有不再有效的分类链接 key
+  // 先读取现有的所有分类，找出那些已经不存在于 categories 数组中的分类
+  const existingCategoriesData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
+  const existingCategories = existingCategoriesData ? JSON.parse(existingCategoriesData) : [];
+  const allKnownCategoryIds = new Set([
+    ...existingCategories.map(c => c.id),
+    ...validCategoryIds,
+  ]);
+
+  // 4. 删除所有旧的 links:* key（确保没有残留数据）
+  const deletePromises = [];
+  for (const catId of allKnownCategoryIds) {
+    deletePromises.push(kv.delete(categoryLinksKey(catId)));
+  }
+  await Promise.all(deletePromises);
+
+  // 5. 按新的 categoryId 分组链接
   const grouped = {};
   for (const link of links) {
     const catId = link.categoryId || 'common';
@@ -76,9 +99,18 @@ async function saveCategoryLinks(kv, links) {
     grouped[catId].push(link);
   }
 
-  const writes = Object.entries(grouped).map(([catId, catLinks]) =>
-    kv.put(categoryLinksKey(catId), JSON.stringify(catLinks))
-  );
+  // 6. 写入新的分组数据
+  const writes = [];
+  for (const [catId, catLinks] of Object.entries(grouped)) {
+    writes.push(kv.put(categoryLinksKey(catId), JSON.stringify(catLinks)));
+  }
+
+  // 7. 对于空分类（没有链接的分类），写入空数组，确保 key 存在但为空
+  for (const catId of validCategoryIds) {
+    if (!grouped[catId]) {
+      writes.push(kv.put(categoryLinksKey(catId), JSON.stringify([])));
+    }
+  }
 
   await Promise.all(writes);
 }
@@ -112,13 +144,11 @@ export async function onRequest(context) {
         }, 200, corsHeaders);
       }
 
-      // 优化：支持批量获取多个配置 ?getConfig=search,website,ai
       if (getConfig && getConfig.includes(',')) {
         const requestedSections = getConfig.split(',').filter(s => CONFIG_SECTIONS.includes(s) || s === 'true');
         const configMap = {};
 
         if (requestedSections.includes('true') || requestedSections.length === 0) {
-          // 获取全部配置 + 链接 + 分类
           const categoriesData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
           const allCategories = categoriesData ? JSON.parse(categoriesData) : [];
 
@@ -137,7 +167,6 @@ export async function onRequest(context) {
             hasPassword: !!(password && password.trim() !== '')
           }));
 
-          // 同时获取所有配置
           const allConfig = await mergeAllConfigSections(kv);
 
           return jsonResponse({
@@ -317,7 +346,10 @@ export async function onRequest(context) {
         if (body.categoryId) {
           await kv.put(categoryLinksKey(body.categoryId), JSON.stringify(body.links));
         } else {
-          await saveCategoryLinks(kv, body.links);
+          // 需要传入 categories 才能正确清理
+          const categoriesData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
+          const categories = categoriesData ? JSON.parse(categoriesData) : [];
+          await saveCategoryLinks(kv, body.links, categories);
         }
         return jsonResponse({ success: true }, 200, corsHeaders);
       }
@@ -332,8 +364,10 @@ export async function onRequest(context) {
         return jsonResponse({ success: true }, 200, corsHeaders);
       }
 
+      // ===== 修复：同时保存 links 和 categories 时，传入 categories 进行完整清理 =====
       if (body.links && body.categories) {
-        await saveCategoryLinks(kv, body.links);
+        await saveCategoryLinks(kv, body.links, body.categories);
+
         const existingData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
         const existingCategories = existingData ? JSON.parse(existingData) : [];
         const existingPasswords = new Map(existingCategories.map(c => [c.id, c.password]));
@@ -346,7 +380,9 @@ export async function onRequest(context) {
         await kv.put(STORAGE_KEYS.CATEGORIES_CONFIG_KEY, JSON.stringify(mergedCategories));
         return jsonResponse({ success: true }, 200, corsHeaders);
       } else if (body.links) {
-        await saveCategoryLinks(kv, body.links);
+        const categoriesData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);
+        const categories = categoriesData ? JSON.parse(categoriesData) : [];
+        await saveCategoryLinks(kv, body.links, categories);
         return jsonResponse({ success: true }, 200, corsHeaders);
       } else if (body.categories) {
         const existingData = await kv.get(STORAGE_KEYS.CATEGORIES_CONFIG_KEY);

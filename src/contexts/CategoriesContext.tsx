@@ -82,7 +82,7 @@ function buildCategoryTree(cats: Category[]): CategoryWithChildren[] {
 export function CategoriesProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(categoriesReducer, {
     categories: [],
-    unlockedCategoryIds: new Set(),
+    unlockedCategoryIds: new Set(JSON.parse(localStorage.getItem('unlocked_categories') || '[]')),
     expandedCategories: new Set(),
   });
 
@@ -105,8 +105,10 @@ export function CategoriesProvider({ children }: { children: React.ReactNode }) 
   }, []);
 
   const unlockCategory = useCallback((id: string) => {
+    const newSet = new Set([...state.unlockedCategoryIds, id]);
+    localStorage.setItem('unlocked_categories', JSON.stringify(Array.from(newSet)));
     dispatch({ type: 'UNLOCK_CATEGORY', payload: id });
-  }, []);
+  }, [state.unlockedCategoryIds]);
 
   const toggleExpand = useCallback((id: string) => {
     dispatch({ type: 'TOGGLE_EXPAND', payload: id });

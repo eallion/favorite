@@ -10,7 +10,7 @@ import { useConfigContext } from '../contexts/ConfigContext';
  */
 export function useDataSync() {
   const { links = [], initLinks, setLinksAndSync } = useLinksContext();
-  const { categories = [], initCategories } = useCategoriesContext();
+  const { categories = [], initCategories, unlockedCategoryIds } = useCategoriesContext();
   const { initConfig } = useConfigContext();
   const initialized = useRef(false);
 
@@ -22,7 +22,6 @@ export function useDataSync() {
         const parsed = JSON.parse(stored);
         let cats: Category[] = parsed.categories || DEFAULT_CATEGORIES;
 
-        // 确保 common 分类存在且排第一
         if (!cats.some((c: Category) => c.id === 'common')) {
           cats = [{ id: 'common', name: '常用推荐', icon: 'Star' }, ...cats];
         } else {
@@ -33,7 +32,6 @@ export function useDataSync() {
           }
         }
 
-        // 修复无效 categoryId
         const validIds = new Set(cats.map((c: Category) => c.id));
         let lnks: LinkItem[] = (parsed.links || INITIAL_LINKS).map((l: LinkItem) =>
           validIds.has(l.categoryId) ? l : { ...l, categoryId: 'common' }
@@ -47,10 +45,11 @@ export function useDataSync() {
     return { links: INITIAL_LINKS, categories: DEFAULT_CATEGORIES };
   }, []);
 
-  // 从 KV 加载链接和分类
-  const loadFromCloud = useCallback(async (): Promise<{ links: LinkItem[]; categories: Category[] } | null> => {
+  // 从 KV 加载链接和分类（带密码过滤）
+  const loadFromCloud = useCallback(async (unlockedCats?: Set<string>): Promise<{ links: LinkItem[]; categories: Category[] } | null> => {
     try {
-      const res = await fetch(`${API_ENDPOINTS.STORAGE}?getConfig=true&readOnly=true`);
+      const unlockedArray = unlockedCats ? Array.from(unlockedCats) : [];
+      const res = await fetch(`${API_ENDPOINTS.STORAGE}?getConfig=true&readOnly=true&unlocked=${encodeURIComponent(JSON.stringify(unlockedArray))}`);
       if (!res.ok) return null;
       const data = await res.json();
       if (data.links?.length > 0 || data.categories?.length > 0) {
@@ -63,35 +62,33 @@ export function useDataSync() {
     }
   }, []);
 
-  // 从 KV 加载各个配置
+  // 优化：从单个请求加载所有配置
   const loadConfigsFromCloud = useCallback(async () => {
-    const configKeys = ['search', 'website', 'ai', 'weather', 'mastodon', 'icon'];
-    const configMap: Record<string, any> = {};
+    try {
+      // 使用批量接口一次性获取所有配置
+      const res = await fetch(`${API_ENDPOINTS.STORAGE}?getConfig=ai,website,mastodon,weather,search,icon`);
+      if (!res.ok) return;
 
-    await Promise.all(configKeys.map(async (key) => {
-      try {
-        const res = await fetch(`${API_ENDPOINTS.STORAGE}?getConfig=${key}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data && Object.keys(data).length > 0) {
-            // 将后端命名的 'mastodon' 映射为前端统一使用的 'ticker'
-            const configKey = key === 'mastodon' ? 'ticker' : key;
-            configMap[configKey] = data;
-          }
+      const data = await res.json();
+      const configMap: Record<string, any> = {};
+
+      for (const [key, val] of Object.entries(data)) {
+        if (val && typeof val === 'object' && Object.keys(val).length > 0) {
+          const configKey = key === 'mastodon' ? 'ticker' : key;
+          configMap[configKey] = val;
         }
-      } catch (e) {
-        console.error(`Load config ${key} failed:`, e);
       }
-    }));
 
-    // 更新 ConfigContext
-    if (Object.keys(configMap).length > 0) {
-      initConfig(configMap);
+      if (Object.keys(configMap).length > 0) {
+        initConfig(configMap);
+      }
+    } catch (e) {
+      console.error('Load configs failed:', e);
     }
   }, [initConfig]);
 
   // 初始化数据
-  const initData = useCallback(async () => {
+  const initData = useCallback(async (unlockedCats?: Set<string>) => {
     if (initialized.current) return;
     initialized.current = true;
 
@@ -102,19 +99,17 @@ export function useDataSync() {
 
     // 2. 并行从云端获取最新数据
     const [cloud] = await Promise.all([
-      loadFromCloud(),
+      loadFromCloud(unlockedCats),
       loadConfigsFromCloud(),
     ]);
 
     if (cloud) {
-      // 云端有数据，用云端数据覆盖
       let cats = cloud.categories || [];
       if (cats.length > 0 && !cats.some((c: Category) => c.id === 'common')) {
         cats = [{ id: 'common', name: '常用推荐', icon: 'Star' }, ...cats];
       }
       initLinks(cloud.links || []);
       initCategories(cats);
-      // 更新 localStorage 缓存
       localStorage.setItem(STORAGE_KEYS.LOCAL_STORAGE_KEY, JSON.stringify({
         links: cloud.links || [],
         categories: cats,

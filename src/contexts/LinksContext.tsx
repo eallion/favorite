@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useReducer, useCallback, useMemo, useRef } from 'react';
 import { LinkItem, Category } from '../../types';
 import { STORAGE_KEYS, API_ENDPOINTS } from '../constants';
 import { useAuthContext } from './AuthContext';
@@ -61,50 +61,18 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
 
   const { authToken } = useAuthContext();
 
-  // 初始化（不触发同步）
+  // 防抖定时器 ref
+  const syncTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingSyncRef = useRef<{ links: LinkItem[]; categories: Category[] } | null>(null);
+
   const initLinks = useCallback((links: LinkItem[]) => {
     dispatch({ type: 'SET_LINKS', payload: links });
   }, []);
 
-  // 同步到云端
-  const syncToCloud = useCallback(async (links: LinkItem[], categories: Category[], token: string) => {
-    dispatch({ type: 'SET_SYNC_STATUS', payload: 'saving' });
-    try {
-      const res = await fetch(API_ENDPOINTS.STORAGE, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-auth-password': token,
-        },
-        body: JSON.stringify({ links, categories }),
-      });
-      if (res.status === 401) {
-        dispatch({ type: 'SET_SYNC_STATUS', payload: 'error' });
-        return false;
-      }
-      if (!res.ok) throw new Error('Sync failed');
-      dispatch({ type: 'SET_SYNC_STATUS', payload: 'saved' });
-      setTimeout(() => dispatch({ type: 'SET_SYNC_STATUS', payload: 'idle' }), 2000);
-      return true;
-    } catch (e) {
-      console.error('Sync failed:', e);
-      dispatch({ type: 'SET_SYNC_STATUS', payload: 'error' });
-      return false;
-    }
-  }, []);
-
-  // 持久化：本地 + 云端
-  const persist = useCallback((links: LinkItem[], categories: Category[]) => {
-    localStorage.setItem(STORAGE_KEYS.LOCAL_STORAGE_KEY, JSON.stringify({ links, categories }));
-    if (authToken) {
-      syncToCloud(links, categories, authToken);
-    }
-  }, [authToken, syncToCloud]);
-
   const addLink = useCallback((data: Omit<LinkItem, 'id' | 'createdAt'>) => {
     const newLink: LinkItem = {
       ...data,
-      id: Date.now().toString(),
+      id: `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
       createdAt: Date.now(),
     };
     dispatch({ type: 'ADD_LINK', payload: newLink });
@@ -126,39 +94,87 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'SET_LINKS', payload: links });
   }, []);
 
-  // 设置链接并同步（用于 updateData 场景）
+  // 防抖同步到云端：500ms 内多次修改只发一次请求
   const setLinksAndSync = useCallback((links: LinkItem[], categories: Category[]) => {
-    dispatch({ type: 'SET_LINKS', payload: links });
-    persist(links, categories);
-  }, [persist]);
+    // 过滤掉无效链接（没有 id 的）
+    const validLinks = links.filter(l => l.id && l.id.trim() !== '');
 
-  // 置顶链接
-  const pinnedLinks = useMemo(() =>
-    state.links
-      .filter(l => l.pinned)
-      .sort((a, b) => (a.pinnedOrder ?? 0) - (b.pinnedOrder ?? 0)),
-    [state.links]
-  );
+    dispatch({ type: 'SET_LINKS', payload: validLinks });
+    localStorage.setItem(STORAGE_KEYS.LOCAL_STORAGE_KEY, JSON.stringify({ links: validLinks, categories }));
 
-  // 按分类获取链接（按 weight 排序，weight 相同按 order 排序）
-  const getLinksByCategory = useCallback((categoryId: string) =>
-    state.links
+    if (!authToken) return;
+
+    // 保存待同步数据
+    pendingSyncRef.current = { links: validLinks, categories };
+
+    // 清除旧的定时器
+    if (syncTimeoutRef.current) {
+      clearTimeout(syncTimeoutRef.current);
+    }
+
+    dispatch({ type: 'SET_SYNC_STATUS', payload: 'saving' });
+
+    // 500ms 防抖后执行同步
+    syncTimeoutRef.current = setTimeout(() => {
+      const pending = pendingSyncRef.current;
+      if (!pending) return;
+
+      fetch(API_ENDPOINTS.STORAGE, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-auth-password': authToken,
+        },
+        body: JSON.stringify(pending),
+      })
+      .then(() => {
+        dispatch({ type: 'SET_SYNC_STATUS', payload: 'saved' });
+        setTimeout(() => {
+          dispatch({ type: 'SET_SYNC_STATUS', payload: 'idle' });
+        }, 2000);
+      })
+      .catch(e => {
+        console.error('Sync links failed:', e);
+        dispatch({ type: 'SET_SYNC_STATUS', payload: 'error' });
+      });
+
+      pendingSyncRef.current = null;
+    }, 500);
+  }, [authToken]);
+
+  // 过滤私人书签：未登录时隐藏
+  const visibleLinks = useMemo(() => {
+    if (authToken) return state.links;
+    return state.links.filter(link => !link.isPrivate);
+  }, [state.links, authToken]);
+
+  const pinnedLinks = useMemo(() => {
+    const pinned = visibleLinks.filter(l => l.pinned);
+    return [...pinned].sort((a, b) => {
+      const weightDiff = (b.weight ?? 0) - (a.weight ?? 0);
+      if (weightDiff !== 0) return weightDiff;
+      return (a.pinnedOrder ?? 0) - (b.pinnedOrder ?? 0);
+    });
+  }, [visibleLinks]);
+
+  const getLinksByCategory = useCallback((categoryId: string) => {
+    return visibleLinks
       .filter(l => l.categoryId === categoryId)
       .sort((a, b) => {
-        const wa = a.weight ?? Infinity;
-        const wb = b.weight ?? Infinity;
-        if (wa !== wb) return wa - wb;
+        const weightDiff = (b.weight ?? 0) - (a.weight ?? 0);
+        if (weightDiff !== 0) return weightDiff;
         return (a.order ?? 0) - (b.order ?? 0);
-      }),
-    [state.links]
-  );
+      });
+  }, [visibleLinks]);
 
   return (
     <LinksContext.Provider value={{
       ...state,
       initLinks,
-      addLink, updateLink, deleteLink, deleteLinks,
-      updateLinks, setLinksAndSync, pinnedLinks, getLinksByCategory,
+      addLink, updateLink, deleteLink, deleteLinks, updateLinks,
+      setLinksAndSync,
+      pinnedLinks,
+      getLinksByCategory,
     }}>
       {children}
     </LinksContext.Provider>

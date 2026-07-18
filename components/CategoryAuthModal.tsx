@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Lock, ArrowRight, Loader2, X } from 'lucide-react';
 import { Category } from '../types';
+import { API_ENDPOINTS } from '../src/constants';
 
 interface CategoryAuthModalProps {
   isOpen: boolean;
@@ -12,18 +13,45 @@ interface CategoryAuthModalProps {
 const CategoryAuthModal: React.FC<CategoryAuthModalProps> = ({ isOpen, onClose, category, onUnlock }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   if (!isOpen || !category) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === category.password) {
-        onUnlock(category.id);
-        setPassword('');
-        setError('');
-        onClose();
-    } else {
+    if (!password.trim()) return;
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      // 调用后端验证分类密码
+      const res = await fetch(
+        `${API_ENDPOINTS.STORAGE}?getConfig=links&category=${encodeURIComponent(category.id)}&catPassword=${encodeURIComponent(password.trim())}`
+      );
+
+      if (res.status === 403) {
         setError('密码错误');
+        setIsLoading(false);
+        return;
+      }
+
+      if (!res.ok) {
+        setError('验证失败，请重试');
+        setIsLoading(false);
+        return;
+      }
+
+      // 密码正确，解锁分类
+      onUnlock(category.id);
+      setPassword('');
+      setError('');
+      setIsLoading(false);
+      onClose();
+    } catch (err) {
+      console.error('Category auth error:', err);
+      setError('网络错误，请重试');
+      setIsLoading(false);
     }
   };
 
@@ -53,6 +81,7 @@ const CategoryAuthModal: React.FC<CategoryAuthModalProps> = ({ isOpen, onClose, 
               className="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-amber-500 outline-none transition-all text-center tracking-widest"
               placeholder="目录密码"
               autoFocus
+              disabled={isLoading}
             />
           </div>
 
@@ -64,10 +93,12 @@ const CategoryAuthModal: React.FC<CategoryAuthModalProps> = ({ isOpen, onClose, 
 
           <button
             type="submit"
-            disabled={!password}
-            className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2"
+            disabled={!password || isLoading}
+            className="w-full bg-amber-500 hover:bg-amber-600 disabled:bg-amber-300 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-lg shadow-amber-500/30 flex items-center justify-center gap-2"
           >
-            解锁 <ArrowRight size={18} />
+            {isLoading ? <Loader2 size={18} className="animate-spin" /> : <>
+              解锁 <ArrowRight size={18} />
+            </>}
           </button>
         </form>
       </div>

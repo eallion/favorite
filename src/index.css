@@ -4,6 +4,7 @@
 /* 强制设置浅色模式为默认 */
 html {
   color-scheme: light;
+  scroll-behavior: smooth;
 }
 
 html.dark {
@@ -408,4 +409,54 @@ html.dark .dark\:focus\:ring-blue-500:focus {
 section[data-category-section] {
   content-visibility: auto;
   contain-intrinsic-size: auto 320px;
+}
+
+/* ========== 移动端优化修复 ========== */
+
+/* 防止 iOS Safari 输入框自动放大 */
+input, textarea, select {
+  font-size: 16px !important;
+}
+
+/* 移动端模态框适配 */
+@media (max-width: 640px) {
+  /* 模态框容器顶部对齐，方便滚动 */
+  .fixed.inset-0.z-\[60\] {
+    align-items: flex-start !important;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  /* 模态框内容最大高度 */
+  .max-w-md.max-h-\[92vh\] {
+    max-height: 95vh !important;
+  }
+}
+
+/* 确保工具栏按钮不被压缩 */
+.flex-shrink-0 {
+  flex-shrink: 0 !important;
+}
+
+/* 小屏幕下隐藏部分非必要元素 */
+@media (max-width: 480px) {
+  /* 如果天气组件太宽，可以隐藏温度文字只显示图标 */
+  .weather-display .weather-temp {
+    display: none;
+  }
+}
+
+/* iOS Safari 长按优化 - 仅触摸设备 */
+@media (hover: none) and (pointer: coarse) {
+  .link-card {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/*  iOS Safari 侧边栏问题，但你的布局是内部滚动，所以需要针对 main 元素 */
+main.flex-1.overflow-y-auto {
+  scroll-behavior: smooth;
 }

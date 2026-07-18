@@ -1,5 +1,4 @@
 import React from 'react';
-import { DndContext, closestCenter, DragEndEvent, SensorDescriptor } from '@dnd-kit/core';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import { LinkItem, Category } from '../../../types';
 import { CategoryWithChildren } from '../../contexts/CategoriesContext';
@@ -16,8 +15,6 @@ interface CategorySectionProps {
   onEditLink: (link: LinkItem) => void;
   onDeleteLink: (id: string) => void;
   onContextMenu: (e: React.MouseEvent, link: LinkItem) => void;
-  onDragEnd: (event: DragEndEvent, categoryId: string) => void;
-  sensors: SensorDescriptor<any>[];
   authToken?: string | null;
   isDraggable?: boolean;
   isEditMode?: boolean;
@@ -27,16 +24,12 @@ interface CategorySectionProps {
 export function CategorySection({
   category, links, subcategoryLinks, viewMode,
   isBatchEditMode, selectedLinks, onToggleSelection,
-  onEditLink, onDeleteLink, onContextMenu, onDragEnd, sensors,
+  onEditLink, onDeleteLink, onContextMenu,
   authToken, isDraggable = false, isEditMode = false, onWeightChange,
 }: CategorySectionProps) {
   const allLinks = [...links, ...subcategoryLinks];
 
   if (allLinks.length === 0) return null;
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    onDragEnd(event, category.id);
-  };
 
   const gridClass = viewMode === 'detailed'
     ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
@@ -51,34 +44,32 @@ export function CategorySection({
         </span>
       </h2>
 
-      {/* Category's own links */}
+      {/* Category's own links - no DndContext here, handled by parent */}
       {links.length > 0 && (
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={links.map(l => l.id)} strategy={rectSortingStrategy}>
-            <div className={`grid gap-3 ${gridClass}`}>
-              {links.map(link => (
-                <LinkCard
-                  key={link.id}
-                  link={link}
-                  viewMode={viewMode}
-                  isBatchEditMode={isBatchEditMode}
-                  isSelected={selectedLinks.has(link.id)}
-                  onToggleSelection={onToggleSelection}
-                  onEdit={onEditLink}
-                  onDelete={onDeleteLink}
-                  onContextMenu={onContextMenu}
-                  authToken={authToken}
-                  isDraggable={isDraggable}
-                  isEditMode={isEditMode}
-                  onWeightChange={onWeightChange}
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
+        <SortableContext items={links.map(l => l.id)} strategy={rectSortingStrategy}>
+          <div className={`grid gap-3 ${gridClass}`}>
+            {links.map(link => (
+              <LinkCard
+                key={link.id}
+                link={link}
+                viewMode={viewMode}
+                isBatchEditMode={isBatchEditMode}
+                isSelected={selectedLinks.has(link.id)}
+                onToggleSelection={onToggleSelection}
+                onEdit={onEditLink}
+                onDelete={onDeleteLink}
+                onContextMenu={onContextMenu}
+                authToken={authToken}
+                isDraggable={isDraggable}
+                isEditMode={isEditMode}
+                onWeightChange={onWeightChange}
+              />
+            ))}
+          </div>
+        </SortableContext>
       )}
 
-      {/* Subcategory links */}
+      {/* Subcategory links - no DndContext here either */}
       {category.children?.map(child => {
         const childLinks = subcategoryLinks.filter(l => l.categoryId === child.id);
         if (childLinks.length === 0) return null;
@@ -91,29 +82,27 @@ export function CategorySection({
                 {childLinks.length}
               </span>
             </h3>
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={(e) => onDragEnd(e, child.id)}>
-              <SortableContext items={childLinks.map(l => l.id)} strategy={rectSortingStrategy}>
-                <div className={`grid gap-3 ${gridClass}`}>
-                  {childLinks.map(link => (
-                    <LinkCard
-                      key={link.id}
-                      link={link}
-                      viewMode={viewMode}
-                      isBatchEditMode={isBatchEditMode}
-                      isSelected={selectedLinks.has(link.id)}
-                      onToggleSelection={onToggleSelection}
-                      onEdit={onEditLink}
-                      onDelete={onDeleteLink}
-                      onContextMenu={onContextMenu}
-                      authToken={authToken}
-                      isDraggable={isDraggable}
-                      isEditMode={isEditMode}
-                      onWeightChange={onWeightChange}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-            </DndContext>
+            <SortableContext items={childLinks.map(l => l.id)} strategy={rectSortingStrategy}>
+              <div className={`grid gap-3 ${gridClass}`}>
+                {childLinks.map(link => (
+                  <LinkCard
+                    key={link.id}
+                    link={link}
+                    viewMode={viewMode}
+                    isBatchEditMode={isBatchEditMode}
+                    isSelected={selectedLinks.has(link.id)}
+                    onToggleSelection={onToggleSelection}
+                    onEdit={onEditLink}
+                    onDelete={onDeleteLink}
+                    onContextMenu={onContextMenu}
+                    authToken={authToken}
+                    isDraggable={isDraggable}
+                    isEditMode={isEditMode}
+                    onWeightChange={onWeightChange}
+                  />
+                ))}
+              </div>
+            </SortableContext>
           </div>
         );
       })}

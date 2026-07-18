@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useReducer, useCallback, useMemo, useRef } from 'react';
 import { LinkItem, Category } from '../../types';
 import { STORAGE_KEYS, API_ENDPOINTS } from '../constants';
 import { useAuthContext } from './AuthContext';
@@ -61,6 +61,10 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
 
   const { authToken } = useAuthContext();
 
+  // 防抖定时器 ref
+  const syncTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingSyncRef = useRef<{ links: LinkItem[]; categories: Category[] } | null>(null);
+
   const initLinks = useCallback((links: LinkItem[]) => {
     dispatch({ type: 'SET_LINKS', payload: links });
   }, []);
@@ -68,7 +72,7 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
   const addLink = useCallback((data: Omit<LinkItem, 'id' | 'createdAt'>) => {
     const newLink: LinkItem = {
       ...data,
-      id: Date.now().toString(),
+      id: `${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
       createdAt: Date.now(),
     };
     dispatch({ type: 'ADD_LINK', payload: newLink });
@@ -90,19 +94,50 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'SET_LINKS', payload: links });
   }, []);
 
+  // 防抖同步到云端：500ms 内多次修改只发一次请求
   const setLinksAndSync = useCallback((links: LinkItem[], categories: Category[]) => {
     dispatch({ type: 'SET_LINKS', payload: links });
     localStorage.setItem(STORAGE_KEYS.LOCAL_STORAGE_KEY, JSON.stringify({ links, categories }));
-    if (authToken) {
+
+    if (!authToken) return;
+
+    // 保存待同步数据
+    pendingSyncRef.current = { links, categories };
+
+    // 清除旧的定时器
+    if (syncTimeoutRef.current) {
+      clearTimeout(syncTimeoutRef.current);
+    }
+
+    dispatch({ type: 'SET_SYNC_STATUS', payload: 'saving' });
+
+    // 500ms 防抖后执行同步
+    syncTimeoutRef.current = setTimeout(() => {
+      const pending = pendingSyncRef.current;
+      if (!pending) return;
+
       fetch(API_ENDPOINTS.STORAGE, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-auth-password': authToken,
         },
-        body: JSON.stringify({ links, categories }),
-      }).catch(e => console.error('Sync links failed:', e));
-    }
+        body: JSON.stringify(pending),
+      })
+      .then(() => {
+        dispatch({ type: 'SET_SYNC_STATUS', payload: 'saved' });
+        // 2秒后恢复 idle 状态
+        setTimeout(() => {
+          dispatch({ type: 'SET_SYNC_STATUS', payload: 'idle' });
+        }, 2000);
+      })
+      .catch(e => {
+        console.error('Sync links failed:', e);
+        dispatch({ type: 'SET_SYNC_STATUS', payload: 'error' });
+      });
+
+      pendingSyncRef.current = null;
+    }, 500);
   }, [authToken]);
 
   // 过滤私人书签：未登录时隐藏
@@ -114,7 +149,6 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
   const pinnedLinks = useMemo(() => {
     const pinned = visibleLinks.filter(l => l.pinned);
     return [...pinned].sort((a, b) => {
-      // 先按 weight 降序（数值大的靠前），再按 pinnedOrder 升序
       const weightDiff = (b.weight ?? 0) - (a.weight ?? 0);
       if (weightDiff !== 0) return weightDiff;
       return (a.pinnedOrder ?? 0) - (b.pinnedOrder ?? 0);
@@ -125,7 +159,6 @@ export function LinksProvider({ children }: { children: React.ReactNode }) {
     return visibleLinks
       .filter(l => l.categoryId === categoryId)
       .sort((a, b) => {
-        // 先按 weight 降序（数值大的靠前），weight 相同则按 order 升序
         const weightDiff = (b.weight ?? 0) - (a.weight ?? 0);
         if (weightDiff !== 0) return weightDiff;
         return (a.order ?? 0) - (b.order ?? 0);

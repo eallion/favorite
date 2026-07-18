@@ -10,8 +10,10 @@ interface CategoryManagerModalProps {
   isOpen: boolean;
   onClose: () => void;
   categories: Category[];
+  links: { id: string; categoryId: string; title: string }[];
   onUpdateCategories: (newCategories: Category[]) => void;
   onDeleteCategory: (id: string) => void;
+  onUpdateLinks?: (links: { id: string; categoryId: string; title: string }[]) => void;
   onVerifyPassword?: (password: string) => Promise<boolean>;
 }
 
@@ -19,8 +21,10 @@ const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
   isOpen,
   onClose,
   categories,
+  links,
   onUpdateCategories,
   onDeleteCategory,
+  onUpdateLinks,
   onVerifyPassword
 }) => {
   // 本地编辑状态 - 不直接修改原始数据
@@ -174,8 +178,17 @@ const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
     if (!onVerifyPassword || hasVerifiedPermissions) {
       if (confirm(`确定删除"${cat.name}"分类吗？该分类下的书签将移动到"常用推荐"。`)) {
         const newCats = localCategories.filter(c => c.id !== cat.id);
+        // 迁移该分类下的书签到 common
+        if (onUpdateLinks && links) {
+          const linksToMigrate = links.filter(l => l.categoryId === cat.id);
+          if (linksToMigrate.length > 0) {
+            const migratedLinks = links.map(l =>
+              l.categoryId === cat.id ? { ...l, categoryId: 'common' } : l
+            );
+            onUpdateLinks(migratedLinks);
+          }
+        }
         markChanged(newCats);
-        toast.success(`分类「${cat.name}」已标记删除，点击保存生效`);
       }
       return;
     }
@@ -192,9 +205,18 @@ const CategoryManagerModal: React.FC<CategoryManagerModalProps> = ({
       if (cat) startEdit(cat);
     } else if (pendingAction.type === 'delete') {
       const cat = localCategories.find(c => c.id === pendingAction.categoryId);
-      if (cat && confirm(`确定删除"${cat.name}"分类吗？`)) {
+      if (cat && confirm(`确定删除"${cat.name}"分类吗？该分类下的书签将移动到"常用推荐"。`)) {
+        // 迁移该分类下的书签到 common
+        if (onUpdateLinks && links) {
+          const linksToMigrate = links.filter(l => l.categoryId === cat.id);
+          if (linksToMigrate.length > 0) {
+            const migratedLinks = links.map(l =>
+              l.categoryId === cat.id ? { ...l, categoryId: 'common' } : l
+            );
+            onUpdateLinks(migratedLinks);
+          }
+        }
         markChanged(localCategories.filter(c => c.id !== cat.id));
-        toast.success(`分类「${cat.name}」已标记删除，点击保存生效`);
       }
     }
     setPendingAction(null);

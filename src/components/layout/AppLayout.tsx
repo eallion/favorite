@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, lazy, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuthContext } from '../../contexts/AuthContext';
 import { useLinksContext } from '../../contexts/LinksContext';
 import { useCategoriesContext } from '../../contexts/CategoriesContext';
@@ -12,16 +12,15 @@ import { MainContent } from './MainContent';
 import { ContentSkeleton } from './ContentSkeleton';
 import { LinkItem, Category } from '../../../types';
 import AuthModal from '../../../components/AuthModal';
-
-const LinkModal = lazy(() => import('../../../components/LinkModal'));
-const CategoryManagerModal = lazy(() => import('../../../components/CategoryManagerModal'));
-const BackupModal = lazy(() => import('../../../components/BackupModal'));
-const CategoryAuthModal = lazy(() => import('../../../components/CategoryAuthModal'));
+import LinkModal from '../../../components/LinkModal';
+import CategoryManagerModal from '../../../components/CategoryManagerModal';
+import BackupModal from '../../../components/BackupModal';
+import CategoryAuthModal from '../../../components/CategoryAuthModal';
 import ImportModal from '../../../components/ImportModal';
-const SettingsModal = lazy(() => import('../../../components/SettingsModal'));
-const SearchConfigModal = lazy(() => import('../../../components/SearchConfigModal'));
-const ContextMenu = lazy(() => import('../../../components/ContextMenu'));
-const QRCodeModal = lazy(() => import('../../../components/QRCodeModal'));
+import SettingsModal from '../../../components/SettingsModal';
+import SearchConfigModal from '../../../components/SearchConfigModal';
+import ContextMenu from '../../../components/ContextMenu';
+import QRCodeModal from '../../../components/QRCodeModal';
 
 export function AppLayout() {
   const { authToken, requiresAuth, isCheckingAuth, capabilities, login, logout } = useAuthContext();
@@ -320,27 +319,25 @@ export function AppLayout() {
         <MainContent searchQuery={searchQuery} searchResults={searchResults} isBatchEditMode={isBatchEditMode} selectedLinks={selectedLinks} onToggleSelection={toggleLinkSelection} onEditLink={handleEditLink} onDeleteLink={handleDeleteLink} onContextMenu={handleContextMenu} isDragSortMode={isDragSortMode} isEditMode={isEditMode} onWeightChange={handleWeightChange} isInternal={isInternal} />
       </div>
       <AuthModal isOpen={isAuthOpen} onLogin={login} onClose={() => setIsAuthOpen(false)} />
-      <Suspense fallback={null}>
-        {isModalOpen && <LinkModal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setEditingLink(undefined); setPrefillLink(undefined); }} onSave={handleSaveLink} onDelete={editingLink ? () => handleDeleteLink(editingLink.id) : undefined} categories={categories} initialData={editingLink || prefillLink as LinkItem} aiConfig={aiConfig} defaultCategoryId={undefined} iconConfig={iconConfig} supportsUpload={capabilities?.upload ?? true} />}
-        {isCatManagerOpen && <CategoryManagerModal isOpen={isCatManagerOpen} onClose={() => setIsCatManagerOpen(false)} categories={categories} links={links} onUpdateCategories={(newCats) => setCategoriesAndSync(newCats, links)} onDeleteCategory={(id) => { const newCats = categories.filter(c => c.id !== id); setCategoriesAndSync(newCats, links); }} onUpdateLinks={(newLinks) => setLinksAndSync(newLinks, categories)} />}
-        {isBackupModalOpen && <BackupModal isOpen={isBackupModalOpen} onClose={() => setIsBackupModalOpen(false)} links={links} categories={categories} onRestore={(newLinks, newCats) => setLinksAndSync(newLinks, newCats)} webDavConfig={webdav || { url: '', username: '', password: '', enabled: false }} onSaveWebDavConfig={setWebDav} searchConfig={search || { mode: 'internal', externalSources: [] }} onRestoreSearchConfig={setSearch} aiConfig={aiConfig} onRestoreAIConfig={setAI} />}
-        {isImportModalOpen && <ImportModal isOpen={isImportModalOpen} onClose={() => setIsImportModalOpen(false)} existingLinks={links} categories={categories} onImport={(newLinks, newCats) => setLinksAndSync(newLinks, newCats)} />}
-        {isSettingsModalOpen && <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} authToken={authToken} onSettingsLoaded={(settings) => { setAI(settings.ai); setWebsite({ ...website, passwordExpiry: settings.passwordExpiry }); setMastodon(settings.ticker); setWeather(settings.weather); setShowPinned(settings.showPinnedWebsites); if (settings.defaultViewMode) setViewMode(settings.defaultViewMode); }} onImportClick={() => { setIsSettingsModalOpen(false); setIsImportModalOpen(true); }} onBackupClick={() => { setIsSettingsModalOpen(false); setIsBackupModalOpen(true); }} />}
-        {isSearchConfigModalOpen && <SearchConfigModal isOpen={isSearchConfigModalOpen} onClose={() => setIsSearchConfigModalOpen(false)} />}
-        {contextMenu.isOpen && contextMenu.link && (
-          <ContextMenu isOpen={contextMenu.isOpen} position={contextMenu.position} link={contextMenu.link} onClose={() => setContextMenu(prev => ({ ...prev, isOpen: false }))} onCopyLink={() => { navigator.clipboard.writeText(contextMenu.link!.url); setContextMenu(prev => ({ ...prev, isOpen: false })); }} onShowQRCode={(url, title) => { setQrCodeModal({ isOpen: true, url, title }); setContextMenu(prev => ({ ...prev, isOpen: false })); }} onEdit={() => { setEditingLink(contextMenu.link!); setIsModalOpen(true); setContextMenu(prev => ({ ...prev, isOpen: false })); }} onDelete={() => { handleDeleteLink(contextMenu.link!.id); setContextMenu(prev => ({ ...prev, isOpen: false })); }} onTogglePin={() => {
-            const targetLink = contextMenu.link!;
-            const newPinned = !targetLink.pinned;
-            setLinksAndSync(
-              links.map(l => l.id === targetLink.id ? { ...l, pinned: newPinned } : l),
-              categories
-            );
-            setContextMenu(prev => ({ ...prev, isOpen: false }));
-            toast.success(newPinned ? `「${targetLink.title}」已置顶` : `「${targetLink.title}」已取消置顶`);
-          }} />
-        )}
-        {qrCodeModal.isOpen && <QRCodeModal isOpen={qrCodeModal.isOpen} url={qrCodeModal.url} title={qrCodeModal.title} onClose={() => setQrCodeModal({ isOpen: false, url: '', title: '' })} />}
-      </Suspense>
+      {isModalOpen && <LinkModal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setEditingLink(undefined); setPrefillLink(undefined); }} onSave={handleSaveLink} onDelete={editingLink ? () => handleDeleteLink(editingLink.id) : undefined} categories={categories} initialData={editingLink || prefillLink as LinkItem} aiConfig={aiConfig} defaultCategoryId={undefined} iconConfig={iconConfig} supportsUpload={capabilities?.upload ?? true} />}
+      {isCatManagerOpen && <CategoryManagerModal isOpen={isCatManagerOpen} onClose={() => setIsCatManagerOpen(false)} categories={categories} links={links} onUpdateCategories={(newCats) => setCategoriesAndSync(newCats, links)} onDeleteCategory={(id) => { const newCats = categories.filter(c => c.id !== id); setCategoriesAndSync(newCats, links); }} onUpdateLinks={(newLinks) => setLinksAndSync(newLinks, categories)} />}
+      {isBackupModalOpen && <BackupModal isOpen={isBackupModalOpen} onClose={() => setIsBackupModalOpen(false)} links={links} categories={categories} onRestore={(newLinks, newCats) => setLinksAndSync(newLinks, newCats)} webDavConfig={webdav || { url: '', username: '', password: '', enabled: false }} onSaveWebDavConfig={setWebDav} searchConfig={search || { mode: 'internal', externalSources: [] }} onRestoreSearchConfig={setSearch} aiConfig={aiConfig} onRestoreAIConfig={setAI} />}
+      {isImportModalOpen && <ImportModal isOpen={isImportModalOpen} onClose={() => setIsImportModalOpen(false)} existingLinks={links} categories={categories} onImport={(newLinks, newCats) => setLinksAndSync(newLinks, newCats)} />}
+      {isSettingsModalOpen && <SettingsModal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} authToken={authToken} onSettingsLoaded={(settings) => { setAI(settings.ai); setWebsite({ ...website, passwordExpiry: settings.passwordExpiry }); setMastodon(settings.ticker); setWeather(settings.weather); setShowPinned(settings.showPinnedWebsites); if (settings.defaultViewMode) setViewMode(settings.defaultViewMode); }} onImportClick={() => { setIsSettingsModalOpen(false); setIsImportModalOpen(true); }} onBackupClick={() => { setIsSettingsModalOpen(false); setIsBackupModalOpen(true); }} />}
+      {isSearchConfigModalOpen && <SearchConfigModal isOpen={isSearchConfigModalOpen} onClose={() => setIsSearchConfigModalOpen(false)} />}
+      {contextMenu.isOpen && contextMenu.link && (
+        <ContextMenu isOpen={contextMenu.isOpen} position={contextMenu.position} link={contextMenu.link} onClose={() => setContextMenu(prev => ({ ...prev, isOpen: false }))} onCopyLink={() => { navigator.clipboard.writeText(contextMenu.link!.url); setContextMenu(prev => ({ ...prev, isOpen: false })); }} onShowQRCode={(url, title) => { setQrCodeModal({ isOpen: true, url, title }); setContextMenu(prev => ({ ...prev, isOpen: false })); }} onEdit={() => { setEditingLink(contextMenu.link!); setIsModalOpen(true); setContextMenu(prev => ({ ...prev, isOpen: false })); }} onDelete={() => { handleDeleteLink(contextMenu.link!.id); setContextMenu(prev => ({ ...prev, isOpen: false })); }} onTogglePin={() => {
+          const targetLink = contextMenu.link!;
+          const newPinned = !targetLink.pinned;
+          setLinksAndSync(
+            links.map(l => l.id === targetLink.id ? { ...l, pinned: newPinned } : l),
+            categories
+          );
+          setContextMenu(prev => ({ ...prev, isOpen: false }));
+          toast.success(newPinned ? `「${targetLink.title}」已置顶` : `「${targetLink.title}」已取消置顶`);
+        }} />
+      )}
+      {qrCodeModal.isOpen && <QRCodeModal isOpen={qrCodeModal.isOpen} url={qrCodeModal.url} title={qrCodeModal.title} onClose={() => setQrCodeModal({ isOpen: false, url: '', title: '' })} />}
       {catAuthModalData && <CategoryAuthModal isOpen={!!catAuthModalData} category={catAuthModalData} onClose={() => setCatAuthModalData(null)} onUnlock={handleCategoryUnlock} />}
       {isBatchEditMode && selectedLinks.size > 0 && (
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-slate-800/95 border-t border-slate-200 dark:border-slate-700 px-4 py-3 flex items-center justify-between shadow-lg">

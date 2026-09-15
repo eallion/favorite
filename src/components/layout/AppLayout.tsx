@@ -17,7 +17,7 @@ const LinkModal = lazy(() => import('../../../components/LinkModal'));
 const CategoryManagerModal = lazy(() => import('../../../components/CategoryManagerModal'));
 const BackupModal = lazy(() => import('../../../components/BackupModal'));
 const CategoryAuthModal = lazy(() => import('../../../components/CategoryAuthModal'));
-const ImportModal = lazy(() => import('../../../components/ImportModal'));
+import ImportModal from '../../../components/ImportModal';
 const SettingsModal = lazy(() => import('../../../components/SettingsModal'));
 const SearchConfigModal = lazy(() => import('../../../components/SearchConfigModal'));
 const ContextMenu = lazy(() => import('../../../components/ContextMenu'));

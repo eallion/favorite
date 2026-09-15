@@ -682,9 +682,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                     <CloudCog size={16} /> 网站内容管理
                   </h4>
                   <div className="grid grid-cols-2 gap-3">
-                   {/* <button onClick={onImportClick} className="flex flex-col items-center justify-center gap-2 p-3 text-sm text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 rounded-lg border border-slate-200 dark:border-slate-600 transition-all">
+                    <button onClick={onImportClick} className="flex flex-col items-center justify-center gap-2 p-3 text-sm text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 rounded-lg border border-slate-200 dark:border-slate-600 transition-all">
                       <Upload size={18} /><span>导入书签</span>
-                    </button> */}
+                    </button>
                     <button onClick={onBackupClick} className="flex flex-col items-center justify-center gap-2 p-3 text-sm text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 rounded-lg border border-slate-200 dark:border-slate-600 transition-all">
                       <CloudCog size={18} /><span>备份恢复</span>
                     </button>

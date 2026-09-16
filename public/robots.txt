@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://s.eallion.com/sitemap.xml
+Sitemap: https://sq.y11.fun/sitemap.xml

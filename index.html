@@ -41,17 +41,19 @@
 
     <title>F导航</title>
   <link rel="stylesheet" href="/src/index.css">
-  <script>
-    // 确保页面加载时使用正确的主题
-    (function() {
-      const theme = localStorage.getItem('cloudnav_theme_preference');
-      if (theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    })();
-  </script>
+    <script>
+      // 确保页面加载时使用正确的主题
+      (function() {
+        const theme = localStorage.getItem('cloudnav_theme_preference');
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+          document.querySelector('meta[name="theme-color"]')
+            ?.setAttribute('content', '#1c2128');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      })();
+    </script>
 </head>
   <body class="bg-gray-50 text-slate-900 transition-colors duration-300">
     <div id="root"></div>

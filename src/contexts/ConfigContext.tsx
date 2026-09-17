@@ -105,6 +105,17 @@ function configReducer(state: ConfigState, action: ConfigAction): ConfigState {
 // --- Context ---
 const ConfigContext = createContext<ConfigContextValue | null>(null);
 
+// 同步浏览器工具栏颜色（<meta name="theme-color">），深色与页面背景 #1c2128 保持一致
+function applyThemeColorMeta(dark: boolean) {
+  let meta = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null;
+  if (!meta) {
+    meta = document.createElement('meta');
+    meta.name = 'theme-color';
+    document.head.appendChild(meta);
+  }
+  meta.setAttribute('content', dark ? '#1c2128' : '#ffffff');
+}
+
 // --- Provider ---
 export function ConfigProvider({ children }: { children: React.ReactNode }) {
   // 从 localStorage 初始化
@@ -137,6 +148,7 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
       document.documentElement.classList.remove('dark');
       document.documentElement.removeAttribute('data-theme');
     }
+    applyThemeColorMeta(isDark);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setAI = useCallback((config: AIConfig) => {
@@ -195,6 +207,7 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
       document.documentElement.classList.remove('dark');
       document.documentElement.removeAttribute('data-theme');
     }
+    applyThemeColorMeta(dark);
   }, []);
 
   const syncConfigToKV = useCallback(async (authToken: string) => {

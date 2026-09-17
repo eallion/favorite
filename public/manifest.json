@@ -4,8 +4,8 @@
   "description": "一个现代化的云端导航页面",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#3b82f6",
+  "background_color": "#1c2128",
+  "theme_color": "#1c2128",
   "orientation": "portrait",
   "icons": [
     {

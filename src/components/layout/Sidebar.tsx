@@ -125,21 +125,22 @@ export function Sidebar({
   };
 
   const overlayOpacity = getOverlayOpacity();
-  const showOverlay = overlayOpacity > 0;
 
   return (
     <>
-      {/* 遮罩层 - 仅移动端，点击关闭 */}
-      {showOverlay && (
-        <div
-          className="fixed inset-0 z-20 lg:hidden cursor-pointer"
-          style={{
-            backgroundColor: `rgba(0, 0, 0, ${overlayOpacity})`,
-            transition: isDragging ? 'none' : 'background-color 0.3s ease',
-          }}
-          onClick={onClose}
-        />
-      )}
+      {/* 遮罩层 - 仅移动端，点击关闭。
+          注意：不能条件卸载此元素——iOS Safari 下瞬间移除 fixed 全屏层
+          会在底部安全区留下残影（WebKit 合成层不重绘）。改为常驻 DOM，
+          用背景色过渡淡入淡出，透明时禁用指针事件 */}
+      <div
+        className="fixed inset-0 z-20 lg:hidden"
+        style={{
+          backgroundColor: `rgba(0, 0, 0, ${overlayOpacity})`,
+          transition: isDragging ? 'none' : 'background-color 0.3s ease',
+          pointerEvents: overlayOpacity > 0 ? 'auto' : 'none',
+        }}
+        onClick={onClose}
+      />
 
       {/* 侧边栏 */}
       <aside

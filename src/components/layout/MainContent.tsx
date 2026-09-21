@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useLinksContext } from '../../contexts/LinksContext';
 import { useCategoriesContext } from '../../contexts/CategoriesContext';
 import { useConfigContext } from '../../contexts/ConfigContext';
@@ -8,6 +8,7 @@ import { CategorySection } from '../category/CategorySection';
 import { PinnedSection } from '../link/PinnedSection';
 import { LinkCard } from '../link/LinkCard';
 import { Footer } from './Footer';
+import { BackToTop } from './BackToTop';
 import { LinkItem } from '../../../types';
 
 interface MainContentProps {
@@ -36,6 +37,7 @@ export function MainContent({
   const { authToken } = useAuthContext();
   const { sensors, handleDragEnd, handlePinnedDragEnd } = useDragSort();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const mainRef = useRef<HTMLElement>(null);
 
   const safeGetLinksByCategory = useCallback((categoryId: string) => {
     return getLinksByCategory ? getLinksByCategory(categoryId) : [];
@@ -68,7 +70,7 @@ export function MainContent({
   // Search mode: Only show results if internal search is checked
   if (searchQuery.trim() && isInternal) {
     return (
-      <main className="flex-1 overflow-y-auto flex flex-col justify-between">
+      <main ref={mainRef} className="flex-1 overflow-y-auto flex flex-col justify-between">
         <div className="p-4 lg:p-8 space-y-8 flex-1">
           <section>
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2 mb-4">
@@ -102,12 +104,13 @@ export function MainContent({
           </section>
         </div>
         <Footer />
+        <BackToTop scrollContainerRef={mainRef} />
       </main>
     );
   }
 
   return (
-    <main className="flex-1 overflow-y-auto flex flex-col justify-between">
+    <main ref={mainRef} className="flex-1 overflow-y-auto flex flex-col justify-between">
       <div className="p-4 lg:p-8 space-y-8 flex-1">
         {/* Pinned section */}
         {showPinnedWebsites && pinnedLinks.length > 0 && (
@@ -160,6 +163,7 @@ export function MainContent({
         })}
       </div>
       <Footer />
+      <BackToTop scrollContainerRef={mainRef} />
     </main>
   );
 }

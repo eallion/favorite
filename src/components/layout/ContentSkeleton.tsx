@@ -1,13 +1,16 @@
 import React from 'react';
 import CardSkeleton from '../../../components/CardSkeleton';
+import { ViewMode } from '../../../types';
 
 interface ContentSkeletonProps {
-  viewMode?: 'compact' | 'detailed';
+  viewMode?: ViewMode;
 }
 
 export function ContentSkeleton({ viewMode = 'detailed' }: ContentSkeletonProps) {
   const gridClass = viewMode === 'detailed'
     ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
+    : viewMode === 'app'
+    ? 'grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12'
     : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6';
 
   return (
@@ -19,7 +22,7 @@ export function ContentSkeleton({ viewMode = 'detailed' }: ContentSkeletonProps)
           <div className="h-5 bg-slate-200 dark:bg-slate-700 rounded-full w-8" />
         </div>
         <div className={`grid gap-3 ${gridClass}`}>
-          <CardSkeleton viewMode={viewMode} count={6} />
+          <CardSkeleton viewMode={viewMode} count={viewMode === 'app' ? 12 : 6} />
         </div>
       </section>
       {[1, 2, 3].map(i => (

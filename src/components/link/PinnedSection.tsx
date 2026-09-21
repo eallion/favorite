@@ -2,12 +2,12 @@ import React from 'react';
 import { DndContext, closestCenter, DragEndEvent, SensorDescriptor } from '@dnd-kit/core';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
 import { Pin } from 'lucide-react';
-import { LinkItem } from '../../../types';
+import { LinkItem, ViewMode } from '../../../types';
 import { LinkCard } from './LinkCard';
 
 interface PinnedSectionProps {
   links: LinkItem[];
-  viewMode?: 'compact' | 'detailed';
+  viewMode?: ViewMode;
   isBatchEditMode: boolean;
   selectedLinks: Set<string>;
   onToggleSelection: (id: string) => void;
@@ -31,6 +31,8 @@ export function PinnedSection({
 
   const gridClass = viewMode === 'detailed'
     ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
+    : viewMode === 'app'
+    ? 'grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12'
     : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-10';
 
   return (

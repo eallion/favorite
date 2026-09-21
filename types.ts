@@ -58,8 +58,11 @@ export interface AIConfig {
   faviconUrl?: string;
   navigationName?: string;
   sidebarNavigationName?: string;
-  defaultViewMode?: 'compact' | 'detailed';
+  defaultViewMode?: ViewMode;
 }
+
+// 视图模式类型
+export type ViewMode = 'compact' | 'detailed' | 'app';
 
 // 图标获取方式类型
 export type IconSourceType = 'faviconextractor' | 'google' | 'customapi' | 'customurl' | 'upload-edgeone' | 'upload-cloudflare';
@@ -197,8 +200,8 @@ export interface AppConfig {
 
   // 视图配置
   view?: {
-    mode: 'compact' | 'detailed'; // 用户个人视图偏好
-    defaultMode?: 'compact' | 'detailed'; // 管理员设置的默认视图模式
+    mode: ViewMode; // 用户个人视图偏好
+    defaultMode?: ViewMode; // 管理员设置的默认视图模式
   };
 
   // 界面配置

@@ -1,4 +1,4 @@
-import { AppConfig, WebDavConfig, SearchConfig, IconConfig, AIConfig, WebsiteConfig, TickerConfig, WeatherConfig } from '../../types';
+import { AppConfig, WebDavConfig, SearchConfig, IconConfig, AIConfig, WebsiteConfig, TickerConfig, WeatherConfig, ViewMode } from '../../types';
 import { STORAGE_KEYS } from '../constants';
 
 // 默认配置
@@ -169,9 +169,9 @@ class ConfigManager {
   /**
    * 更新视图模式
    */
-  updateViewMode(mode: 'compact' | 'detailed', isDefault: boolean = false): void {
+  updateViewMode(mode: ViewMode, isDefault: boolean = false): void {
     if (!this.config.view) {
-      this.config.view = {};
+      this.config.view = { mode: 'detailed' };
     }
 
     if (isDefault) {
@@ -185,7 +185,7 @@ class ConfigManager {
   /**
    * 获取视图模式
    */
-  getViewMode(): { mode: 'compact' | 'detailed'; defaultMode?: 'compact' | 'detailed' } {
+  getViewMode(): { mode?: ViewMode; defaultMode?: ViewMode } {
     return this.config.view || { mode: 'detailed', defaultMode: 'detailed' };
   }
 
@@ -311,7 +311,7 @@ export const updateMastodonConfig = (config: TickerConfig) => configManager.upda
 export const getMastodonConfig = () => configManager.getMastodonConfig();
 export const updateWeatherConfig = (config: WeatherConfig) => configManager.updateWeatherConfig(config);
 export const getWeatherConfig = () => configManager.getWeatherConfig();
-export const updateViewMode = (mode: 'compact' | 'detailed', isDefault?: boolean) => configManager.updateViewMode(mode, isDefault);
+export const updateViewMode = (mode: ViewMode, isDefault?: boolean) => configManager.updateViewMode(mode, isDefault);
 export const getViewMode = () => configManager.getViewMode();
 export const updateUIConfig = (config: Partial<AppConfig['ui']>) => configManager.updateUIConfig(config);
 export const getUIConfig = () => configManager.getUIConfig();

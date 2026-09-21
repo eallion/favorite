@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
-import { LinkItem } from '../../../types';
+import { LinkItem, ViewMode } from '../../../types';
 import { extractColorFromImage, generateColorFromText, ExtractedColor } from '../../../src/utils/colorExtractor';
 
 interface LinkCardProps {
   link: LinkItem;
-  viewMode: 'compact' | 'detailed';
+  viewMode: ViewMode;
   isBatchEditMode: boolean;
   isSelected: boolean;
   onToggleSelection: (id: string) => void;
@@ -51,6 +51,7 @@ export function LinkCard({
   };
 
   const isDetailedView = viewMode === 'detailed';
+  const isAppView = viewMode === 'app';
   const iconSrc = link.icon && !imgError ? link.icon : null;
 
   // 观察可见性，离屏卡片延迟执行颜色提取
@@ -131,15 +132,20 @@ export function LinkCard({
     <div
       ref={mergedRef}
       style={style}
-      data-color-ready={!!color || undefined}
+      data-color-ready={!isAppView && (!!color || undefined)}
+      data-view-mode={viewMode}
       className={`link-card group relative transition-all duration-200 ${
         isSelected
-          ? 'bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800'
-          : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'
+          ? 'bg-red-50 dark:bg-red-900/30 ring-2 ring-red-400 dark:ring-red-600'
+          : isAppView
+          ? 'bg-transparent border-0 border-transparent shadow-none'
+          : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm'
       } ${isBatchEditMode ? 'cursor-pointer' : isDraggable ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'} ${
         isDetailedView
-          ? 'flex flex-col rounded-2xl border shadow-sm p-4 min-h-[100px] items-start justify-start text-left w-full min-w-0'
-          : 'flex items-center justify-between rounded-xl border shadow-sm p-3'
+          ? 'flex flex-col rounded-2xl p-4 min-h-[100px] items-start justify-start text-left w-full min-w-0'
+          : isAppView
+          ? 'flex flex-col rounded-2xl border-0 border-transparent shadow-none p-2 items-center justify-center text-center w-full min-w-0 min-h-[96px] sm:min-h-[108px] hover:bg-slate-100/70 dark:hover:bg-slate-700/50'
+          : 'flex items-center justify-between rounded-xl p-3'
       } ${isDragging ? 'shadow-2xl scale-105' : ''}`}
       onClick={handleClick}
       onContextMenu={(e) => onContextMenu(e, link)}
@@ -147,14 +153,16 @@ export function LinkCard({
       {...(isDraggable && !isBatchEditMode ? attributes : {})}
       {...(isDraggable && !isBatchEditMode ? listeners : {})}
     >
-      {/* 背景模糊图标 */}
-      <div className="icon-bg">
-        {iconSrc ? (
-          <img src={iconSrc} alt="" loading="lazy" onError={() => setImgError(true)} />
-        ) : (
-          <span style={{ fontSize: '48px', fontWeight: 'bold' }}>{link.title.charAt(0).toUpperCase()}</span>
-        )}
-      </div>
+      {/* 背景模糊图标 - 仅在简约和详情模式下显示 */}
+      {!isAppView && (
+        <div className="icon-bg">
+          {iconSrc ? (
+            <img src={iconSrc} alt="" loading="lazy" onError={() => setImgError(true)} />
+          ) : (
+            <span style={{ fontSize: '48px', fontWeight: 'bold' }}>{link.title.charAt(0).toUpperCase()}</span>
+          )}
+        </div>
+      )}
 
       {/* Batch edit checkbox */}
       {isBatchEditMode && (
@@ -201,44 +209,66 @@ export function LinkCard({
 
       {/* Link content */}
       <div className={`icon-main flex flex-1 min-w-0 overflow-hidden h-full w-full ${
-        isDetailedView ? 'flex-col md:flex-row md:gap-4 md:items-center' : 'items-center'
+        isDetailedView
+          ? 'flex-col md:flex-row md:gap-4 md:items-center'
+          : isAppView
+          ? 'flex-col items-center justify-center'
+          : 'items-center'
       }`}>
         {isDetailedView ? (
-          <>
-            <div className="flex flex-col md:flex-row md:items-start gap-3 w-full min-w-0">
-              <div className="flex items-center gap-3 w-full md:hidden">
-                <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold uppercase shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 shadow-sm">
-                  {iconSrc ? <img src={iconSrc} alt="" className="w-6 h-6" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
-                </div>
-                <h3 className="flex-1 min-w-0 text-slate-800 dark:text-slate-200 text-base font-medium overflow-hidden text-ellipsis whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
-                  {link.title}
-                </h3>
+          <div className="flex flex-col md:flex-row md:items-start gap-3 w-full min-w-0">
+            <div className="flex items-center gap-3 w-full md:hidden">
+              <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold uppercase shrink-0 w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-900 shadow-sm dark:shadow-none">
+                {iconSrc ? <img src={iconSrc} alt="" className="w-6 h-6 dark:opacity-85 dark:brightness-90" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
               </div>
+              <h3 className="flex-1 min-w-0 text-slate-800 dark:text-slate-200 text-base font-medium overflow-hidden text-ellipsis whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
+                {link.title}
+              </h3>
+            </div>
+            {link.description && (
+              <p className="w-full md:hidden text-sm text-slate-600 dark:text-slate-400 leading-relaxed overflow-hidden text-ellipsis whitespace-nowrap" title={link.description}>
+                {link.description}
+              </p>
+            )}
+            <div className="hidden md:flex text-blue-600 dark:text-blue-400 items-center justify-center text-sm font-bold uppercase shrink-0 w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-900 shadow-sm dark:shadow-none">
+              {iconSrc ? <img src={iconSrc} alt="" className="w-10 h-10 dark:opacity-85 dark:brightness-90" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
+            </div>
+            <div className="hidden md:flex flex-1 min-w-0 flex-col justify-start w-full">
+              <h3 className="text-slate-800 dark:text-slate-200 text-base font-medium w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
+                {link.title}
+              </h3>
               {link.description && (
-                <p className="w-full md:hidden text-sm text-slate-600 dark:text-slate-400 leading-relaxed overflow-hidden text-ellipsis whitespace-nowrap" title={link.description}>
+                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap" title={link.description}>
                   {link.description}
                 </p>
               )}
-              <div className="hidden md:flex text-blue-600 dark:text-blue-400 items-center justify-center text-sm font-bold uppercase shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-800 shadow-sm">
-                {iconSrc ? <img src={iconSrc} alt="" className="w-10 h-10" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
-              </div>
-              <div className="hidden md:flex flex-1 min-w-0 flex-col justify-start w-full">
-                <h3 className="text-slate-800 dark:text-slate-200 text-base font-medium w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
-                  {link.title}
-                </h3>
-                {link.description && (
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed w-full min-w-0 overflow-hidden text-ellipsis whitespace-nowrap" title={link.description}>
-                    {link.description}
-                  </p>
+            </div>
+          </div>
+        ) : isAppView ? (
+          <>
+            <div className="flex flex-col items-center justify-center w-full min-w-0">
+              <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-base sm:text-lg font-bold uppercase shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-slate-100 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm dark:shadow-none transition-all duration-200 group-hover:scale-110 group-hover:-translate-y-0.5 group-hover:shadow-md dark:group-hover:shadow-none">
+                {iconSrc ? (
+                  <img src={iconSrc} alt="" className="w-8 h-8 sm:w-9 sm:h-9 object-contain dark:opacity-85 dark:brightness-90" loading="lazy" onError={() => setImgError(true)} />
+                ) : (
+                  link.title.charAt(0).toUpperCase()
                 )}
               </div>
+              <h3 className="w-full text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 truncate mt-2 text-center group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
+                {link.title}
+              </h3>
             </div>
+            {link.description && (
+              <div className="tooltip-custom absolute left-1/2 -translate-x-1/2 -top-8 w-max max-w-[200px] bg-black text-white text-xs p-2 rounded opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all z-20 pointer-events-none truncate">
+                {link.description}
+              </div>
+            )}
           </>
         ) : (
           <>
             <div className="flex items-center gap-3 w-full">
-              <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold uppercase shrink-0 w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-700">
-                {iconSrc ? <img src={iconSrc} alt="" className="w-5 h-5" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
+              <div className="text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm font-bold uppercase shrink-0 w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-900">
+                {iconSrc ? <img src={iconSrc} alt="" className="w-5 h-5 dark:opacity-85 dark:brightness-90" loading="lazy" onError={() => setImgError(true)} /> : link.title.charAt(0).toUpperCase()}
               </div>
               <h3 className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate whitespace-nowrap overflow-hidden text-ellipsis group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title={link.title}>
                 {link.title}
@@ -256,7 +286,7 @@ export function LinkCard({
       {/* Hover actions - 只在编辑模式下显示 */}
       {!isBatchEditMode && authToken && isEditMode && (
         <div className={`flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-md p-1 absolute z-10 ${
-          isDetailedView ? 'top-3 right-3' : 'top-1/2 -translate-y-1/2 right-2'
+          isDetailedView ? 'top-3 right-3' : isAppView ? 'top-2 right-2' : 'top-1/2 -translate-y-1/2 right-2'
         }`}>
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEdit(link); }}

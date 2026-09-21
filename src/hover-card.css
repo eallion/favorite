@@ -88,12 +88,12 @@
 
 /* Dark mode */
 .dark .link-card .icon-bg {
-  filter: blur(25px) saturate(4) brightness(1.4) contrast(1.5);
-  opacity: 0.2;
+  filter: blur(25px) saturate(2) brightness(0.8) contrast(1.1);
+  opacity: 0.12;
 }
 
 .dark .link-card:not(:hover):not(:focus-within) .icon-bg {
-  opacity: calc(0.2 * 0.3);
+  opacity: calc(0.12 * 0.3);
 }
 
 .dark .link-card .icon-bg span {
@@ -123,6 +123,35 @@
   box-shadow:
     0 0 0 1px rgba(59, 130, 246, 0.3),
     0 10px 25px -5px rgba(59, 130, 246, 0.2);
+}
+
+/* App 模式：完全移除外边框、外阴影与背景遮罩，呈现纯粹的 iOS/安卓应用抽屉风格 */
+.link-card[data-view-mode="app"],
+.link-card[data-view-mode="app"]:hover,
+.link-card[data-view-mode="app"][data-color-ready]:hover,
+.dark .link-card[data-view-mode="app"][data-color-ready]:hover,
+.link-card[data-view-mode="app"]:not([data-color-ready]):hover,
+.dark .link-card[data-view-mode="app"]:not([data-color-ready]):hover {
+  border: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  background-color: transparent;
+}
+
+.link-card[data-view-mode="app"] {
+  overflow: visible;
+}
+
+.link-card[data-view-mode="app"]::after {
+  display: none !important;
+}
+
+.link-card[data-view-mode="app"] .icon-bg {
+  display: none !important;
+}
+
+.link-card[data-view-mode="app"]:hover .icon-main {
+  transform: none;
 }
 
 /* Performance optimization */

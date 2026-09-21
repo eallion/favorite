@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Save, Settings, Clock, LayoutGrid, MessageCircle, Cloud, BookOpen, Upload, CloudCog, LogOut, Loader2, Plus, Trash2, Search, Shield } from 'lucide-react';
-import { AIConfig, PasswordExpiryConfig, TickerConfig, WeatherConfig, WeatherProvider, TickerSource, SearchConfig, IconConfig } from '../types';
+import { AIConfig, PasswordExpiryConfig, TickerConfig, WeatherConfig, WeatherProvider, TickerSource, SearchConfig, IconConfig, ViewMode } from '../types';
 import { toast } from './Toast';
 import { SEARCH_ENGINES, DEFAULT_ICON_CONFIG } from '../src/constants';
 
@@ -12,7 +12,7 @@ interface SettingsData {
   ticker: TickerConfig;
   weather: WeatherConfig;
   showPinnedWebsites: boolean;
-  defaultViewMode: 'compact' | 'detailed';
+  defaultViewMode: ViewMode;
   search: SearchConfig;
   icon: IconConfig;
 }
@@ -401,6 +401,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div className="flex gap-3">
                   <button onClick={() => update('defaultViewMode', 'compact')} className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${settings.defaultViewMode === 'compact' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-2 border-blue-500' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-2 border-transparent'}`}>简约</button>
                   <button onClick={() => update('defaultViewMode', 'detailed')} className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${settings.defaultViewMode === 'detailed' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-2 border-blue-500' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-2 border-transparent'}`}>详细</button>
+                  <button onClick={() => update('defaultViewMode', 'app')} className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${settings.defaultViewMode === 'app' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-2 border-blue-500' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-2 border-transparent'}`}>应用</button>
                 </div>
               </section>
 

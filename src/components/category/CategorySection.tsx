@@ -1,7 +1,7 @@
 import React from 'react';
 import { DndContext, closestCenter, DragEndEvent, SensorDescriptor } from '@dnd-kit/core';
 import { SortableContext, rectSortingStrategy } from '@dnd-kit/sortable';
-import { LinkItem, Category } from '../../../types';
+import { LinkItem, Category, ViewMode } from '../../../types';
 import { CategoryWithChildren } from '../../contexts/CategoriesContext';
 import { LinkCard } from '../link/LinkCard';
 
@@ -9,7 +9,7 @@ interface CategorySectionProps {
   category: CategoryWithChildren;
   links: LinkItem[];
   subcategoryLinks: LinkItem[];
-  viewMode: 'compact' | 'detailed';
+  viewMode: ViewMode;
   isBatchEditMode: boolean;
   selectedLinks: Set<string>;
   onToggleSelection: (id: string) => void;
@@ -40,6 +40,8 @@ export function CategorySection({
 
   const gridClass = viewMode === 'detailed'
     ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6'
+    : viewMode === 'app'
+    ? 'grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12'
     : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-10';
 
   return (

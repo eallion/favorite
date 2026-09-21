@@ -401,7 +401,9 @@ export function AppLayout() {
   // Loading state
   if (isInitialLoading) {
     return (
-      <div className="flex h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden text-slate-900 dark:text-slate-50">
+      <div className={`flex h-screen overflow-hidden text-slate-900 dark:text-slate-50 transition-colors duration-200 ${
+        viewMode === 'app' ? 'bg-white dark:bg-slate-800' : 'bg-slate-50 dark:bg-slate-900'
+      }`}>
         <aside className="hidden lg:flex w-48 xl:w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex-col">
           <div className="h-16 flex items-center px-6 border-b border-slate-100 dark:border-slate-700">
             <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-24 animate-pulse" />
@@ -415,7 +417,9 @@ export function AppLayout() {
             ))}
           </div>
         </aside>
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className={`flex-1 flex flex-col min-w-0 transition-colors duration-200 ${
+          viewMode === 'app' ? 'bg-white dark:bg-slate-800' : 'bg-slate-50 dark:bg-slate-900'
+        }`}>
           <header className="sticky top-0 z-30 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 h-16 flex items-center px-4 lg:px-8">
             <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-24 animate-pulse" />
             <div className="flex-1 max-w-lg mx-4">
@@ -426,14 +430,16 @@ export function AppLayout() {
               <div className="w-9 h-9 bg-slate-200 dark:bg-slate-700 rounded-full animate-pulse" />
             </div>
           </header>
-          <ContentSkeleton viewMode="detailed" />
+          <ContentSkeleton viewMode={viewMode} />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden text-slate-900 dark:text-slate-50">
+    <div className={`flex h-screen overflow-hidden text-slate-900 dark:text-slate-50 transition-colors duration-200 ${
+      viewMode === 'app' ? 'bg-white dark:bg-slate-800' : 'bg-slate-50 dark:bg-slate-900'
+    }`}>
       {/* Sidebar */}
       <Sidebar
         isOpen={sidebarOpen}
@@ -448,7 +454,9 @@ export function AppLayout() {
       />
 
       {/* Main area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className={`flex-1 flex flex-col min-w-0 transition-colors duration-200 ${
+        viewMode === 'app' ? 'bg-white dark:bg-slate-800' : 'bg-slate-50 dark:bg-slate-900'
+      }`}>
         <Header
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}

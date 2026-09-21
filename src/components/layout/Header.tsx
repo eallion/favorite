@@ -329,6 +329,16 @@ export function Header({
               style={darkMode && viewMode === 'detailed' ? { border: 'none' } : {}}
               title="详情版视图"
             >详情</button>
+            <button
+              onClick={() => setViewMode('app')}
+              className={`px-3 py-2 text-xs font-medium rounded-full transition-all flex items-center justify-center h-full min-w-[40px] leading-none cursor-pointer ${
+                viewMode === 'app'
+                  ? 'bg-white dark:bg-slate-600 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-200/50'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100'
+              }`}
+              style={darkMode && viewMode === 'app' ? { border: 'none' } : {}}
+              title="应用版视图"
+            >应用</button>
           </div>
 
           {/* Theme toggle */}

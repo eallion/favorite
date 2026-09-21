@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer, useCallback, useEffect } from 'react';
 import {
   AppConfig, AIConfig, WebsiteConfig, WebDavConfig,
-  SearchConfig, IconConfig, TickerConfig, WeatherConfig,
+  SearchConfig, IconConfig, TickerConfig, WeatherConfig, ViewMode,
 } from '../../types';
 import { STORAGE_KEYS, DEFAULT_ICON_CONFIG } from '../constants';
 import { configManager } from '../utils/configManager';
@@ -15,7 +15,7 @@ interface ConfigState {
   icon: IconConfig;
   ticker: TickerConfig;
   weather: WeatherConfig;
-  viewMode: 'compact' | 'detailed';
+  viewMode: ViewMode;
   showPinnedWebsites: boolean;
   darkMode: boolean;
 }
@@ -28,7 +28,7 @@ type ConfigAction =
   | { type: 'SET_ICON'; payload: IconConfig }
   | { type: 'SET_TICKER'; payload: TickerConfig }
   | { type: 'SET_WEATHER'; payload: WeatherConfig }
-  | { type: 'SET_VIEW_MODE'; payload: 'compact' | 'detailed' }
+  | { type: 'SET_VIEW_MODE'; payload: ViewMode }
   | { type: 'SET_SHOW_PINNED'; payload: boolean }
   | { type: 'SET_DARK_MODE'; payload: boolean }
   | { type: 'LOAD_CONFIG'; payload: Partial<ConfigState> };
@@ -42,7 +42,7 @@ interface ConfigContextValue extends ConfigState {
   setIcon: (config: IconConfig) => void;
   setMastodon: (config: TickerConfig) => void;
   setWeather: (config: WeatherConfig) => void;
-  setViewMode: (mode: 'compact' | 'detailed') => void;
+  setViewMode: (mode: ViewMode) => void;
   setShowPinned: (show: boolean) => void;
   setDarkMode: (dark: boolean) => void;
   syncConfigToKV: (authToken: string) => Promise<boolean>;
@@ -122,7 +122,7 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
     icon: configManager.getIconConfig() || DEFAULT_ICON_CONFIG,
     ticker: configManager.getMastodonConfig() || defaultTicker,
     weather: configManager.getWeatherConfig() || defaultWeather,
-    viewMode: (savedViewMode === 'detailed' || savedViewMode === 'compact')
+    viewMode: (savedViewMode === 'detailed' || savedViewMode === 'compact' || savedViewMode === 'app')
       ? savedViewMode
       : (configManager.getViewMode()?.defaultMode || 'detailed'),
     showPinnedWebsites: configManager.getUIConfig()?.showPinnedWebsites ?? true,
@@ -176,7 +176,7 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
     configManager.updateWeatherConfig(config);
   }, []);
 
-  const setViewMode = useCallback((mode: 'compact' | 'detailed') => {
+  const setViewMode = useCallback((mode: ViewMode) => {
     dispatch({ type: 'SET_VIEW_MODE', payload: mode });
     localStorage.setItem('cloudnav_view_mode_preference', mode);
     configManager.updateViewMode(mode);

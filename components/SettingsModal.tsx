@@ -9,8 +9,6 @@ interface SettingsData {
   passwordExpiry: PasswordExpiryConfig;
   icp?: string;
   mps?: string;
-  icpUrl?: string;
-  mpsUrl?: string;
   ticker: TickerConfig;
   weather: WeatherConfig;
   showPinnedWebsites: boolean;
@@ -37,8 +35,6 @@ const DEFAULT_SETTINGS: SettingsData = {
   passwordExpiry: { value: 1, unit: 'week' },
   icp: '',
   mps: '',
-  icpUrl: '',
-  mpsUrl: '',
   ticker: { enabled: false, source: 'mastodon', customItems: [] },
   weather: { enabled: false, provider: 'jinrishici', unit: 'celsius' },
   showPinnedWebsites: true,
@@ -105,8 +101,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             passwordExpiry: appConfig.website?.passwordExpiry || prev.passwordExpiry,
             icp: appConfig.website?.icp || '',
             mps: appConfig.website?.mps || '',
-            icpUrl: appConfig.website?.icpUrl || '',
-            mpsUrl: appConfig.website?.mpsUrl || '',
             ticker: appConfig.ticker || appConfig.mastodon || prev.ticker,
             weather: appConfig.weather || prev.weather,
             showPinnedWebsites: appConfig.ui?.showPinnedWebsites ?? prev.showPinnedWebsites,
@@ -147,8 +141,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
           passwordExpiry: finalSettings.passwordExpiry,
           icp: finalSettings.icp || '',
           mps: finalSettings.mps || '',
-          icpUrl: finalSettings.icpUrl || '',
-          mpsUrl: finalSettings.mpsUrl || '',
         },
         mastodon: finalSettings.ticker,
         weather: finalSettings.weather,
@@ -341,32 +333,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-500 mb-1">ICP 备案跳转链接（选填）</label>
-                    <input
-                      type="text"
-                      value={settings.icpUrl || ''}
-                      onChange={(e) => update('icpUrl', e.target.value)}
-                      placeholder="https://beian.miit.gov.cn/（留空默认）"
-                      className="w-full h-11 px-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                    />
-                  </div>
-                  <div>
                     <label className="block text-xs font-medium text-slate-500 mb-1">公安联网备案号</label>
                     <input
                       type="text"
                       value={settings.mps || ''}
                       onChange={(e) => update('mps', e.target.value)}
                       placeholder="例如：京公网安备 11010102000001号"
-                      className="w-full h-11 px-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-slate-500 mb-1">公安联网备案跳转链接（选填）</label>
-                    <input
-                      type="text"
-                      value={settings.mpsUrl || ''}
-                      onChange={(e) => update('mpsUrl', e.target.value)}
-                      placeholder="留空自动识别备案代码生成全国公安机关互联网站安全管理服务平台查询链接"
                       className="w-full h-11 px-3 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
                     />
                   </div>

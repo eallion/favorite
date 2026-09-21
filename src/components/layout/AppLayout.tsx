@@ -567,8 +567,6 @@ export function AppLayout() {
                 passwordExpiry: settings.passwordExpiry,
                 icp: settings.icp,
                 mps: settings.mps,
-                icpUrl: settings.icpUrl,
-                mpsUrl: settings.mpsUrl,
               });
               setMastodon(settings.ticker);
               setWeather(settings.weather);

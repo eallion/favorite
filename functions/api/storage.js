@@ -150,8 +150,6 @@ export async function onRequest(context) {
             passwordExpiry: { value: 1, unit: 'week' },
             icp: '',
             mps: '',
-            icpUrl: '',
-            mpsUrl: '',
           },
         };
         return jsonResponse(sectionVal || defaults[getConfig] || {}, 200, corsHeaders);

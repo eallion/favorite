@@ -154,8 +154,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             passwordExpiry: { value: 1, unit: 'week' },
             icp: '',
             mps: '',
-            icpUrl: '',
-            mpsUrl: '',
           },
         };
         return res.status(200).json(sectionVal || defaults[getConfig as string] || {});

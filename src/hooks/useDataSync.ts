@@ -4,6 +4,7 @@ import { STORAGE_KEYS, API_ENDPOINTS } from '../constants';
 import { useLinksContext } from '../contexts/LinksContext';
 import { useCategoriesContext } from '../contexts/CategoriesContext';
 import { useConfigContext } from '../contexts/ConfigContext';
+import { configManager } from '../utils/configManager';
 
 /**
  * 数据同步 Hook：管理 localStorage ↔ KV 的加载和同步
@@ -23,26 +24,14 @@ export function useDataSync() {
         let cats: Category[] = parsed.categories || DEFAULT_CATEGORIES;
 
         // 确保 common 分类存在且排第一
-        if (!cats.some((c: Category) => c.id === 'common')) {
+        if (cats.length > 0 && !cats.some(c => c.id === 'common')) {
           cats = [{ id: 'common', name: '常用推荐', icon: 'Star' }, ...cats];
-        } else {
-          const idx = cats.findIndex((c: Category) => c.id === 'common');
-          if (idx > 0) {
-            const common = cats[idx];
-            cats = [common, ...cats.slice(0, idx), ...cats.slice(idx + 1)];
-          }
         }
 
-        // 修复无效 categoryId
-        const validIds = new Set(cats.map((c: Category) => c.id));
-        let lnks: LinkItem[] = (parsed.links || INITIAL_LINKS).map((l: LinkItem) =>
-          validIds.has(l.categoryId) ? l : { ...l, categoryId: 'common' }
-        );
-
-        return { links: lnks, categories: cats };
+        return { links: parsed.links || INITIAL_LINKS, categories: cats };
       }
     } catch (e) {
-      console.error('Load from local failed:', e);
+      console.error('Load from local storage failed:', e);
     }
     return { links: INITIAL_LINKS, categories: DEFAULT_CATEGORIES };
   }, []);
@@ -65,7 +54,7 @@ export function useDataSync() {
 
   // 从 KV 加载各个配置
   const loadConfigsFromCloud = useCallback(async () => {
-    const configKeys = ['search', 'website', 'ai', 'weather', 'mastodon', 'icon'];
+    const configKeys = ['search', 'website', 'ai', 'weather', 'mastodon', 'icon', 'view', 'ui'];
     const configMap: Record<string, any> = {};
 
     await Promise.all(configKeys.map(async (key) => {
@@ -74,9 +63,23 @@ export function useDataSync() {
         if (res.ok) {
           const data = await res.json();
           if (data && Object.keys(data).length > 0) {
-            // 将后端命名的 'mastodon' 映射为前端统一使用的 'ticker'
-            const configKey = key === 'mastodon' ? 'ticker' : key;
-            configMap[configKey] = data;
+            if (key === 'view') {
+              if (data.defaultMode) {
+                configManager.updateViewMode(data.defaultMode, true);
+                const userPref = localStorage.getItem('cloudnav_view_mode_preference');
+                if (!userPref) {
+                  configMap.viewMode = data.defaultMode;
+                }
+              }
+            } else if (key === 'ui') {
+              if (typeof data.showPinnedWebsites === 'boolean') {
+                configMap.showPinnedWebsites = data.showPinnedWebsites;
+              }
+            } else {
+              // 将后端命名的 'mastodon' 映射为前端统一使用的 'ticker'
+              const configKey = key === 'mastodon' ? 'ticker' : key;
+              configMap[configKey] = data;
+            }
           }
         }
       } catch (e) {

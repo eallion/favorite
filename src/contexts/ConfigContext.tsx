@@ -218,9 +218,13 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const initConfig = useCallback((config: Partial<ConfigState>) => {
-    // 只合并非空配置，避免空对象覆盖默认值
+    // 只合并有效配置，避免空对象覆盖默认值
     const filtered = Object.fromEntries(
-      Object.entries(config).filter(([_, v]) => v && typeof v === 'object' && Object.keys(v).length > 0)
+      Object.entries(config).filter(([_, v]) => {
+        if (v === undefined || v === null) return false;
+        if (typeof v === 'object') return Object.keys(v).length > 0;
+        return true;
+      })
     );
     if (Object.keys(filtered).length > 0) {
       dispatch({ type: 'LOAD_CONFIG', payload: filtered });

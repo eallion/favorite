@@ -47,25 +47,25 @@
     "@vercel/kv": "^3.0.0",
     "buffer": "^6.0.3",
     "lucide-react": "^0.554.0",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
     "uuid": "^13.0.2"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.3.0",
-    "@types/node": "^22.19.18",
-    "@typescript-eslint/eslint-plugin": "^8.59.2",
-    "@typescript-eslint/parser": "^8.59.2",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^22.20.4",
+    "@typescript-eslint/eslint-plugin": "^8.70.0",
+    "@typescript-eslint/parser": "^8.70.0",
     "@vitejs/plugin-react": "^5.2.0",
-    "autoprefixer": "^10.5.0",
-    "eslint": "^9.39.4",
+    "autoprefixer": "^10.6.1",
+    "eslint": "^9.39.5",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
-    "prettier": "^3.8.3",
-    "tailwindcss": "^4.3.0",
-    "terser": "^5.47.1",
+    "prettier": "^3.9.8",
+    "tailwindcss": "^4.3.3",
+    "terser": "^5.51.2",
     "typescript": "~5.8.3",
-    "vite": "^6.4.2"
+    "vite": "^6.4.3"
   }
 }

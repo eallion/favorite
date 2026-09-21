@@ -7,6 +7,7 @@ import { useDragSort } from '../../hooks/useDragSort';
 import { CategorySection } from '../category/CategorySection';
 import { PinnedSection } from '../link/PinnedSection';
 import { LinkCard } from '../link/LinkCard';
+import { Footer } from './Footer';
 import { LinkItem } from '../../../types';
 
 interface MainContentProps {
@@ -67,92 +68,98 @@ export function MainContent({
   // Search mode: Only show results if internal search is checked
   if (searchQuery.trim() && isInternal) {
     return (
-      <main className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-8">
-        <section>
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2 mb-4">
-            搜索结果
-            <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 rounded-full">
-              {searchResults.length}
-            </span>
-          </h2>
-          <div className={`grid gap-3 ${gridClass}`}>
-            {searchResults.map(link => (
-              <LinkCard
-                key={link.id}
-                link={link}
-                viewMode={viewMode}
-                isBatchEditMode={isBatchEditMode}
-                isSelected={selectedLinks.has(link.id)}
-                onToggleSelection={onToggleSelection}
-                onEdit={onEditLink}
-                onDelete={onDeleteLink}
-                onContextMenu={onContextMenu}
-                authToken={authToken}
-                isEditMode={isEditMode}
-                onWeightChange={onWeightChange}
-                isDraggable={false}
-              />
-            ))}
-          </div>
-          {searchResults.length === 0 && (
-            <p className="text-slate-500 text-center py-12">未找到匹配的链接</p>
-          )}
-        </section>
+      <main className="flex-1 overflow-y-auto flex flex-col justify-between">
+        <div className="p-4 lg:p-8 space-y-8 flex-1">
+          <section>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2 mb-4">
+              搜索结果
+              <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 rounded-full">
+                {searchResults.length}
+              </span>
+            </h2>
+            <div className={`grid gap-3 ${gridClass}`}>
+              {searchResults.map(link => (
+                <LinkCard
+                  key={link.id}
+                  link={link}
+                  viewMode={viewMode}
+                  isBatchEditMode={isBatchEditMode}
+                  isSelected={selectedLinks.has(link.id)}
+                  onToggleSelection={onToggleSelection}
+                  onEdit={onEditLink}
+                  onDelete={onDeleteLink}
+                  onContextMenu={onContextMenu}
+                  authToken={authToken}
+                  isEditMode={isEditMode}
+                  onWeightChange={onWeightChange}
+                  isDraggable={false}
+                />
+              ))}
+            </div>
+            {searchResults.length === 0 && (
+              <p className="text-slate-500 text-center py-12">未找到匹配的链接</p>
+            )}
+          </section>
+        </div>
+        <Footer />
       </main>
     );
   }
 
   return (
-    <main className="flex-1 overflow-y-auto p-4 lg:p-8 space-y-8">
-      {/* Pinned section */}
-      {showPinnedWebsites && pinnedLinks.length > 0 && (
-        <section id="cat-pinned">
-          <PinnedSection
-            links={pinnedLinks}
-            viewMode={viewMode}
-            isBatchEditMode={isBatchEditMode}
-            selectedLinks={selectedLinks}
-            onToggleSelection={onToggleSelection}
-            onEditLink={onEditLink}
-            onDeleteLink={onDeleteLink}
-            onContextMenu={onContextMenu}
-            onDragEnd={handlePinnedDragEnd}
-            sensors={sensors}
-            authToken={authToken}
-            isDraggable={isDragSortMode}
-            isEditMode={isEditMode}
-            onWeightChange={onWeightChange}
-          />
-        </section>
-      )}
+    <main className="flex-1 overflow-y-auto flex flex-col justify-between">
+      <div className="p-4 lg:p-8 space-y-8 flex-1">
+        {/* Pinned section */}
+        {showPinnedWebsites && pinnedLinks.length > 0 && (
+          <section id="cat-pinned">
+            <PinnedSection
+              links={pinnedLinks}
+              viewMode={viewMode}
+              isBatchEditMode={isBatchEditMode}
+              selectedLinks={selectedLinks}
+              onToggleSelection={onToggleSelection}
+              onEditLink={onEditLink}
+              onDeleteLink={onDeleteLink}
+              onContextMenu={onContextMenu}
+              onDragEnd={handlePinnedDragEnd}
+              sensors={sensors}
+              authToken={authToken}
+              isDraggable={isDragSortMode}
+              isEditMode={isEditMode}
+              onWeightChange={onWeightChange}
+            />
+          </section>
+        )}
 
-      {/* All categories */}
-      {categoryTree.map(cat => {
-        const catLinks = safeGetLinksByCategory(cat.id);
-        const subcategoryLinks = cat.children?.flatMap(child => safeGetLinksByCategory(child.id)) || [];
+        {/* All categories */}
+        {categoryTree.map(cat => {
+          const catLinks = safeGetLinksByCategory(cat.id);
+          const subcategoryLinks = cat.children?.flatMap(child => safeGetLinksByCategory(child.id)) || [];
 
-        return (
-          <CategorySection
-            key={cat.id}
-            category={cat}
-            links={catLinks}
-            subcategoryLinks={subcategoryLinks}
-            viewMode={viewMode}
-            isBatchEditMode={isBatchEditMode}
-            selectedLinks={selectedLinks}
-            onToggleSelection={onToggleSelection}
-            onEditLink={onEditLink}
-            onDeleteLink={onDeleteLink}
-            onContextMenu={onContextMenu}
-            onDragEnd={handleDragEnd}
-            sensors={sensors}
-            authToken={authToken}
-            isDraggable={isDragSortMode}
-            isEditMode={isEditMode}
-            onWeightChange={onWeightChange}
-          />
-        );
-      })}
+          return (
+            <CategorySection
+              key={cat.id}
+              category={cat}
+              links={catLinks}
+              subcategoryLinks={subcategoryLinks}
+              viewMode={viewMode}
+              isBatchEditMode={isBatchEditMode}
+              selectedLinks={selectedLinks}
+              onToggleSelection={onToggleSelection}
+              onEditLink={onEditLink}
+              onDeleteLink={onDeleteLink}
+              onContextMenu={onContextMenu}
+              onDragEnd={handleDragEnd}
+              sensors={sensors}
+              authToken={authToken}
+              isDraggable={isDragSortMode}
+              isEditMode={isEditMode}
+              onWeightChange={onWeightChange}
+            />
+          );
+        })}
+      </div>
+      <Footer />
     </main>
   );
 }

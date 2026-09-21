@@ -150,7 +150,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (CONFIG_SECTIONS.includes(getConfig as string)) {
         const sectionVal = await readConfigSection(kv, getConfig as string);
         const defaults: Record<string, any> = {
-          website: { passwordExpiry: { value: 1, unit: 'week' } },
+          website: {
+            passwordExpiry: { value: 1, unit: 'week' },
+            icp: '',
+            mps: '',
+            icpUrl: '',
+            mpsUrl: '',
+          },
         };
         return res.status(200).json(sectionVal || defaults[getConfig as string] || {});
       }

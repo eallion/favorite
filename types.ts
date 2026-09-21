@@ -98,6 +98,10 @@ export interface PasswordExpiryConfig {
 // 网站配置
 export interface WebsiteConfig {
   passwordExpiry: PasswordExpiryConfig;
+  icp?: string;
+  mps?: string;
+  icpUrl?: string;
+  mpsUrl?: string;
 }
 
 // 搜索模式类型

@@ -562,7 +562,14 @@ export function AppLayout() {
             authToken={authToken}
             onSettingsLoaded={(settings) => {
               setAI(settings.ai);
-              setWebsite({ ...website, passwordExpiry: settings.passwordExpiry });
+              setWebsite({
+                ...website,
+                passwordExpiry: settings.passwordExpiry,
+                icp: settings.icp,
+                mps: settings.mps,
+                icpUrl: settings.icpUrl,
+                mpsUrl: settings.mpsUrl,
+              });
               setMastodon(settings.ticker);
               setWeather(settings.weather);
               setShowPinned(settings.showPinnedWebsites);

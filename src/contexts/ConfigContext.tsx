@@ -59,6 +59,10 @@ const defaultAI: AIConfig = {
 
 const defaultWebsite: WebsiteConfig = {
   passwordExpiry: { value: 1, unit: 'week' },
+  icp: '',
+  mps: '',
+  icpUrl: '',
+  mpsUrl: '',
 };
 
 const defaultWebDav: WebDavConfig = {

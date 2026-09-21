@@ -146,7 +146,13 @@ export async function onRequest(context) {
       if (CONFIG_SECTIONS.includes(getConfig)) {
         const sectionVal = await readConfigSection(kv, getConfig);
         const defaults = {
-          website: { passwordExpiry: { value: 1, unit: 'week' } },
+          website: {
+            passwordExpiry: { value: 1, unit: 'week' },
+            icp: '',
+            mps: '',
+            icpUrl: '',
+            mpsUrl: '',
+          },
         };
         return jsonResponse(sectionVal || defaults[getConfig] || {}, 200, corsHeaders);
       }
